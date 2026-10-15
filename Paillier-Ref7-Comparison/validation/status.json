@@ -1,0 +1,31 @@
+{
+  "date_client": "2026-10-14",
+  "cpu_cpp_compile": "PASS",
+  "cpp_contract_cases_passed": 27,
+  "genibatch_tests_passed": 12,
+  "shared_tests_passed": 11,
+  "genibatch_fixture_bits": [
+    64,
+    256,
+    512,
+    1024,
+    2048
+  ],
+  "integration_bits": [
+    256,
+    512,
+    1024
+  ],
+  "integration_backends": [
+    "genibatch-fate-cpu-1",
+    "zkp-cpu-1",
+    "zkp-cpu-4"
+  ],
+  "cuda_compile": "NOT_RUN",
+  "cuda_runtime": "NOT_RUN",
+  "genibatch_gpu": "MISSING_AUTHORS_DEPENDENCY",
+  "performance_claims": "NONE",
+  "note": "Local Windows functional validation only; target Ubuntu/RTX4060 measurements must be rerun.",
+  "packed_demo": "PASS_100_LOGICAL_17_CIPHERTEXTS",
+  "integration_directory": "integration-cpu-final"
+}

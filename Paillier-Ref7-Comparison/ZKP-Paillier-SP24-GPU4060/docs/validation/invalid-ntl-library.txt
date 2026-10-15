@@ -1,0 +1,31 @@
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test ZKP_NTL_LINKS
+-- Performing Test ZKP_NTL_LINKS - Failed
+-- Configuring incomplete, errors occurred!
+CMake Error at cmake/CheckToolchain.cmake:20 (message):
+  NTL/GMP failed to link with /usr/bin/c++.
+
+  If the log mentions __cxa_call_terminate@CXXABI_1.3.15, GLIBCXX or CXXABI,
+  the selected libstdc++ is incompatible with NTL.
+
+  Ubuntu 26.04: use /usr/bin/g++ for both C++ and CUDA, with CUDA 13.4.  Do
+  not force an old GCC 13 or replace system library symlinks.
+
+  Check CXX, LIBRARY_PATH, LD_LIBRARY_PATH and CMake's cached library paths.
+  Reconfigure in a new build directory after correcting the toolchain.
+
+  NTL=/usr/lib/x86_64-linux-gnu/libm.so.6;
+  GMP=<workspace>/.local-deps/sysroot/usr/lib/x86_64-linux-gnu/libgmp.a;
+  see docs/UBUNTU_26_RTX4060.md.
+Call Stack (most recent call first):
+  CMakeLists.txt:18 (zkp_check_ntl_abi)
+
+

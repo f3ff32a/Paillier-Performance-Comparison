@@ -1,0 +1,27 @@
+{
+  "project": "FederatedAI/FATE",
+  "tag": "v1.8.0",
+  "commit": "3ee02ea81c62d60353b2df40e141529b151d7c67",
+  "files": [
+    {
+      "path": "python/federatedml/secureprotol/fate_paillier.py",
+      "source_url": "https://raw.githubusercontent.com/FederatedAI/FATE/3ee02ea81c62d60353b2df40e141529b151d7c67/python/federatedml/secureprotol/fate_paillier.py",
+      "sha256": "1f06deba1d44708b5e69174991ac93c121d79a898b76b3736bc9124e60ed8296"
+    },
+    {
+      "path": "python/federatedml/secureprotol/gmpy_math.py",
+      "source_url": "https://raw.githubusercontent.com/FederatedAI/FATE/3ee02ea81c62d60353b2df40e141529b151d7c67/python/federatedml/secureprotol/gmpy_math.py",
+      "sha256": "3449d5119cc19704a56b292c05dc69e325a5026d8a7be52a32e81695b7767f35"
+    },
+    {
+      "path": "python/federatedml/secureprotol/fixedpoint.py",
+      "source_url": "https://raw.githubusercontent.com/FederatedAI/FATE/3ee02ea81c62d60353b2df40e141529b151d7c67/python/federatedml/secureprotol/fixedpoint.py",
+      "sha256": "321594b361e921ead3487c39b7faf61966e7e4d641fb83286c59210d52927c52"
+    },
+    {
+      "path": "LICENSE",
+      "source_url": "https://raw.githubusercontent.com/FederatedAI/FATE/3ee02ea81c62d60353b2df40e141529b151d7c67/LICENSE",
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ]
+}

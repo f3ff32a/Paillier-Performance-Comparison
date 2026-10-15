@@ -1,0 +1,5 @@
+dataset_id,implementation,backend,mode,modulus_bits,logical_count,ciphertext_count,run,warmup,host_ms,kernel_ms,verified,packing,threads,cpu_tasks,gpu_tasks,fallback_tasks,actual_n_bits,actual_n2_bits,timing_scope
+7c9c0832b5297dcb218726c62ba2e15421436b5c4341f465475e3d499f10afe0,zkp-paillier,cpu,encryption,512,10,10,1,1,0.81299999999999994,0,true,none,4,10,0,0,512,1024,host-inclusive-session-per-run
+7c9c0832b5297dcb218726c62ba2e15421436b5c4341f465475e3d499f10afe0,zkp-paillier,cpu,encryption,512,10,10,1,0,0.624,0,true,none,4,10,0,0,512,1024,host-inclusive-session-per-run
+7c9c0832b5297dcb218726c62ba2e15421436b5c4341f465475e3d499f10afe0,zkp-paillier,cpu,encryption,512,10,10,2,0,0.66200000000000003,0,true,none,4,10,0,0,512,1024,host-inclusive-session-per-run
+7c9c0832b5297dcb218726c62ba2e15421436b5c4341f465475e3d499f10afe0,zkp-paillier,cpu,encryption,512,10,10,3,0,0.63300000000000001,0,true,none,4,10,0,0,512,1024,host-inclusive-session-per-run

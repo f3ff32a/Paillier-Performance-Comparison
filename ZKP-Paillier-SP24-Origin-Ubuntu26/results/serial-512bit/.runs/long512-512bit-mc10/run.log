@@ -1,0 +1,84 @@
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=10 repeat=1 seed=random
+KEYGEN_SECONDS=0.023839847 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.014
+P.Ljir time: 0
+P.Lj time: 0
+P.wireUp time: 0.126
+P.run time: 0.115
+P.circuit time: 0.17
+message count: 10
+byte length: 512-bit
+single encrypt circuit's N: 760
+single encrypt circuit's Q: 1519
+batch encrypt circuit's N: 105800
+batch encrypt circuit's Q: 211600
+P.commit time: 44.547
+P.y time: 0
+prover.setY time: 0.073
+prover.rx time: 0.049
+sx.wai time: 0.074
+sx.wbi time: 0.026
+sx.wci time: 0.178
+prover.sx time: 0.279
+prover.rx_ time: 0.135
+prover.ky time: 0.001
+prover.tx.mul time: 0.866
+prover.txT time: 0
+prover.txCommit time: 1.489
+prover.polyCommit time: 2.895
+P.polyCommit time: 2.905
+P.x time: 0
+P.prove time: 0.151
+V.Ljir time: 0
+V.wireUp time: 0.077
+V.circuit time: 0.106
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.04
+verifier.calcV1 time: 0
+verifier.setY time: 0.073
+sx.wai time: 0.077
+sx.wbi time: 0.026
+sx.wci time: 0.18
+verifier.sx time: 0.398
+verifier.r_ time: 0
+verifier.rr_ time: 0.001
+verifier.calcV2 time: 0.474
+verifier.commitR1 time: 0.044
+verifier.commitR2 time: 0.22
+verifier.verify time: 0.78
+V.verify time: 0.784
+V.attach_value time: 0
+P.decompose time: 7393
+P.decompose-complex time: 7736
+
+==========
+message count: 10
+message/batch: 15
+batch count: 1
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 213378 bytes
+proof size/message: 21337.8 bytes
+
+single encrypt circuit's N: 760
+single encrypt circuit's Q: 1519
+batch encrypt circuit's N: 105800
+batch encrypt circuit's Q: 211600
+batch encrypt circuit's matrix m: 325
+batch encrypt circuit's matrix n: 326
+
+encryption time: 0.014
+circuit create time: 0.2395
+value assign time: 0.115
+commit time: 44.547
+prove time: 3.056
+verify time: 0.784
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=49.447580924

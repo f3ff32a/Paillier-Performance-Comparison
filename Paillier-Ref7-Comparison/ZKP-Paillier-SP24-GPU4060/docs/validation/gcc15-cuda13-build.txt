@@ -1,0 +1,48 @@
++ <workspace>/.local-deps/gcc15/usr/bin/x86_64-linux-gnu-g++-15 --version
+x86_64-linux-gnu-g++-15 (Ubuntu 15.2.0-16ubuntu1) 15.2.0
+Copyright (C) 2025 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
++ <workspace>/.local-deps/cuda13/bin/nvcc --version
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2026 NVIDIA Corporation
+Built on Mon_Aug_03_13:24:11_PDT_2026
+Cuda compilation tools, release 13.4, V13.4.59
+Build cuda_13.4.r13.4/compiler.38657139_0
++ <workspace>/.local-deps/python/cmake/data/bin/cmake -S <workspace>/ZKP-Paillier-SP24-GPU2 -B <workspace>/build-gpu2-gcc15 -DCMAKE_BUILD_TYPE=Release -DZKP_BUILD_TESTS=ON -DZKP_ENABLE_OPENMP=ON -DZKP_ENABLE_CUDA=ON -DCMAKE_CXX_COMPILER=<workspace>/.local-deps/gcc15/usr/bin/x86_64-linux-gnu-g++-15 -DCMAKE_CUDA_COMPILER=<workspace>/.local-deps/cuda13/bin/nvcc -DCMAKE_CUDA_HOST_COMPILER=<workspace>/.local-deps/gcc15/usr/bin/x86_64-linux-gnu-g++-15 -DCMAKE_CUDA_ARCHITECTURES=89-real -DCMAKE_PREFIX_PATH=<workspace>/.local-deps/sysroot/usr '-DCMAKE_BUILD_RPATH=<workspace>/.local-deps/sysroot/usr/lib/x86_64-linux-gnu;<workspace>/.local-deps/gcc15/usr/lib/x86_64-linux-gnu'
+-- Performing Test ZKP_NTL_LINKS
+-- Performing Test ZKP_NTL_LINKS - Success
+-- Performing Test ZKP_NTL_RUNS
+-- Performing Test ZKP_NTL_RUNS - Success
+-- ZKP host compiler: <workspace>/.local-deps/gcc15/usr/bin/x86_64-linux-gnu-g++-15 (15.2.0)
+-- ZKP NTL: <workspace>/.local-deps/sysroot/usr/lib/x86_64-linux-gnu/libntl.so; GMP: <workspace>/.local-deps/sysroot/usr/lib/x86_64-linux-gnu/libgmp.a
+-- ZKP CUDA: 13.4.59; host: <workspace>/.local-deps/gcc15/usr/bin/x86_64-linux-gnu-g++-15; arch: 89-real
+-- Configuring done (1.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: <workspace>/build-gpu2-gcc15
++ <workspace>/.local-deps/python/cmake/data/bin/cmake --build <workspace>/build-gpu2-gcc15 --parallel 4
+[  8%] Built target zkp_cuda
+[ 12%] Linking CUDA executable zkp_device_info
+[ 16%] Building CXX object CMakeFiles/zkp_paillier.dir/src/cpp/app/CBase.cpp.o
+[ 20%] Building CXX object CMakeFiles/zkp_paillier.dir/src/cpp/app/math/MathUtils.cpp.o
+[ 24%] Building CXX object CMakeFiles/zkp_paillier.dir/src/cpp/app/PolynomialCommitment.cpp.o
+[ 28%] Built target zkp_device_info
+[ 32%] Building CXX object CMakeFiles/zkp_paillier.dir/src/cpp/app/math/Matrix.cpp.o
+[ 36%] Building CXX object CMakeFiles/zkp_paillier.dir/src/cpp/app/utils/ConvertUtils.cpp.o
+[ 40%] Building CXX object CMakeFiles/zkp_paillier.dir/src/cpp/app/utils/Timer.cpp.o
+[ 44%] Building CXX object CMakeFiles/zkp_paillier.dir/src/cpp/app/acceleration/Backend.cpp.o
+[ 48%] Linking CXX static library libzkp_paillier.a
+[ 76%] Built target zkp_paillier
+[ 80%] Building CXX object CMakeFiles/transcript_fixture.dir/tests/v6_transcript_fixture.cpp.o
+[ 84%] Building CXX object CMakeFiles/zkp_bench.dir/tools/benchmark.cpp.o
+[ 88%] Building CXX object CMakeFiles/acceleration_tests.dir/tests/acceleration_tests.cpp.o
+[ 92%] Linking CXX executable zkp_bench
+[ 92%] Built target zkp_bench
+[ 96%] Linking CXX executable transcript_fixture
+[ 96%] Built target transcript_fixture
+[100%] Linking CXX executable acceleration_tests
+[100%] Built target acceleration_tests
+BUILD=PASS <workspace>/build-gpu2-gcc15
+Build metadata: <workspace>/build-gpu2-gcc15/build-info.txt
+Next: python3 scripts/validate_gpu.py --build-dir <workspace>/build-gpu2-gcc15

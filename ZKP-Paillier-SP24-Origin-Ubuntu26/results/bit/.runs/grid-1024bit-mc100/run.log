@@ -1,0 +1,84 @@
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=1024 messages=100 repeat=1 seed=random
+KEYGEN_SECONDS=0.224779745 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.19
+P.Ljir time: 0
+P.Lj time: 0.001
+P.wireUp time: 0.521
+P.run time: 0.748
+P.circuit time: 0.785
+message count: 100
+byte length: 1024-bit
+single encrypt circuit's N: 1521
+single encrypt circuit's Q: 3041
+batch encrypt circuit's N: 360635
+batch encrypt circuit's Q: 721270
+P.commit time: 822.149
+P.y time: 0.001
+prover.setY time: 0.807
+prover.rx time: 0.484
+sx.wai time: 0.621
+sx.wbi time: 0.101
+sx.wci time: 1.508
+prover.sx time: 2.231
+prover.rx_ time: 1.364
+prover.ky time: 0.005
+prover.tx.mul time: 7.828
+prover.txT time: 0
+prover.txCommit time: 18.715
+prover.polyCommit time: 31.437
+P.polyCommit time: 31.477
+P.x time: 0
+P.prove time: 1.625
+V.Ljir time: 0
+V.wireUp time: 0.286
+V.circuit time: 0.443
+V.y time: 0.001
+V.x time: 0
+verifier.polyVerify time: 0.387
+verifier.calcV1 time: 0
+verifier.setY time: 0.807
+sx.wai time: 0.638
+sx.wbi time: 0.108
+sx.wci time: 1.514
+verifier.sx time: 3.522
+verifier.r_ time: 0
+verifier.rr_ time: 0.005
+verifier.calcV2 time: 4.336
+verifier.commitR1 time: 0.451
+verifier.commitR2 time: 2.897
+verifier.verify time: 8.073
+V.verify time: 8.089
+V.attach_value time: 0.002
+P.decompose time: 11128
+P.decompose-complex time: 3617
+
+==========
+message count: 100
+message/batch: 15
+batch count: 7
+byte length: 1024-bit
+byte length: 128 bytes
+message size: 128 bytes
+slot size: 4 bytes
+slot/message: 32
+range proof count: 128
+cipher size: 256 bytes
+proof size: 721054 bytes
+proof size/message: 7210.54 bytes
+
+single encrypt circuit's N: 1521
+single encrypt circuit's Q: 3041
+batch encrypt circuit's N: 360635
+batch encrypt circuit's Q: 721270
+batch encrypt circuit's matrix m: 601
+batch encrypt circuit's matrix n: 601
+
+encryption time: 0.19
+circuit create time: 1.018
+value assign time: 0.748
+commit time: 822.149
+prove time: 33.103
+verify time: 8.09
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=871.567785457

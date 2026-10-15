@@ -1,0 +1,5 @@
+dataset_id,implementation,backend,mode,modulus_bits,logical_count,ciphertext_count,run,warmup,host_ms,kernel_ms,verified,packing,threads,cpu_tasks,gpu_tasks,fallback_tasks,actual_n_bits,actual_n2_bits,compute_ms,timing_scope
+4c848fa5df8a4ee95861a5903a9e5d90a12620a0105ba04f5f6d4c3ca57a9c33,genibatch-fate-cpu,cpu,encryption,1024,10,10,1,1,10.002000000,,1,none,1,10,0,0,1024,2047,9.924100000,host-inclusive-session-per-run
+4c848fa5df8a4ee95861a5903a9e5d90a12620a0105ba04f5f6d4c3ca57a9c33,genibatch-fate-cpu,cpu,encryption,1024,10,10,1,0,10.122200000,,1,none,1,10,0,0,1024,2047,10.032300000,host-inclusive-session-per-run
+4c848fa5df8a4ee95861a5903a9e5d90a12620a0105ba04f5f6d4c3ca57a9c33,genibatch-fate-cpu,cpu,encryption,1024,10,10,2,0,10.284900000,,1,none,1,10,0,0,1024,2047,10.216700000,host-inclusive-session-per-run
+4c848fa5df8a4ee95861a5903a9e5d90a12620a0105ba04f5f6d4c3ca57a9c33,genibatch-fate-cpu,cpu,encryption,1024,10,10,3,0,10.319900000,,1,none,1,10,0,0,1024,2047,10.252500000,host-inclusive-session-per-run

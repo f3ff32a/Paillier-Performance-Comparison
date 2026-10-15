@@ -1,0 +1,5 @@
+# Build
+/build
+/coverage
+cryptoplustest
+cryptoplustest.xml

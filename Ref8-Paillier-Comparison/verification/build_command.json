@@ -1,0 +1,18 @@
+[
+  "C:\\Program Files\\RedPanda-Cpp\\mingw64\\bin\\g++.exe",
+  "-std=c++17",
+  "-O2",
+  "-fopenmp",
+  "-static",
+  "-I",
+  "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\toolchain\\mingw64\\include",
+  "-I",
+  "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\outputs\\Ref8-Paillier-Comparison\\vendor\\user_acceleration",
+  "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\outputs\\Ref8-Paillier-Comparison\\adapters\\user_bench.cpp",
+  "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\outputs\\Ref8-Paillier-Comparison\\vendor\\user_acceleration\\Backend.cpp",
+  "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\outputs\\Ref8-Paillier-Comparison\\vendor\\user_acceleration\\CudaStub.cpp",
+  "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\toolchain\\mingw64\\lib\\libgmp.a",
+  "-lssp",
+  "-o",
+  "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\native-validation\\user_bench.exe"
+]

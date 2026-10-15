@@ -1,0 +1,5 @@
+project=ZKP-Paillier-SP24-GPU2
+compiled_cuda=13.4
+driver_api=0.0 runtime=13.4
+CUDA_PROBE=FAIL cudaGetDeviceCount: cudaErrorInsufficientDriver (35) CUDA driver version is insufficient for CUDA runtime version
+See docs/UBUNTU_26_RTX4060.md. Check the driver, selected GPU, and native sm_89 build.

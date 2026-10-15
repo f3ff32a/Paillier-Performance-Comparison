@@ -1,0 +1,27 @@
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE
+-- Performing Test ZKP_NTL_LINKS
+-- Performing Test ZKP_NTL_LINKS - Success
+-- Performing Test ZKP_NTL_RUNS
+-- Performing Test ZKP_NTL_RUNS - Success
+-- Found OpenMP_CXX: -fopenmp (found version "4.5")
+-- Found OpenMP: TRUE (found version "4.5") found components: CXX
+-- Configuring incomplete, errors occurred!
+CMake Error at cmake/CheckToolchain.cmake:51 (message):
+  C++ and CUDA must use the same host compiler in this project.
+
+  CXX=/usr/bin/c++; CUDA host=/usr/bin/false.
+
+  Select the same g++ for both in a new build directory; see scripts/build.py
+  and docs/UBUNTU_26_RTX4060.md.
+Call Stack (most recent call first):
+  CMakeLists.txt:35 (zkp_select_cuda_host)
+
+

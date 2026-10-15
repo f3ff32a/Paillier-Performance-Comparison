@@ -1,0 +1,5 @@
+CPU v6 vs GPU2 CPU (GCC 13.3): byte-identical
+CPU v6 vs GPU2 CPU (GCC 15.2): byte-identical
+Bytes: 5886
+SHA-256: 5a5b3bdfcd766808842179bd950455769944facf94561f6df746a735f5072067
+GPU device transcript comparison: NOT RUN (no NVIDIA GPU available)

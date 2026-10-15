@@ -1,0 +1,17 @@
+验证时间：2026-10-14
+
+通过：原始DOCX/ZIP未修改；vendor来源SHA256；参考GPU模幂函数逐字一致；
+原生CPU适配器编译运行；512/1024/2048位共享输入；逐项Python一般公式检查；
+线程1/4检查；非法消息/随机数/CUDA缺失拒绝；完整CPU采集流程；9项契约测试。
+
+CPU检查环境：Windows、MinGW11.5、OpenMP、GMP6.3.0。
+只使用包内加速源码编译。GMP取自官方MSYS2包并验证其SHA256。
+编译命令及精确适配器文件哈希见build_command.json、validation_report.json。
+cpu_functional_run内只有CPU结果，用于功能验收，不构成GPU性能比较。
+
+尚未通过：Linux CMake构建、CUDA成功编译、两个CUDA后端的GPU实机校验和性能。
+本机nvcc尝试失败，错误为缺少cl.exe，详见cuda_compile_attempt.json。
+没有报告GPU加速比、完整ZKP对比结果或参考论文性能复现。
+
+正式采集前应在目标Linux/CUDA环境按使用说明运行edges验收，再运行structured
+和uniform测试；COMPARISON=PASS代表这些输入下结果一致，不代表密码学安全审计。

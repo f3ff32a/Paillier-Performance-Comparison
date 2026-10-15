@@ -1,0 +1,12 @@
+# Generated build and cache files
+build/
+build-*/
+cmake-build-*/
+CMakeFiles/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.venv/
+venv/
+node_modules/

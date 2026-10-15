@@ -1,0 +1,5 @@
+cuobjdump --list-elf zkp_bench
+ELF file    1: zkp_bench.1.sm_89.cubin
+
+cuobjdump --list-ptx zkp_bench
+cuobjdump info    : No PTX file found to extract from '<workspace>/build-gpu2-gcc15/zkp_bench'. You may try with -all option.

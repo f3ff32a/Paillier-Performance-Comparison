@@ -1,0 +1,37 @@
+{
+  "series": "grid",
+  "parameters": {
+    "bits": 2048,
+    "mc": 1,
+    "range": 128,
+    "slot": 4,
+    "batch": 15,
+    "repeat": 1,
+    "seed": null
+  },
+  "binary_sha256": "85f0b6638fd4b42b1ea624be0e2761af5fd6d9f6cbd1e51d7bec249ca2ea46aa",
+  "status": "INTERRUPTED",
+  "command": [
+    "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/build/serial_benchmark",
+    "--bits",
+    "2048",
+    "--mc",
+    "1",
+    "--range",
+    "128",
+    "--slot",
+    "4",
+    "--batch",
+    "15",
+    "--repeat",
+    "1",
+    "--csv",
+    "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/results/bit/.runs/grid-2048bit-mc1/result.csv"
+  ],
+  "timeout_seconds": null,
+  "started_utc": "2026-10-12T04:47:45.541264+00:00",
+  "updated_utc": "2026-10-12T12:36:17.691592+00:00",
+  "reason": "interrupted by Ctrl-C",
+  "returncode": -15,
+  "elapsed_process_seconds": 5509.139221641
+}

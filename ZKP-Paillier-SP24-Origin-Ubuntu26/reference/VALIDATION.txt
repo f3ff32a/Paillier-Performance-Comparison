@@ -1,0 +1,32 @@
+验证记录（2026-10-12）
+
+输入：用户上传的ZKP-Paillier-SP24-master(4).zip。
+基准：保留原作者串行算法，OpenMP OFF，CUDA OFF，NTL线程固定1。
+
+1. GCC13.3 / NTL11.5.1 / Linux环境：完整源码编译链接成功。
+   make check通过：核心语义与边界检查PASS；13项批量脚本测试PASS；3项CLI测试PASS。
+   512bit / MC1 / range128 / slot4 / batch15 / repeat3：3次验证PASS，3行真实CSV。
+   此处功能测试用时不能用作用户电脑或GPU性能数据，包内不混入这些计时。
+
+2. 官方Ubuntu26.04（resolute）发行的GCC15.2.0-16ubuntu1、NTL11.5.1-1build1、binutils2.46：
+   私有目录完整干净编译15个翻译单元，两个程序链接和构建信息检查均成功。
+   核心语义与边界检查PASS；3项CLI测试PASS；实际加载目标NTL/C++运行库。
+   未发现OpenMP/CUDA符号依赖。17个QA包核对官方SHA256。
+   宿主仍为Ubuntu24/glibc2.39，GMP/gf2x来自兼容的24环境依赖。
+   这是使用Ubuntu26工具链与NTL的兼容测试，并非完整Ubuntu26根系统或用户真机验收。
+
+3. 相同固定随机输入的原作者/兼容源码完整证明记录逐字节一致。
+   参数：128bit / MC3 / range8 / slot4 / batch15。
+   SHA256双方均为：d625c72686034c4dcf78087bc756c87bc641e0bf43f3a87e85189e9394552b5a。
+
+4. GCC13.3 ASan+UBSan：64bit / MC1 / range128 / slot4 / batch15 / seed20261012 / repeat2，
+   两次PASS、CSV两行；核心检查PASS；两项exit0、stderr为空，无ASan/UBSan诊断。
+   因容器/proc限制，LeakSanitizer不可运行；仅关闭detect_leaks，未关闭ASan/UBSan。
+   不声明已通过LSan验收；对象销毁另由weak_ptr语义测试检查。
+
+5. 批量脚本：A/B分组、2048bit分文件、样本CV、失败/部分结果过滤、超时与Ctrl-C进程组清理、
+   参数/摘要/CSV损坏的续跑、动态库指纹、同目录并发锁、时间戳变化后恢复共13项测试PASS。
+   受控模拟程序仅用于脚本测试，不进入实际性能结果。
+
+范围限制：未在用户六台机器重新跑实验；未进行43配置的大规模串行性能测量。
+请在目标电脑执行make check和512bit小检查，再执行正式批量命令。

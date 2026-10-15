@@ -1,0 +1,9 @@
+{
+  "project": "ZKP-Paillier-SP24-GPU2",
+  "status": "FAIL",
+  "tests": [],
+  "device": 0,
+  "bits": 512,
+  "messages": 10,
+  "error": "real CUDA kernel probe failed; see .local-deps/gpu2-no-gpu-final/environment.json"
+}

@@ -1,0 +1,26 @@
+series,bits,mc,repeat,status,returncode,reason,csv,log,updated_utc
+grid,256,1,1,PASS,0,,.runs/grid-256bit-mc1/result.csv,.runs/grid-256bit-mc1/run.log,2026-10-12T02:41:57.355570+00:00
+grid,256,10,1,PASS,0,,.runs/grid-256bit-mc10/result.csv,.runs/grid-256bit-mc10/run.log,2026-10-12T02:42:03.814930+00:00
+grid,256,20,1,PASS,0,,.runs/grid-256bit-mc20/result.csv,.runs/grid-256bit-mc20/run.log,2026-10-12T02:42:10.817693+00:00
+grid,256,40,1,PASS,0,,.runs/grid-256bit-mc40/result.csv,.runs/grid-256bit-mc40/run.log,2026-10-12T02:42:18.411963+00:00
+grid,256,80,1,PASS,0,,.runs/grid-256bit-mc80/result.csv,.runs/grid-256bit-mc80/run.log,2026-10-12T02:42:26.958339+00:00
+grid,256,100,1,PASS,0,,.runs/grid-256bit-mc100/result.csv,.runs/grid-256bit-mc100/run.log,2026-10-12T02:42:36.133698+00:00
+grid,256,200,1,PASS,0,,.runs/grid-256bit-mc200/result.csv,.runs/grid-256bit-mc200/run.log,2026-10-12T02:42:48.126776+00:00
+grid,256,400,1,PASS,0,,.runs/grid-256bit-mc400/result.csv,.runs/grid-256bit-mc400/run.log,2026-10-12T02:43:06.645537+00:00
+grid,512,1,1,PASS,0,,.runs/grid-512bit-mc1/result.csv,.runs/grid-512bit-mc1/run.log,2026-10-12T02:43:55.034418+00:00
+grid,512,10,1,PASS,0,,.runs/grid-512bit-mc10/result.csv,.runs/grid-512bit-mc10/run.log,2026-10-12T02:44:45.463217+00:00
+grid,512,20,1,PASS,0,,.runs/grid-512bit-mc20/result.csv,.runs/grid-512bit-mc20/run.log,2026-10-12T02:45:38.151070+00:00
+grid,512,40,1,PASS,0,,.runs/grid-512bit-mc40/result.csv,.runs/grid-512bit-mc40/run.log,2026-10-12T02:46:36.183629+00:00
+grid,512,80,1,PASS,0,,.runs/grid-512bit-mc80/result.csv,.runs/grid-512bit-mc80/run.log,2026-10-12T02:47:43.148519+00:00
+grid,512,100,1,PASS,0,,.runs/grid-512bit-mc100/result.csv,.runs/grid-512bit-mc100/run.log,2026-10-12T02:48:55.281612+00:00
+grid,512,200,1,PASS,0,,.runs/grid-512bit-mc200/result.csv,.runs/grid-512bit-mc200/run.log,2026-10-12T02:50:29.508830+00:00
+grid,512,400,1,PASS,0,,.runs/grid-512bit-mc400/result.csv,.runs/grid-512bit-mc400/run.log,2026-10-12T02:52:47.206383+00:00
+grid,1024,1,1,PASS,0,,.runs/grid-1024bit-mc1/result.csv,.runs/grid-1024bit-mc1/run.log,2026-10-12T03:02:18.770376+00:00
+grid,1024,10,1,PASS,0,,.runs/grid-1024bit-mc10/result.csv,.runs/grid-1024bit-mc10/run.log,2026-10-12T03:12:20.713302+00:00
+grid,1024,20,1,PASS,0,,.runs/grid-1024bit-mc20/result.csv,.runs/grid-1024bit-mc20/run.log,2026-10-12T03:23:00.850845+00:00
+grid,1024,40,1,PASS,0,,.runs/grid-1024bit-mc40/result.csv,.runs/grid-1024bit-mc40/run.log,2026-10-12T03:34:30.371111+00:00
+grid,1024,80,1,PASS,0,,.runs/grid-1024bit-mc80/result.csv,.runs/grid-1024bit-mc80/run.log,2026-10-12T03:48:03.726389+00:00
+grid,1024,100,1,PASS,0,,.runs/grid-1024bit-mc100/result.csv,.runs/grid-1024bit-mc100/run.log,2026-10-12T04:02:35.866479+00:00
+grid,1024,200,1,PASS,0,,.runs/grid-1024bit-mc200/result.csv,.runs/grid-1024bit-mc200/run.log,2026-10-12T04:21:19.844750+00:00
+grid,1024,400,1,PASS,0,,.runs/grid-1024bit-mc400/result.csv,.runs/grid-1024bit-mc400/run.log,2026-10-12T04:47:45.273056+00:00
+grid,2048,1,1,INTERRUPTED,-15,interrupted by Ctrl-C,.runs/grid-2048bit-mc1/result.csv,.runs/grid-2048bit-mc1/run.log,2026-10-12T12:36:17.691592+00:00

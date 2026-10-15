@@ -1,0 +1,16 @@
+{
+  "requested_n_bits": 1024,
+  "actual_n_bits": 1023,
+  "n2_bits": 2046,
+  "prime_bits": 512,
+  "dataset": "structured",
+  "slot_bytes": 4,
+  "slots_per_message": 32,
+  "count": 40,
+  "seed": 2361,
+  "randomness": "synthetic deterministic",
+  "generator": "n+1",
+  "primality": "Miller-Rabin 48 rounds",
+  "key_checked_by_decryption": true,
+  "sha256": "320cf1a9572e6613bda4ab0a67055d1319bb68945275080ebe28b335f2da08f7"
+}

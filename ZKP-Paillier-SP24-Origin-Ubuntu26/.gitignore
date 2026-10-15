@@ -1,0 +1,32 @@
+# Build
+/generated-src
+/build
+/src/WasmWrapper.cpp
+*.o
+*.gcno
+*.gcda
+*.gcov
+*.tmp
+/docs/api
+/docs/README.pdf
+
+
+# OSX Macro File
+.DS_Store
+
+# IDE
+.vscode/*
+.vs/*
+.idea
+
+# NodeJS dependencies
+node_modules
+
+# testing
+*.csv
+*.xls
+*.xlsx
+*.log
+
+# test files
+/test_files

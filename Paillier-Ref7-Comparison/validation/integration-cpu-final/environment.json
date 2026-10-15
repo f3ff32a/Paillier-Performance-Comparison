@@ -1,0 +1,59 @@
+{
+  "created_utc": "2026-10-14T01:00:11.293621+00:00",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-10-10.0.19045-SP0",
+  "cpu": "Intel64 Family 6 Model 151 Stepping 2, GenuineIntel",
+  "arguments": {
+    "zkp_binary": "work\\toolchain-build\\paillier_compare.exe",
+    "datasets": [
+      "outputs\\Paillier-Ref7-Comparison\\examples\\n256-c10-zkp-slots.json",
+      "outputs\\Paillier-Ref7-Comparison\\examples\\n512-c10-full-domain.json",
+      "outputs\\Paillier-Ref7-Comparison\\examples\\n1024-c10-zkp-slots.json"
+    ],
+    "bits": [
+      "256",
+      "512",
+      "1024"
+    ],
+    "messages": [
+      "1",
+      "10",
+      "40",
+      "100",
+      "200",
+      "400"
+    ],
+    "profile": "zkp-slots",
+    "zkp_backends": [
+      "cpu"
+    ],
+    "threads": 4,
+    "cpu_threads": null,
+    "repeat": 3,
+    "warmup": 1,
+    "timeout": 1800,
+    "output": "outputs\\Paillier-Ref7-Comparison\\validation\\integration-cpu-final"
+  },
+  "gpu": {
+    "exit_code": 0,
+    "output": "name, driver_version, memory.total [MiB]\nNVIDIA GeForce RTX 4060 Laptop GPU, 616.92, 8188 MiB",
+    "stderr": ""
+  },
+  "note": "Same-input ordinary Paillier encryption. No ZKP protocol speedup inferred.",
+  "execution_environment": {
+    "OMP_DYNAMIC": null,
+    "OMP_THREAD_LIMIT": null,
+    "OMP_NUM_THREADS": null,
+    "OMP_PROC_BIND": null,
+    "OMP_PLACES": null,
+    "CUDA_VISIBLE_DEVICES": null,
+    "ZKP_BACKEND": null,
+    "ZKP_CUDA_DEVICE": null,
+    "ZKP_CPU_THREADS": null,
+    "ZKP_GPU_CHUNK": null,
+    "ZKP_GPU_MAX_CHUNK": null,
+    "ZKP_GPU_MEMORY_MIB": null,
+    "ZKP_GPU_VERIFY": null,
+    "ZKP_ACCEL_VERBOSE": null
+  }
+}

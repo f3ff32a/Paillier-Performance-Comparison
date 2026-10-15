@@ -1,0 +1,35 @@
+image: polyubtc/wasm-lib-runner
+
+stages:
+  - build
+  - report
+
+build:cpp:
+  stage: build
+  script:
+    - make gtest_build
+    - make cpp_clean
+    - make cpp_build
+    - make cpp_test_clean
+    - make cpp_test
+    - make cpp_coverage
+    - make pack_cpp
+  artifacts:
+    name: C++ build
+    expire_in: 1 week
+    paths:
+      - build/cpp/cryptoplus
+      - test/cpp/coverage
+      - test/cpp/cryptoplustest.xml
+
+report:test:
+  stage: report
+  script:
+    - echo "Reporting...";
+  dependencies:
+    - build:cpp
+  artifacts:
+    name: C++ Unit Test Report
+    reports:
+      junit:
+        - test/cpp/cryptoplustest.xml

@@ -1,0 +1,6 @@
+{
+  "status": "PASS",
+  "validated_rows": 27,
+  "comparison_scope": "ordinary Paillier encryption operator; not full ZKP",
+  "timing": "native warm operator wall time; RNG, setup, oracle excluded"
+}

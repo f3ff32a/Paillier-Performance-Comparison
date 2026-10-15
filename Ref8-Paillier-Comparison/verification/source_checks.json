@@ -1,0 +1,14 @@
+{
+  "ref8_pow_mod_mem_exact_match": true,
+  "original_inputs_unchanged": [
+    {
+      "path": "C:\\study\\3_research\\面向可验证云计算的 Paillier 零知识证明 CPU–GPU 异构加速方法.docx",
+      "sha256": "5a60647750cdb70345577e782b5fa2b28dd9043d2cefafee3c15b3a2626c6ce6"
+    },
+    {
+      "path": "C:\\study\\3_research\\ZKP-Paillier-SP24-GPU4060.zip",
+      "sha256": "0820bd89c5c8e2c5f5152f46d7f75a58ccaae74acfcd9ab6a016b1e5d7304a4a"
+    }
+  ],
+  "ref8_revision": "6a8fc29419b2ff881d05171d7e40c6098dca4b96"
+}

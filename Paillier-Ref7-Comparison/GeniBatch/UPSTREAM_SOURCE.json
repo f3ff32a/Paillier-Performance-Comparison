@@ -1,0 +1,82 @@
+{
+  "project": "GeniBatch",
+  "repository": "https://github.com/Huangxy-Minel/GeniBatch",
+  "commit": "bb80c4581373d7a779839482d256161fd33a7cab",
+  "upstream_files": 18,
+  "byte_identity_verified": true,
+  "modified_upstream_paths": [],
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "c7586350e75d4f16db42e8153d8746d41cda77d63964836a50549b47bb98a841"
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "e6aaf8806d7ba8530793bab3d089ab5674d6c5665e34699b6c2afeff358d8917"
+    },
+    {
+      "path": "README.md",
+      "sha256": "81870de922f636bbd0020faaa4b46ff2fa4cbcfa368ff7524c65b433f5b3ff2d"
+    },
+    {
+      "path": "encoding/encoder.py",
+      "sha256": "ef30a6692ca793aeee216c6549bbc642385fcbfa0507cec1dfff989212852cd1"
+    },
+    {
+      "path": "encryption/encrypt.py",
+      "sha256": "ff10eb43d626e5aebfa2060273d2e44997d2769b70f88907b59c47bd7138e8ef"
+    },
+    {
+      "path": "experiments/caesar.py",
+      "sha256": "c1cb8da2a13e82de0559008978211c00b03738ebbe047a16f4bce7d57768a236"
+    },
+    {
+      "path": "experiments/secureboost.py",
+      "sha256": "fb914d4ee782193cf2f97bfd1acad68a1a9dd5fbc1583f8b6270be0fcb58d5df"
+    },
+    {
+      "path": "experiments/test_enc_dec.py",
+      "sha256": "5b1e3bdf908d18ac4ce6a7884cec94dbd58ca52cdb544e0e967b194a8f1cf0da"
+    },
+    {
+      "path": "experiments/test_operator.py",
+      "sha256": "c6cd1fee5b4028e0c02fbb69c630c99fd80665de55d256330a8307608eb7e7f0"
+    },
+    {
+      "path": "experiments/test_vec_op.py",
+      "sha256": "e4f56d2bc9f53fdd5e65296774afa5603e012b1ad059fb94e1784cda5398bbc0"
+    },
+    {
+      "path": "fate_plugin/optim_hetero_gradients.py",
+      "sha256": "d4c20fa60923d6f09306afd60b7421373437e6639381537d35223ab28df2eb1a"
+    },
+    {
+      "path": "planner/batch_plan.py",
+      "sha256": "4201f8e0b3837dc54220d14c6fa7338d95aacf41f184624180003a3d58cbd438"
+    },
+    {
+      "path": "planner/plan_node.py",
+      "sha256": "b4ec47a844826e94d6f09fb4de562b37d63852f1b389a86fe8c50aec90b0c5ec"
+    },
+    {
+      "path": "storage/data_store.py",
+      "sha256": "fede7511cbb4a7c6cbb2b58a4f2a7aa044901daa4b6f99759250b0c651d8a770"
+    },
+    {
+      "path": "encoding/test/test_encoder.py",
+      "sha256": "ed9464a79e11b70923d2e520544ce5355f63bb9a7c30533aceae9dc81d9b27e5"
+    },
+    {
+      "path": "encryption/test/test_encryption.py",
+      "sha256": "ff61a5d56d68c0e45595da934670dc519fe3a8cc17b8adf21bbe99d5a4625373"
+    },
+    {
+      "path": "planner/test/test.py",
+      "sha256": "2a0ee541b8ff3fb99b1055f472ad03bace6a2f119079941b324c8c8a6eb11e4f"
+    },
+    {
+      "path": "planner/test/test_plan_node.py",
+      "sha256": "0f838501ba116e1b8e9128a31126ec1a8441047099f2df3ff42d726369b32010"
+    }
+  ]
+}

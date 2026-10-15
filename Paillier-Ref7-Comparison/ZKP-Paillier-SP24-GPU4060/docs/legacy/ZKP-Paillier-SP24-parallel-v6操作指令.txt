@@ -1,0 +1,17 @@
+unzip ZKP-Paillier-SP24-parallel-v6
+A(如果出现提示，输入A代表全部修改，注意必须大写)
+cd ZKP-Paillier-SP24-parallel-v6
+cd test/cpp
+export OMP_NUM_THREADS=16
+export OMP_NESTED=TRUE
+make clean
+cd ../../src/cpp && make clean   # 清理核心库
+make library
+cd ../..
+rm -rf deps/googletest	#清理原来的残留googletest
+git clone -b release-1.12.1 https://github.com/google/googletest.git deps/googletest
+cd test/cpp
+make compile_gtest
+vim App_test.cpp（如果修改参数的情况下，主要留意90行后的代码）
+make
+make run_test

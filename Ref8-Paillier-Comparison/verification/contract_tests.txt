@@ -1,0 +1,14 @@
+test_corrupt_output_rejected (__main__.Contracts.test_corrupt_output_rejected) ... ok
+test_fixture_domain_rejections (__main__.Contracts.test_fixture_domain_rejections) ... ok
+test_fixture_no_overwrite_and_hash (__main__.Contracts.test_fixture_no_overwrite_and_hash) ... ok
+test_general_paillier_agreement_and_decryption (__main__.Contracts.test_general_paillier_agreement_and_decryption) ... ok
+test_generated_key_and_same_seed (__main__.Contracts.test_generated_key_and_same_seed) ... ok
+test_invalid_gpu_and_bad_timings_rejected (__main__.Contracts.test_invalid_gpu_and_bad_timings_rejected) ... ok
+test_missing_or_duplicate_repeats_rejected (__main__.Contracts.test_missing_or_duplicate_repeats_rejected) ... ok
+test_summary_uses_same_case_medians (__main__.Contracts.test_summary_uses_same_case_medians) ... ok
+test_valid_cpu_and_cuda_records (__main__.Contracts.test_valid_cpu_and_cuda_records) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.028s
+
+OK

@@ -1,0 +1,80 @@
+{
+  "format_version": 1,
+  "created_utc": "2026-10-12T02:02:34.450152+00:00",
+  "protocol_parameters": {
+    "range": 128,
+    "slot": 4,
+    "batch": 15,
+    "repeat": 1,
+    "seed": null
+  },
+  "binary": "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/build/serial_benchmark",
+  "binary_sha256": "85f0b6638fd4b42b1ea624be0e2761af5fd6d9f6cbd1e51d7bec249ca2ea46aa",
+  "runtime_fingerprint": "dcf836e8c839b91feddc7c9533012bccbdf2433d8d3af213bebef5fdee0cbce1",
+  "invocations": [
+    {
+      "utc": "2026-10-12T02:02:34.450162+00:00",
+      "suite": "long512",
+      "jobs": [
+        [
+          "long512",
+          512,
+          1
+        ],
+        [
+          "long512",
+          512,
+          10
+        ],
+        [
+          "long512",
+          512,
+          20
+        ],
+        [
+          "long512",
+          512,
+          40
+        ],
+        [
+          "long512",
+          512,
+          80
+        ],
+        [
+          "long512",
+          512,
+          100
+        ],
+        [
+          "long512",
+          512,
+          200
+        ],
+        [
+          "long512",
+          512,
+          400
+        ],
+        [
+          "long512",
+          512,
+          800
+        ],
+        [
+          "long512",
+          512,
+          1000
+        ],
+        [
+          "long512",
+          512,
+          2000
+        ]
+      ],
+      "resume": false,
+      "timeout": null,
+      "keep_going": true
+    }
+  ]
+}

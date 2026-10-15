@@ -1,0 +1,22 @@
+{
+  "command": [
+    "C:/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v13.4/bin/nvcc.exe",
+    "-std=c++17",
+    "-O3",
+    "-arch=sm_89",
+    "-DKEY_BITS=256",
+    "-I",
+    "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\outputs\\Ref8-Paillier-Comparison\\vendor\\cgbn\\include",
+    "-I",
+    "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\toolchain\\mingw64\\include",
+    "-c",
+    "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\outputs\\Ref8-Paillier-Comparison\\adapters\\ref8_bench.cu",
+    "-o",
+    "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\ref8_compile_check.obj"
+  ],
+  "exit_code": 1,
+  "stdout": "nvcc fatal   : Cannot find compiler 'cl.exe' in PATH\n",
+  "stderr": "",
+  "cuda_compilation_verified": false,
+  "gpu_execution_verified": false
+}

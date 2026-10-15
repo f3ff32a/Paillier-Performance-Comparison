@@ -1,0 +1,4 @@
+VERIFICATION=PASS dataset_id=4ca5d0fabd0abe86b077823ac36c678a67a645086007bda78b71939c110f192a backend=cpu run=1 warmup=0 host_ms=0.032000000000000001 kernel_ms=0 cpu_tasks=5 gpu_tasks=0
+ERROR: refusing to overwrite existing output: C:\Users\Anynomous\Documents\Codex\2026-10-14\qi\work\alias-regression\sub\..\result.csv
+
+ALIAS_GUARD=PASS preserved CSV

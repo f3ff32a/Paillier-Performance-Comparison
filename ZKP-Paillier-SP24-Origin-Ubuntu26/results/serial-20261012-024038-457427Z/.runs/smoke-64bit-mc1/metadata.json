@@ -1,0 +1,39 @@
+{
+  "series": "smoke",
+  "parameters": {
+    "bits": 64,
+    "mc": 1,
+    "range": 128,
+    "slot": 4,
+    "batch": 15,
+    "repeat": 3,
+    "seed": null
+  },
+  "binary_sha256": "85f0b6638fd4b42b1ea624be0e2761af5fd6d9f6cbd1e51d7bec249ca2ea46aa",
+  "status": "PASS",
+  "command": [
+    "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/build/serial_benchmark",
+    "--bits",
+    "64",
+    "--mc",
+    "1",
+    "--range",
+    "128",
+    "--slot",
+    "4",
+    "--batch",
+    "15",
+    "--repeat",
+    "3",
+    "--csv",
+    "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/results/serial-20261012-024038-457427Z/.runs/smoke-64bit-mc1/result.csv"
+  ],
+  "timeout_seconds": null,
+  "started_utc": "2026-10-12T02:40:38.548728+00:00",
+  "updated_utc": "2026-10-12T02:40:39.613280+00:00",
+  "reason": "",
+  "returncode": 0,
+  "csv_rows": 3,
+  "csv_sha256": "205915fce4431d934d5714875e541e15d0b85086ce5d6ab0673e43783a9686eb",
+  "elapsed_process_seconds": 0.9087782779997724
+}

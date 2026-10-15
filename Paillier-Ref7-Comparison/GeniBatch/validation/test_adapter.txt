@@ -1,0 +1,21 @@
+Verified 7 ciphertexts per run; wrote C:\Users\ANYNOM~1\AppData\Local\Temp\tmpcymvvbyw\run.csv and C:\Users\ANYNOM~1\AppData\Local\Temp\tmpcymvvbyw\results.json
+test_altered_expected_rejected_even_with_recomputed_hash (__main__.AdapterTests.test_altered_expected_rejected_even_with_recomputed_hash) ... ok
+test_cli_exports_all_runs_and_canonical_results (__main__.AdapterTests.test_cli_exports_all_runs_and_canonical_results) ... ok
+test_cpu_matches_independent_oracle_including_fate_inverse_shortcut (__main__.AdapterTests.test_cpu_matches_independent_oracle_including_fate_inverse_shortcut) ... ok
+test_cuda_missing_dependency_never_runs_cpu (__main__.AdapterTests.test_cuda_missing_dependency_never_runs_cpu) ... ok
+test_existing_outputs_are_preserved (__main__.AdapterTests.test_existing_outputs_are_preserved) ... ERROR: Output paths must be new; existing CSV or JSON output is not overwritten
+ok
+test_hash_wrong_rejected (__main__.AdapterTests.test_hash_wrong_rejected) ... ok
+test_noncanonical_leading_zero_rejected (__main__.AdapterTests.test_noncanonical_leading_zero_rejected) ... ok
+test_output_never_overwrites_dataset (__main__.AdapterTests.test_output_never_overwrites_dataset) ... ERROR: Dataset, CSV output and JSON results-output must be three different paths
+ERROR: Dataset, CSV output and JSON results-output must be three different paths
+ok
+test_packed_integer_slots_recover_all_logical_inputs (__main__.AdapterTests.test_packed_integer_slots_recover_all_logical_inputs) ... ok
+test_packing_full_domain_is_rejected (__main__.AdapterTests.test_packing_full_domain_is_rejected) ... ok
+test_randomness_not_a_unit_rejected (__main__.AdapterTests.test_randomness_not_a_unit_rejected) ... ok
+test_unmodified_vendored_fate_source_hashes (__main__.AdapterTests.test_unmodified_vendored_fate_source_hashes) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 0.224s
+
+OK

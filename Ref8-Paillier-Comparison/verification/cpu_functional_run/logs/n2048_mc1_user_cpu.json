@@ -1,0 +1,27 @@
+{
+  "command": [
+    "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\native-validation\\user_bench.exe",
+    "--input",
+    "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\cpu-runner-final\\inputs\\n2048_mc1.txt",
+    "--output",
+    "C:\\Users\\Anynomous\\Documents\\Codex\\2026-10-14\\7\\work\\cpu-runner-final\\ciphertexts\\n2048_mc1_user_cpu.txt",
+    "--repeat",
+    "3",
+    "--warmup",
+    "1",
+    "--device",
+    "0",
+    "--backend",
+    "cpu",
+    "--threads",
+    "4",
+    "--gpu-chunk",
+    "1",
+    "--gpu-max-chunk",
+    "32"
+  ],
+  "exit_code": 0,
+  "process_seconds": 0.050715899997157976,
+  "stdout": "{\"backend\":\"user_cpu\",\"repeat\":0,\"wall_seconds\":0.0066087000000000003,\"kernel_ms\":0,\"count\":1,\"n_bits\":2048,\"storage_bits\":4096,\"gpu_tasks\":0,\"cpu_tasks\":1,\"fallback_tasks\":0,\"setup_seconds\":0,\"cold_first_call_seconds\":0.0081776000000000001,\"verified\":true,\"verification\":\"PASS\"}\n{\"backend\":\"user_cpu\",\"repeat\":1,\"wall_seconds\":0.0066439000000000003,\"kernel_ms\":0,\"count\":1,\"n_bits\":2048,\"storage_bits\":4096,\"gpu_tasks\":0,\"cpu_tasks\":1,\"fallback_tasks\":0,\"setup_seconds\":0,\"cold_first_call_seconds\":0.0081776000000000001,\"verified\":true,\"verification\":\"PASS\"}\n{\"backend\":\"user_cpu\",\"repeat\":2,\"wall_seconds\":0.0065782999999999996,\"kernel_ms\":0,\"count\":1,\"n_bits\":2048,\"storage_bits\":4096,\"gpu_tasks\":0,\"cpu_tasks\":1,\"fallback_tasks\":0,\"setup_seconds\":0,\"cold_first_call_seconds\":0.0081776000000000001,\"verified\":true,\"verification\":\"PASS\"}\n",
+  "stderr": ""
+}

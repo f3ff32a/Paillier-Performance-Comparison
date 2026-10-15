@@ -1,0 +1,50 @@
+{
+  "compiler": "C:\\Program Files\\RedPanda-Cpp\\mingw64\\bin\\g++.exe",
+  "adapter_sha256": "75268827020ff3f060b9c54b59e890559d9525440b5fa48a51bc4abe75a9fb38",
+  "gmp_package_sha256": "8924433974c4add46cb46ea4f6ef283b5c5139d3f552375115b5580f855015cc",
+  "tests": [
+    {
+      "fixture": "tiny",
+      "threads": 1,
+      "count": 5,
+      "exit": 0,
+      "python_oracle_equal": true,
+      "pass": true
+    },
+    {
+      "fixture": "tiny",
+      "threads": 2,
+      "count": 5,
+      "exit": 0,
+      "python_oracle_equal": true,
+      "pass": true
+    },
+    {
+      "fixture": "batch",
+      "threads": 1,
+      "count": 30,
+      "exit": 0,
+      "python_oracle_equal": true,
+      "pass": true
+    },
+    {
+      "fixture": "batch",
+      "threads": 2,
+      "count": 30,
+      "exit": 0,
+      "python_oracle_equal": true,
+      "pass": true
+    }
+  ],
+  "binary_sha256": "ea92da8dba47c86dc3b6fa26524f4439e0e7cbcc4b26cb2dfb3bcdfb8d0cc80a",
+  "source_sha256": {
+    "adapters/user_bench.cpp": "75268827020ff3f060b9c54b59e890559d9525440b5fa48a51bc4abe75a9fb38",
+    "vendor/user_acceleration/Backend.cpp": "814c5d27a8bc1697df7997fa78543e330e33900399aed183f1eddc711e4d64ae",
+    "vendor/user_acceleration/Backend.hpp": "060a1d4b1d6b8e18d7f47c3e4f3d295b00cb2ad2089fc735b86436fbabf515b8",
+    "vendor/user_acceleration/CudaStub.cpp": "1527acf28356a172de5e4985320c76671c680b65a9af6028b85a7b3c41105648",
+    "vendor/user_acceleration/CudaBackend.hpp": "cefb01e004b6615474361c0d8f453383bf782b8a5ad93f15325ce8b7823a9fd9",
+    "vendor/user_acceleration/GmpSupport.hpp": "e6bca6f7088c30a84b550ad729259c5da83a85dfa94c1eb4ea1ae0adfed3d12d",
+    "scripts/compare.py": "6930b7b543b224e18ee91dada2ffd694b45e0209924e9d34e32b5a23462d17bf",
+    "scripts/fixtures.py": "493fcdec528b2052d0bfe93f76440bfe9876e1b8eac62562601f652906794818"
+  }
+}

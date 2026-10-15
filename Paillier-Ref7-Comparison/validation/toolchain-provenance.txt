@@ -1,0 +1,16 @@
+w64devkit portable toolchain (extracted only into work/toolchain/gcc)
+Official release: https://github.com/skeeto/w64devkit/releases/tag/v2.10.1
+Asset: https://github.com/skeeto/w64devkit/releases/download/v2.10.1/w64devkit-x64-2.10.1.7z.exe
+Size: 67263552 bytes
+Official SHA256 verified: add1edf984ce4d473cfeb7c52e0ab38db73a855bba6c7f564d5e16648eb2896a
+Compiler: GCC 16.2.0
+
+MSYS2 mingw64 GMP development package (extracted only into work/toolchain/gmp)
+Official package metadata: https://packages.msys2.org/packages/mingw-w64-x86_64-gmp
+Asset: https://mirror.msys2.org/mingw/mingw64/mingw-w64-x86_64-gmp-6.3.0-2-any.pkg.tar.zst
+Size: 591674 bytes
+Official SHA256 verified: 8924433974c4add46cb46ea4f6ef283b5c5139d3f552375115b5580f855015cc
+
+No system installation, permanent PATH changes, or service changes were made.
+CPU adapter linked Backend.cpp and CudaStub.cpp with C++14, O3, OpenMP, pthread, static GMP.
+CPU contract tests: PASS, 27 cases. CUDA and hybrid execution remain untested.

@@ -1,0 +1,688 @@
+
+CONFIGURATION grid bits=512 mc=1 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=1 repeat=1 seed=random
+KEYGEN_SECONDS=0.02019959 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.013
+P.Ljir time: 0
+P.Lj time: 0
+P.wireUp time: 0.121
+P.run time: 0.112
+P.circuit time: 0.166
+message count: 1
+byte length: 512-bit
+single encrypt circuit's N: 790
+single encrypt circuit's Q: 1579
+batch encrypt circuit's N: 102716
+batch encrypt circuit's Q: 205432
+P.commit time: 43.133
+P.y time: 0
+prover.setY time: 0.073
+prover.rx time: 0.049
+sx.wai time: 0.071
+sx.wbi time: 0.026
+sx.wci time: 0.18
+prover.sx time: 0.278
+prover.rx_ time: 0.135
+prover.ky time: 0.001
+prover.tx.mul time: 0.848
+prover.txT time: 0
+prover.txCommit time: 1.423
+prover.polyCommit time: 2.81
+P.polyCommit time: 2.82
+P.x time: 0
+P.prove time: 0.145
+V.Ljir time: 0
+V.wireUp time: 0.074
+V.circuit time: 0.102
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.04
+verifier.calcV1 time: 0
+verifier.setY time: 0.071
+sx.wai time: 0.071
+sx.wbi time: 0.026
+sx.wci time: 0.181
+verifier.sx time: 0.395
+verifier.r_ time: 0
+verifier.rr_ time: 0.001
+verifier.calcV2 time: 0.467
+verifier.commitR1 time: 0.044
+verifier.commitR2 time: 0.22
+verifier.verify time: 0.773
+V.verify time: 0.777
+V.attach_value time: 0
+P.decompose time: 4122
+P.decompose-complex time: 710
+
+==========
+message count: 1
+message/batch: 15
+batch count: 1
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 210545 bytes
+proof size/message: 210545 bytes
+
+single encrypt circuit's N: 790
+single encrypt circuit's Q: 1579
+batch encrypt circuit's N: 102716
+batch encrypt circuit's Q: 205432
+batch encrypt circuit's matrix m: 320
+batch encrypt circuit's matrix n: 321
+
+encryption time: 0.013
+circuit create time: 0.2315
+value assign time: 0.112
+commit time: 43.133
+prove time: 2.965
+verify time: 0.777
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=47.905865835
+
+CONFIGURATION grid bits=512 mc=10 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=10 repeat=1 seed=random
+KEYGEN_SECONDS=0.007452749 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.014
+P.Ljir time: 0
+P.Lj time: 0
+P.wireUp time: 0.128
+P.run time: 0.123
+P.circuit time: 0.177
+message count: 10
+byte length: 512-bit
+single encrypt circuit's N: 777
+single encrypt circuit's Q: 1553
+batch encrypt circuit's N: 108163
+batch encrypt circuit's Q: 216326
+P.commit time: 45.191
+P.y time: 0
+prover.setY time: 0.068
+prover.rx time: 0.048
+sx.wai time: 0.073
+sx.wbi time: 0.027
+sx.wci time: 0.173
+prover.sx time: 0.274
+prover.rx_ time: 0.13
+prover.ky time: 0.001
+prover.tx.mul time: 0.895
+prover.txT time: 0
+prover.txCommit time: 1.468
+prover.polyCommit time: 2.886
+P.polyCommit time: 2.897
+P.x time: 0
+P.prove time: 0.141
+V.Ljir time: 0
+V.wireUp time: 0.08
+V.circuit time: 0.109
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.041
+verifier.calcV1 time: 0
+verifier.setY time: 0.068
+sx.wai time: 0.074
+sx.wbi time: 0.027
+sx.wci time: 0.175
+verifier.sx time: 0.388
+verifier.r_ time: 0
+verifier.rr_ time: 0.001
+verifier.calcV2 time: 0.459
+verifier.commitR1 time: 0.047
+verifier.commitR2 time: 0.232
+verifier.verify time: 0.78
+V.verify time: 0.784
+V.attach_value time: 0
+P.decompose time: 6708
+P.decompose-complex time: 7213
+
+==========
+message count: 10
+message/batch: 15
+batch count: 1
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 215309 bytes
+proof size/message: 21530.9 bytes
+
+single encrypt circuit's N: 777
+single encrypt circuit's Q: 1553
+batch encrypt circuit's N: 108163
+batch encrypt circuit's Q: 216326
+batch encrypt circuit's matrix m: 329
+batch encrypt circuit's matrix n: 329
+
+encryption time: 0.014
+circuit create time: 0.247
+value assign time: 0.123
+commit time: 45.191
+prove time: 3.038
+verify time: 0.784
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=50.098319124
+
+CONFIGURATION grid bits=512 mc=20 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=20 repeat=1 seed=random
+KEYGEN_SECONDS=0.019580595 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.015
+P.Ljir time: 0
+P.Lj time: 0
+P.wireUp time: 0.137
+P.run time: 0.132
+P.circuit time: 0.191
+message count: 20
+byte length: 512-bit
+single encrypt circuit's N: 773
+single encrypt circuit's Q: 1545
+batch encrypt circuit's N: 116270
+batch encrypt circuit's Q: 232540
+P.commit time: 47.076
+P.y time: 0
+prover.setY time: 0.083
+prover.rx time: 0.057
+sx.wai time: 0.084
+sx.wbi time: 0.029
+sx.wci time: 0.202
+prover.sx time: 0.316
+prover.rx_ time: 0.154
+prover.ky time: 0.001
+prover.tx.mul time: 0.953
+prover.txT time: 0
+prover.txCommit time: 1.498
+prover.polyCommit time: 3.065
+P.polyCommit time: 3.076
+P.x time: 0
+P.prove time: 0.164
+V.Ljir time: 0
+V.wireUp time: 0.084
+V.circuit time: 0.116
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.04
+verifier.calcV1 time: 0
+verifier.setY time: 0.08
+sx.wai time: 0.086
+sx.wbi time: 0.028
+sx.wci time: 0.203
+verifier.sx time: 0.449
+verifier.r_ time: 0
+verifier.rr_ time: 0.001
+verifier.calcV2 time: 0.531
+verifier.commitR1 time: 0.046
+verifier.commitR2 time: 0.24
+verifier.verify time: 0.858
+V.verify time: 0.863
+V.attach_value time: 0
+P.decompose time: 8098
+P.decompose-complex time: 7161
+
+==========
+message count: 20
+message/batch: 15
+batch count: 2
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 221746 bytes
+proof size/message: 11087.3 bytes
+
+single encrypt circuit's N: 773
+single encrypt circuit's Q: 1545
+batch encrypt circuit's N: 116270
+batch encrypt circuit's Q: 232540
+batch encrypt circuit's matrix m: 341
+batch encrypt circuit's matrix n: 341
+
+encryption time: 0.015
+circuit create time: 0.264
+value assign time: 0.132
+commit time: 47.076
+prove time: 3.24
+verify time: 0.863
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=52.334506903
+
+CONFIGURATION grid bits=512 mc=40 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=40 repeat=1 seed=random
+KEYGEN_SECONDS=0.019222564 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.018
+P.Ljir time: 0
+P.Lj time: 0
+P.wireUp time: 0.162
+P.run time: 0.144
+P.circuit time: 0.219
+message count: 40
+byte length: 512-bit
+single encrypt circuit's N: 766
+single encrypt circuit's Q: 1531
+batch encrypt circuit's N: 131626
+batch encrypt circuit's Q: 263252
+P.commit time: 51.386
+P.y time: 0
+prover.setY time: 0.091
+prover.rx time: 0.063
+sx.wai time: 0.101
+sx.wbi time: 0.032
+sx.wci time: 0.224
+prover.sx time: 0.358
+prover.rx_ time: 0.174
+prover.ky time: 0.001
+prover.tx.mul time: 1.067
+prover.txT time: 0
+prover.txCommit time: 1.58
+prover.polyCommit time: 3.338
+P.polyCommit time: 3.351
+P.x time: 0
+P.prove time: 0.187
+V.Ljir time: 0
+V.wireUp time: 0.098
+V.circuit time: 0.136
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.042
+verifier.calcV1 time: 0
+verifier.setY time: 0.091
+sx.wai time: 0.102
+sx.wbi time: 0.032
+sx.wci time: 0.224
+verifier.sx time: 0.502
+verifier.r_ time: 0
+verifier.rr_ time: 0.001
+verifier.calcV2 time: 0.596
+verifier.commitR1 time: 0.046
+verifier.commitR2 time: 0.254
+verifier.verify time: 1.555
+V.verify time: 1.56
+V.attach_value time: 0
+P.decompose time: 8623
+P.decompose-complex time: 8028
+
+==========
+message count: 40
+message/batch: 15
+batch count: 3
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 233718 bytes
+proof size/message: 5842.95 bytes
+
+single encrypt circuit's N: 766
+single encrypt circuit's Q: 1531
+batch encrypt circuit's N: 131626
+batch encrypt circuit's Q: 263252
+batch encrypt circuit's matrix m: 363
+batch encrypt circuit's matrix n: 363
+
+encryption time: 0.018
+circuit create time: 0.3075
+value assign time: 0.144
+commit time: 51.386
+prove time: 3.538
+verify time: 1.56
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=57.783310184
+
+CONFIGURATION grid bits=512 mc=80 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=80 repeat=1 seed=random
+KEYGEN_SECONDS=0.021687159 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.023
+P.Ljir time: 0
+P.Lj time: 0
+P.wireUp time: 0.205
+P.run time: 0.178
+P.circuit time: 0.28
+message count: 80
+byte length: 512-bit
+single encrypt circuit's N: 762
+single encrypt circuit's Q: 1523
+batch encrypt circuit's N: 164348
+batch encrypt circuit's Q: 328696
+P.commit time: 59.825
+P.y time: 0
+prover.setY time: 0.116
+prover.rx time: 0.082
+sx.wai time: 0.138
+sx.wbi time: 0.041
+sx.wci time: 0.279
+prover.sx time: 0.46
+prover.rx_ time: 0.218
+prover.ky time: 0.002
+prover.tx.mul time: 1.357
+prover.txT time: 0
+prover.txCommit time: 1.657
+prover.polyCommit time: 3.896
+P.polyCommit time: 3.913
+P.x time: 0
+P.prove time: 0.234
+V.Ljir time: 0
+V.wireUp time: 0.125
+V.circuit time: 0.174
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.042
+verifier.calcV1 time: 0
+verifier.setY time: 0.115
+sx.wai time: 0.139
+sx.wbi time: 0.042
+sx.wci time: 0.285
+verifier.sx time: 0.647
+verifier.r_ time: 0
+verifier.rr_ time: 0.002
+verifier.calcV2 time: 0.765
+verifier.commitR1 time: 0.049
+verifier.commitR2 time: 0.28
+verifier.verify time: 1.138
+V.verify time: 1.144
+V.attach_value time: 0
+P.decompose time: 9425
+P.decompose-complex time: 7422
+
+==========
+message count: 80
+message/batch: 15
+batch count: 6
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 256631 bytes
+proof size/message: 3207.8875 bytes
+
+single encrypt circuit's N: 762
+single encrypt circuit's Q: 1523
+batch encrypt circuit's N: 164348
+batch encrypt circuit's Q: 328696
+batch encrypt circuit's matrix m: 405
+batch encrypt circuit's matrix n: 406
+
+encryption time: 0.023
+circuit create time: 0.392
+value assign time: 0.178
+commit time: 59.825
+prove time: 4.147
+verify time: 1.144
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=66.708865694
+
+CONFIGURATION grid bits=512 mc=100 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=100 repeat=1 seed=random
+KEYGEN_SECONDS=0.018193972 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.024
+P.Ljir time: 0
+P.Lj time: 0.001
+P.wireUp time: 0.224
+P.run time: 0.203
+P.circuit time: 0.307
+message count: 100
+byte length: 512-bit
+single encrypt circuit's N: 771
+single encrypt circuit's Q: 1541
+batch encrypt circuit's N: 182785
+batch encrypt circuit's Q: 365570
+P.commit time: 64.313
+P.y time: 0
+prover.setY time: 0.129
+prover.rx time: 0.091
+sx.wai time: 0.154
+sx.wbi time: 0.046
+sx.wci time: 0.314
+prover.sx time: 0.515
+prover.rx_ time: 0.241
+prover.ky time: 0.002
+prover.tx.mul time: 1.479
+prover.txT time: 0
+prover.txCommit time: 1.716
+prover.polyCommit time: 4.176
+P.polyCommit time: 4.193
+P.x time: 0
+P.prove time: 0.264
+V.Ljir time: 0
+V.wireUp time: 0.137
+V.circuit time: 0.2
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.044
+verifier.calcV1 time: 0
+verifier.setY time: 0.129
+sx.wai time: 0.158
+sx.wbi time: 0.046
+sx.wci time: 0.319
+verifier.sx time: 0.726
+verifier.r_ time: 0
+verifier.rr_ time: 0.002
+verifier.calcV2 time: 0.858
+verifier.commitR1 time: 0.049
+verifier.commitR2 time: 0.289
+verifier.verify time: 1.242
+V.verify time: 1.249
+V.attach_value time: 0
+P.decompose time: 8815
+P.decompose-complex time: 9669
+
+==========
+message count: 100
+message/batch: 15
+batch count: 7
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 268862 bytes
+proof size/message: 2688.62 bytes
+
+single encrypt circuit's N: 771
+single encrypt circuit's Q: 1541
+batch encrypt circuit's N: 182785
+batch encrypt circuit's Q: 365570
+batch encrypt circuit's matrix m: 428
+batch encrypt circuit's matrix n: 428
+
+encryption time: 0.024
+circuit create time: 0.4345
+value assign time: 0.203
+commit time: 64.313
+prove time: 4.457
+verify time: 1.249
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=71.75788881
+
+CONFIGURATION grid bits=512 mc=200 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=200 repeat=1 seed=random
+KEYGEN_SECONDS=0.030475154 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.036
+P.Ljir time: 0
+P.Lj time: 0.002
+P.wireUp time: 0.332
+P.run time: 0.298
+P.circuit time: 0.462
+message count: 200
+byte length: 512-bit
+single encrypt circuit's N: 767
+single encrypt circuit's Q: 1533
+batch encrypt circuit's N: 265514
+batch encrypt circuit's Q: 531028
+P.commit time: 83.647
+P.y time: 0
+prover.setY time: 0.188
+prover.rx time: 0.138
+sx.wai time: 0.256
+sx.wbi time: 0.067
+sx.wci time: 0.467
+prover.sx time: 0.791
+prover.rx_ time: 0.367
+prover.ky time: 0.003
+prover.tx.mul time: 2.172
+prover.txT time: 0
+prover.txCommit time: 1.858
+prover.polyCommit time: 5.52
+P.polyCommit time: 5.544
+P.x time: 0
+P.prove time: 0.384
+V.Ljir time: 0
+V.wireUp time: 0.201
+V.circuit time: 0.299
+V.y time: 0
+V.x time: 0
+verifier.polyVerify time: 0.044
+verifier.calcV1 time: 0
+verifier.setY time: 0.189
+sx.wai time: 0.253
+sx.wbi time: 0.068
+sx.wci time: 0.468
+verifier.sx time: 1.095
+verifier.r_ time: 0
+verifier.rr_ time: 0.003
+verifier.calcV2 time: 1.289
+verifier.commitR1 time: 0.054
+verifier.commitR2 time: 0.352
+verifier.verify time: 1.741
+V.verify time: 1.751
+V.attach_value time: 0.001
+P.decompose time: 9436
+P.decompose-complex time: 9929
+
+==========
+message count: 200
+message/batch: 15
+batch count: 14
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 317582 bytes
+proof size/message: 1587.91 bytes
+
+single encrypt circuit's N: 767
+single encrypt circuit's Q: 1533
+batch encrypt circuit's N: 265514
+batch encrypt circuit's Q: 531028
+batch encrypt circuit's matrix m: 515
+batch encrypt circuit's matrix n: 516
+
+encryption time: 0.036
+circuit create time: 0.648
+value assign time: 0.298
+commit time: 83.647
+prove time: 5.928
+verify time: 1.751
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=93.770451843
+
+CONFIGURATION grid bits=512 mc=400 status=PASS
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=512 messages=400 repeat=1 seed=random
+KEYGEN_SECONDS=0.018383198 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.058
+P.Ljir time: 0
+P.Lj time: 0.006
+P.wireUp time: 0.536
+P.run time: 0.53
+P.circuit time: 0.765
+message count: 400
+byte length: 512-bit
+single encrypt circuit's N: 769
+single encrypt circuit's Q: 1537
+batch encrypt circuit's N: 433195
+batch encrypt circuit's Q: 866390
+P.commit time: 121.901
+P.y time: 0
+prover.setY time: 0.302
+prover.rx time: 0.22
+sx.wai time: 0.425
+sx.wbi time: 0.112
+sx.wci time: 0.748
+prover.sx time: 1.286
+prover.rx_ time: 0.59
+prover.ky time: 0.005
+prover.tx.mul time: 3.71
+prover.txT time: 0
+prover.txCommit time: 2.18
+prover.polyCommit time: 8.296
+P.polyCommit time: 8.338
+P.x time: 0
+P.prove time: 0.608
+V.Ljir time: 0
+V.wireUp time: 0.341
+V.circuit time: 0.496
+V.y time: 0.001
+V.x time: 0
+verifier.polyVerify time: 0.048
+verifier.calcV1 time: 0
+verifier.setY time: 0.298
+sx.wai time: 0.439
+sx.wbi time: 0.115
+sx.wci time: 0.755
+verifier.sx time: 1.791
+verifier.r_ time: 0
+verifier.rr_ time: 0.005
+verifier.calcV2 time: 2.095
+verifier.commitR1 time: 0.061
+verifier.commitR2 time: 0.453
+verifier.verify time: 2.66
+V.verify time: 2.678
+V.attach_value time: 0.002
+P.decompose time: 10447
+P.decompose-complex time: 3462
+
+==========
+message count: 400
+message/batch: 15
+batch count: 27
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 393341 bytes
+proof size/message: 983.3525 bytes
+
+single encrypt circuit's N: 769
+single encrypt circuit's Q: 1537
+batch encrypt circuit's N: 433195
+batch encrypt circuit's Q: 866390
+batch encrypt circuit's matrix m: 658
+batch encrypt circuit's matrix n: 659
+
+encryption time: 0.058
+circuit create time: 1.072
+value assign time: 0.53
+commit time: 121.901
+prove time: 8.946
+verify time: 2.679
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=137.383095826

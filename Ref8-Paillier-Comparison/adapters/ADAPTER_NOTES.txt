@@ -1,0 +1,123 @@
+ref8_bench.cu: native operator adapter
+=====================================
+
+Provenance
+----------
+Repository: https://github.com/XTraceAI/cuhepy
+Retrieved repository redirect: XTraceAI/xtrace-sdk -> XTraceAI/cuhepy
+Revision: 6a8fc29419b2ff881d05171d7e40c6098dca4b96
+Upstream file: src/cuhepy/paillier/_gpu_ext/paillier_GPU_client.cu
+Git blob: adc68b9d48ffae33398a26bf692d1bc629ff3390
+SHA-256 of retrieved Windows checkout bytes (CRLF):
+29c913e5a383e78c0e45938b0d082bdb365751133c408aa0b16aa5678cdd05ad
+License: Apache-2.0; retain the upstream LICENSE and original source.
+
+The unchanged full upstream file is the provenance reference. Its pow_mod_mem
+function, source lines 332-360, is copied unchanged into this adapter. Its
+encryption arithmetic, source lines 522-546, is preserved except that supplied
+randomness r is loaded from a fixture rather than sampled inside the GPU.
+The original launch configuration is retained: TPI=32, eight instances/block.
+The exponent loop deliberately scans all ciphertext-storage bits, including
+leading zero bits. It was not shortened, switched to Montgomery exponentiation,
+or replaced by the separate upstream lookup implementation.
+
+Comparison changes
+------------------
+1. Replace binary embedding padding/chunking with explicit integer messages.
+2. Import external public modulus n; g is n+1 and modulus is n squared.
+3. Import external randomizers r; require 1 <= r < n and gcd(r,n)=1.
+4. Remove internal key generation, embedding conversion, and RNG from measured
+   work. This is an adapted Paillier encryption-operator comparison, not the
+   unchanged upstream Hamming application and not a zero-knowledge protocol.
+5. Fail on every CUDA/CGBN error. There is no CPU fallback implementation.
+6. Precompute a GMP oracle using general (n+1)^m and r^n. Check every ciphertext
+   of the cold call, every warmup and measured invocation outside its timing. A failing repeat
+   produces no successful JSON row and exits with a nonzero return code.
+7. Use canonical decimal strings as the common batch input API. Parse them and
+   create GMP temporaries inside each operator timer before limb packing.
+8. Reject an existing destination path, including symlinks, before any work.
+
+Important source observation: at this retrieved revision, the conventional
+GPU implementation already computes g^m as 1+m*n mod n squared. Calling it a
+general-g GPU exponentiation baseline would be inaccurate. The r^n calculation
+does use the upstream general square-and-multiply implementation. The adapted
+kernel is still the conventional, non-lookup path.
+
+Build interface
+---------------
+No modification or conditional macro is required in upstream source. Compile
+the standalone adapter with CUDA/CGBN and GMP; pybind11/Python are not required.
+Use one target for each true modulus width:
+
+binary             KEY_BITS       CGBN ciphertext storage bits
+ref8_bench_512         256         1024
+ref8_bench_1024        512         2048
+ref8_bench_2048       1024         4096
+ref8_bench_3072       1536         6144
+ref8_bench_4096       2048         8192
+
+KEY_BITS denotes a prime-width capacity in the upstream implementation, not
+the Paillier n width. The B-bit bin accepts true n widths B or B-1, since two
+prime factors of B/2 bits can produce either width; it rejects other widths.
+The actual n width and fixed 2B ciphertext storage are both recorded in JSON.
+
+Example CMake target body (Linux with CUDA and GMP installed):
+
+  add_executable(ref8_bench_2048 adapters/ref8_bench.cu)
+  target_compile_definitions(ref8_bench_2048 PRIVATE KEY_BITS=1024 CGBN_TPI=32)
+  target_include_directories(ref8_bench_2048 PRIVATE
+      "${CGBN_INCLUDE_DIR}" "${GMP_INCLUDE_DIR}")
+  target_link_libraries(ref8_bench_2048 PRIVATE CUDA::cudart "${GMP_LIBRARY}")
+  set_target_properties(ref8_bench_2048 PROPERTIES
+      CUDA_STANDARD 17 CUDA_STANDARD_REQUIRED YES)
+
+The root build should set CMAKE_CUDA_ARCHITECTURES appropriately (RTX 4060: 89)
+and supply the CGBN include directory from the user's vendored source. This
+uses the same CGBN revision for both benchmark adapters. Do not enable lookup,
+CPU fallback, or time fixture generation in only one side.
+
+CLI and output
+--------------
+  ref8_bench_2048 --input fixture.txt --output ciphertexts.txt \
+      --repeat 5 --warmup 1 --device 0
+
+Fixture format: first line decimal n only; subsequent nonblank lines decimal
+m then decimal r, separated by whitespace. Messages must satisfy 0 <= m < n.
+The ciphertext output contains one decimal ciphertext per fixture row, from
+the final measured repeat only. Every repeat is nevertheless checked in full.
+Before warmup, a separate fully verified cold operator call records a diagnostic
+duration. stdout emits one JSON object per measured repeat; stderr contains failures.
+JSON fields: backend, repeat, wall_seconds, kernel_ms, count, n_bits,
+storage_bits, gpu_tasks, cpu_tasks, fallback_tasks, verified, setup_seconds,
+cold_first_call_seconds.
+
+wall_seconds includes per-batch decimal input parsing, GMP temporaries, host
+limb serialization, host buffer creation/destruction, allocation/free of device
+m/r/output/error-report buffers, H2D m/r transfer, CUDA launch/events/synchronization,
+kernel, D2H ciphertext/report transfer, native CUDA/CGBN error checks, GMP
+reconstruction, and conversion to host-visible decimal outputs. It excludes
+fixture reads/validation, key constants, RNG, GMP oracle computation, cold/warmup
+calls, GMP correctness comparisons, JSON printing, and output-file writes.
+kernel_ms covers only the kernel interval recorded with CUDA events.
+setup_seconds starts after fixture/oracle construction and includes GPU device
+selection, context startup, fixed n/n-squared buffers/constant upload, and event
+creation. It excludes cold/warmup calls and is repeated in each JSON row.
+
+Allocation-policy distinction: upstream encrypt(), lines 917-968, creates and
+frees its input/random/output/report device buffers on every invocation. The
+adapter preserves per-batch allocation/free for the corresponding m/r/output/
+report buffers. It also preserves ordinary cudaMalloc/cudaMemset report storage;
+an added tiny report D2H transfer enables strict CGBN failure checks. The fixed
+n/n-squared constants are moved to common public-key-session setup, matching the
+user adapter's key/session boundary, and remain on the GPU between repeats.
+Unlike the original Hamming API's bit input and 16 random candidates per item,
+the adapted common API transfers one integer m and one validated r per item.
+These application/API changes must be disclosed with any benchmark results.
+
+Validation boundary
+-------------------
+Source extraction and host/timing/error paths can be audited without running
+CUDA. Actual successful compilation and ciphertext/kernel execution must be
+verified on the target Linux CUDA/GMP environment before reporting performance.
+The adapter's in-process GMP check and the runner's cross-adapter comparison
+must both pass there. No measured GPU result is implied by delivering source.

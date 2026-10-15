@@ -1,0 +1,19 @@
+Test project <workspace>/build-gpu2-gcc15
+    Start 1: cpu_correctness
+1/4 Test #1: cpu_correctness ..................   Passed   50.83 sec
+    Start 2: cuda_correctness
+2/4 Test #2: cuda_correctness .................***Skipped   0.00 sec
+    Start 3: cpu_protocol_smoke
+3/4 Test #3: cpu_protocol_smoke ...............   Passed    0.05 sec
+    Start 4: gpu_acceptance_guards
+4/4 Test #4: gpu_acceptance_guards ............   Passed    0.05 sec
+
+100% tests passed out of 4
+
+Label Time Summary:
+gpu    =   0.00 sec*proc (1 test)
+
+Total Test time (real) =  50.93 sec
+
+The following tests did not run:
+	  2 - cuda_correctness (Skipped)

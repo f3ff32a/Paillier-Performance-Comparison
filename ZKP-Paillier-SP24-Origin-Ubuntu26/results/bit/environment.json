@@ -1,0 +1,658 @@
+{
+  "recorded_utc": "2026-10-12T02:41:51.270149+00:00",
+  "platform": "Linux-7.0.0-34-generic-x86_64-with-glibc2.43",
+  "uname": [
+    "Linux",
+    "szw-KuangshiG16-PRO-Series-GM6PQ0Q",
+    "7.0.0-34-generic",
+    "#34-Ubuntu SMP PREEMPT_DYNAMIC Wed Sep  2 14:29:37 UTC 2026",
+    "x86_64",
+    ""
+  ],
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "cpu_count": 24,
+  "child_environment_overrides": {
+    "OMP_NUM_THREADS": "1",
+    "OMP_THREAD_LIMIT": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "BLIS_NUM_THREADS": "1",
+    "VECLIB_MAXIMUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1"
+  },
+  "binary": "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/build/serial_benchmark",
+  "binary_sha256": "85f0b6638fd4b42b1ea624be0e2761af5fd6d9f6cbd1e51d7bec249ca2ea46aa",
+  "build_info_path": "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/build/build-info.json",
+  "build_info": {
+    "schema_version": 1,
+    "project": "ZKP-Paillier-SP24-Serial-Ubuntu26",
+    "generated_utc": "2026-10-12T01:55:21.621894+00:00",
+    "project_root": "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26",
+    "working_directory": "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26",
+    "environment": {
+      "os_release": {
+        "PRETTY_NAME": "Ubuntu 26.04.1 LTS",
+        "NAME": "Ubuntu",
+        "VERSION_ID": "26.04",
+        "VERSION": "26.04.1 LTS (Resolute Raccoon)",
+        "VERSION_CODENAME": "resolute",
+        "ID": "ubuntu",
+        "ID_LIKE": "debian",
+        "HOME_URL": "https://www.ubuntu.com/",
+        "SUPPORT_URL": "https://help.ubuntu.com/",
+        "BUG_REPORT_URL": "https://bugs.launchpad.net/ubuntu/",
+        "PRIVACY_POLICY_URL": "https://www.ubuntu.com/legal/terms-and-policies/privacy-policy",
+        "UBUNTU_CODENAME": "resolute",
+        "LOGO": "ubuntu-logo"
+      },
+      "kernel": "7.0.0-34-generic",
+      "system": "Linux",
+      "architecture": "x86_64",
+      "cpu_models": [
+        "12th Gen Intel(R) Core(TM) i9-12900HX"
+      ],
+      "logical_cpus_os": 24,
+      "logical_cpus_process_affinity": 24,
+      "ram_total_bytes": 32822865920,
+      "ram_total_gib": 30.568675994873047,
+      "memory_note": "物理内存来自 /proc/meminfo；未测量运行时峰值或容器内存上限。"
+    },
+    "compiler": {
+      "requested": "g++",
+      "command": [
+        "g++"
+      ],
+      "executable_resolved": "/usr/bin/g++",
+      "version_probe": {
+        "command": [
+          "g++",
+          "--version"
+        ],
+        "returncode": 0,
+        "stdout": "g++ (Ubuntu 15.2.0-16ubuntu1) 15.2.0\nCopyright (C) 2025 Free Software Foundation, Inc.\nThis is free software; see the source for copying conditions.  There is NO\nwarranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.",
+        "stderr": ""
+      }
+    },
+    "flags": "-Isrc/cpp -Isrc/cpp/app  -std=c++17 -O3 -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter  -lntl -lgmp -pthread",
+    "headers": {
+      "ok": true,
+      "returncode": 0,
+      "error": "",
+      "command": [
+        "g++",
+        "-Isrc/cpp",
+        "-Isrc/cpp/app",
+        "-std=c++17",
+        "-E",
+        "-dM",
+        "-x",
+        "c++",
+        "-"
+      ],
+      "versions": {
+        "NTL_VERSION": "\"11.5.1\"",
+        "NTL_MAJOR_VERSION": "(11)",
+        "NTL_MINOR_VERSION": "(5)",
+        "NTL_REVISION": "(1)",
+        "__GNU_MP_VERSION": "6",
+        "__GNU_MP_VERSION_MINOR": "3",
+        "__GNU_MP_VERSION_PATCHLEVEL": "0"
+      },
+      "ntl_headers_built_with_threads": true,
+      "header_paths": [
+        "/usr/include/NTL/ALL_FEATURES.h",
+        "/usr/include/NTL/HAVE_AES_NI.h",
+        "/usr/include/NTL/HAVE_ALIGNED_ARRAY.h",
+        "/usr/include/NTL/HAVE_AVX.h",
+        "/usr/include/NTL/HAVE_AVX2.h",
+        "/usr/include/NTL/HAVE_AVX512F.h",
+        "/usr/include/NTL/HAVE_BUILTIN_CLZL.h",
+        "/usr/include/NTL/HAVE_CHRONO_TIME.h",
+        "/usr/include/NTL/HAVE_COPY_TRAITS1.h",
+        "/usr/include/NTL/HAVE_COPY_TRAITS2.h",
+        "/usr/include/NTL/HAVE_FMA.h",
+        "/usr/include/NTL/HAVE_KMA.h",
+        "/usr/include/NTL/HAVE_LL_TYPE.h",
+        "/usr/include/NTL/HAVE_MACOS_TIME.h",
+        "/usr/include/NTL/HAVE_PCLMUL.h",
+        "/usr/include/NTL/HAVE_POSIX_TIME.h",
+        "/usr/include/NTL/HAVE_SSSE3.h",
+        "/usr/include/NTL/PackageInfo.h",
+        "/usr/include/NTL/SmartPtr.h",
+        "/usr/include/NTL/ZZ.h",
+        "/usr/include/NTL/config.h",
+        "/usr/include/NTL/ctools.h",
+        "/usr/include/NTL/gmp_aux.h",
+        "/usr/include/NTL/lip.h",
+        "/usr/include/NTL/mach_desc.h",
+        "/usr/include/NTL/new.h",
+        "/usr/include/NTL/sp_arith.h",
+        "/usr/include/NTL/thread.h",
+        "/usr/include/NTL/tools.h",
+        "/usr/include/NTL/vector.h",
+        "/usr/include/NTL/version.h",
+        "/usr/include/x86_64-linux-gnu/gmp.h"
+      ]
+    },
+    "linker_library_search": [
+      {
+        "name": "libntl.so",
+        "path": "/usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libntl.so",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libntl.so.44.0.1",
+        "is_usr_local": false,
+        "exists": true,
+        "sha256": "4a3417a1d158235655750410afbf56dd84d3cc66abbf0a7ab33c7989c3cf8c17",
+        "package_versions": [
+          {
+            "package": "libntl44:amd64",
+            "version": "11.5.1-1build1"
+          }
+        ],
+        "abi_version_tags": {
+          "available": true,
+          "cxxabi_tags": [
+            "CXXABI_1.3",
+            "CXXABI_1.3.3",
+            "CXXABI_1.3.8",
+            "CXXABI_1.3.9",
+            "CXXABI_1.3.13",
+            "CXXABI_1.3.15"
+          ],
+          "max_cxxabi_tag": "CXXABI_1.3.15",
+          "error": ""
+        },
+        "library_filename_version": "libntl.so.44.0.1",
+        "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。",
+        "link_kind": "shared library",
+        "search_evidence": "compiler -print-file-name"
+      },
+      {
+        "name": "libgmp.so",
+        "path": "/usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libgmp.so",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libgmp.so.10.5.0",
+        "is_usr_local": false,
+        "exists": true,
+        "sha256": "fda9699eef15deda5f1c626e9140377a7f5d88c41516a54278ac02429cb20fa5",
+        "package_versions": [
+          {
+            "package": "libgmp10:amd64",
+            "version": "2:6.3.0+dfsg-5ubuntu2"
+          }
+        ],
+        "abi_version_tags": {
+          "available": true,
+          "cxxabi_tags": [],
+          "max_cxxabi_tag": null,
+          "error": ""
+        },
+        "library_filename_version": "libgmp.so.10.5.0",
+        "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。",
+        "link_kind": "shared library",
+        "search_evidence": "compiler -print-file-name"
+      },
+      {
+        "name": "libstdc++.so.6",
+        "path": "/usr/lib/gcc/x86_64-linux-gnu/15/../../../x86_64-linux-gnu/libstdc++.so.6",
+        "resolved_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.35",
+        "is_usr_local": false,
+        "exists": true,
+        "sha256": "5bb0d21308f123b6ad46c6f35b42cedfcb8d6d439a53aa3dae04d880aaffdde3",
+        "package_versions": [
+          {
+            "package": "libstdc++6:amd64",
+            "version": "16-20260322-1ubuntu1"
+          }
+        ],
+        "abi_version_tags": {
+          "available": true,
+          "cxxabi_tags": [
+            "CXXABI_1.3",
+            "CXXABI_1.3.1",
+            "CXXABI_1.3.2",
+            "CXXABI_1.3.3",
+            "CXXABI_1.3.4",
+            "CXXABI_1.3.5",
+            "CXXABI_1.3.6",
+            "CXXABI_1.3.7",
+            "CXXABI_1.3.8",
+            "CXXABI_1.3.9",
+            "CXXABI_1.3.10",
+            "CXXABI_1.3.11",
+            "CXXABI_1.3.12",
+            "CXXABI_1.3.13",
+            "CXXABI_1.3.14",
+            "CXXABI_1.3.15",
+            "CXXABI_1.3.17"
+          ],
+          "max_cxxabi_tag": "CXXABI_1.3.17",
+          "error": ""
+        },
+        "library_filename_version": "libstdc++.so.6.0.35",
+        "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。",
+        "link_kind": "shared library",
+        "search_evidence": "compiler -print-file-name"
+      }
+    ],
+    "binary": {
+      "path": "/home/szw/ZKP-Paillier-SP24-Serial-Ubuntu26/build/serial_benchmark",
+      "exists": true,
+      "sha256": "85f0b6638fd4b42b1ea624be0e2761af5fd6d9f6cbd1e51d7bec249ca2ea46aa"
+    },
+    "source": {
+      "sha256": "96a2d8ac23546327cdc9f62b3b09f04dcb3ba9fee147499b6fbf022b37ff6f28",
+      "algorithm": "SHA256(relative_path + NUL + file_sha256 + LF), sorted paths",
+      "files": [
+        {
+          "path": "Makefile",
+          "sha256": "099e588261754bc07acbd6cdafdabf51ff80ab2c429d8036d236a8c096773a35"
+        },
+        {
+          "path": "scripts/build_config.py",
+          "sha256": "f1c6a178ac792389ce7e8e44c75bbda88412039b793685b480943deffe1724bb"
+        },
+        {
+          "path": "scripts/build_info.py",
+          "sha256": "5b40f769868881d5eb241640bd0df3408172ad5c885c6334fece4801c892b2d9"
+        },
+        {
+          "path": "scripts/doctor.py",
+          "sha256": "33d1badfac19b63aeb769295171460d78917acde7c34bed2d05732ba8f4060e7"
+        },
+        {
+          "path": "scripts/install_ubuntu.sh",
+          "sha256": "0474309d7073032337b10d171a2fb1cfaae0f184540effd1fbca332cc7b779d9"
+        },
+        {
+          "path": "scripts/run_experiments.py",
+          "sha256": "7fbf910b8ccba25c2f347347a29a0ea48b3c808ff261bc607483c13686c69b63"
+        },
+        {
+          "path": "scripts/serial_experiment_utils.py",
+          "sha256": "3bcb1e21354d6d911cb7ab7f66c37b35623ebcf31483956722ef3041adf872ac"
+        },
+        {
+          "path": "scripts/summarize.py",
+          "sha256": "fb7f5563b8cc632828ad65fe4e617760dedbb521a09a9b311c598bd0d4c21330"
+        },
+        {
+          "path": "scripts/test_experiment_scripts.py",
+          "sha256": "066b356b1c8f5872e55f5da0b100a8ed559d8fa97d46698178874a0f4bd9a009"
+        },
+        {
+          "path": "src/cpp/app/App.cpp",
+          "sha256": "3a8754b505cb651d1859da1eb6f2251c728751097f921f97f036e2f55fe0fe61"
+        },
+        {
+          "path": "src/cpp/app/App.hpp",
+          "sha256": "8333c29f1e9b9acb46bb4721ea3c30d6001e7e89cebdc2a447cd9d5026099253"
+        },
+        {
+          "path": "src/cpp/app/CBase.cpp",
+          "sha256": "79ae9d6ff804f60074cd9222c61f2ed519ae598f03a1e3a2b5bdd174ea06088b"
+        },
+        {
+          "path": "src/cpp/app/CBase.hpp",
+          "sha256": "b146818c39ec0790aac25834b26e2f78b7c012d9a9f9fdc7411e895a01e61c66"
+        },
+        {
+          "path": "src/cpp/app/CBatchEnc.cpp",
+          "sha256": "0a05b941f31fc116a827ecea9fd47ab2277d52612908c1ac19803af704da9399"
+        },
+        {
+          "path": "src/cpp/app/CBatchEnc.hpp",
+          "sha256": "febb55c2e49d48c44f30d8b33e33bb0cdd4e550116d6a8d117724515267ce921"
+        },
+        {
+          "path": "src/cpp/app/CEnc.cpp",
+          "sha256": "f48d4ff63765ad3a1242ad67ac2229ad8057872eb807b1a5a6825f5107c2c5e1"
+        },
+        {
+          "path": "src/cpp/app/CEnc.hpp",
+          "sha256": "7d878c7a98405da3088399cf7e42af78045d35f87ca58fb7b1bd9bbf88243b19"
+        },
+        {
+          "path": "src/cpp/app/CircuitZKPProver.cpp",
+          "sha256": "1149416675293ceffc016dee7bb0c5f7e1c86b0ae1b31c4f0e473c9a83a1c263"
+        },
+        {
+          "path": "src/cpp/app/CircuitZKPProver.hpp",
+          "sha256": "5ae42b5b04940bbb1c803dfd29797764cc5804ebd5c12bbc5e06d896f930c7bc"
+        },
+        {
+          "path": "src/cpp/app/CircuitZKPVerifier.cpp",
+          "sha256": "9a2f9ddae96d89b838b7d5b4ee321d8019a687c4e47d42982bd81764dd25d287"
+        },
+        {
+          "path": "src/cpp/app/CircuitZKPVerifier.hpp",
+          "sha256": "03ad806ca22458438a78c952ad4c3ee608b82e7a2ecad3d559c9feb4f7ae8bd9"
+        },
+        {
+          "path": "src/cpp/app/EndToEnd.cpp",
+          "sha256": "8d43d859ef712c1131fab5721a77cbcec3baef1219b7be9bc203a657ea632a66"
+        },
+        {
+          "path": "src/cpp/app/EndToEnd.hpp",
+          "sha256": "4f3fb04555ae70802a0f9d0e280d36e144954ff18cf521286c67848f5ee36fda"
+        },
+        {
+          "path": "src/cpp/app/PaillierEncryption.cpp",
+          "sha256": "c28fa5522678c018d9cd217c6740f7ab48c7674e028d6b9d0aad615b55228ed9"
+        },
+        {
+          "path": "src/cpp/app/PaillierEncryption.hpp",
+          "sha256": "7c9065a2fc7a7d95a21b015fbf0d09fd60e027fca811520954e6169d7dcb6bf3"
+        },
+        {
+          "path": "src/cpp/app/PolynomialCommitment.cpp",
+          "sha256": "372460f4588bdef5a794e8ccc3ce09eba45dcea1f2985435059f31654301cf7f"
+        },
+        {
+          "path": "src/cpp/app/PolynomialCommitment.hpp",
+          "sha256": "d28d8af783d7d8cad21b8229c5f4bef181762fe4dd9feb89827f686188682b6c"
+        },
+        {
+          "path": "src/cpp/app/math/MathUtils.cpp",
+          "sha256": "f8153720a371e26f8d572599f57f583b53c5529958ef75ccb6aa348badb83013"
+        },
+        {
+          "path": "src/cpp/app/math/MathUtils.hpp",
+          "sha256": "fd4efb2647692f67e65f67499ecf048af73a6a4f7669095eeef8f3c4e75c4acf"
+        },
+        {
+          "path": "src/cpp/app/math/Matrix.cpp",
+          "sha256": "81790f8d219d262f5311a0cde4bbc7ea9093b28fda4512239f922bcab97e8244"
+        },
+        {
+          "path": "src/cpp/app/math/Matrix.hpp",
+          "sha256": "86dfb7d00a8153d0010b1b25fa46a54988a11ea2802a8dd0fbb0b9cc137b7a95"
+        },
+        {
+          "path": "src/cpp/app/namespace.hpp",
+          "sha256": "311c06d0867dd4d54543ec9e57e72774ec016e0c6e74a74b31a8523f9c8cc849"
+        },
+        {
+          "path": "src/cpp/app/utils/ConvertUtils.cpp",
+          "sha256": "00b8aecaad641d881a166227e335e0594b661a136e3f8342ee8931c6780af3cd"
+        },
+        {
+          "path": "src/cpp/app/utils/ConvertUtils.hpp",
+          "sha256": "d79ef31151079120dd0a6a402735b2d0fa4f112d6bef54b30de09e6f246113df"
+        },
+        {
+          "path": "src/cpp/app/utils/Timer.cpp",
+          "sha256": "b28654ec10a2b16e5b04dad01968df21d376579ed91dfe8cc222917e96876da1"
+        },
+        {
+          "path": "src/cpp/app/utils/Timer.hpp",
+          "sha256": "fa61b909d2a9a05c8024aebb1ff45d0d9784d9dde2f01388deb2f65d1f41409f"
+        },
+        {
+          "path": "src/cpp/vendor/json/fifo_map.hpp",
+          "sha256": "47c8844d0972994223d9e4e4d55986ab0e3b69a4c7690a9c5c1bc134aa1c2c91"
+        },
+        {
+          "path": "src/cpp/vendor/json/json.hpp",
+          "sha256": "663d1320e9dedfcc5bff0eb671f4a6baf2dc6677bd8ccc83ebe257cdc13ea313"
+        },
+        {
+          "path": "tools/serial_benchmark.cpp",
+          "sha256": "6923d5969ca77dd22d6c542b6c1808c0b45df47376030c271eaf586dbd668375"
+        }
+      ],
+      "note": "构建信息生成时的源码和构建脚本快照；不包含结果文件、文档或旧 Makefile。"
+    },
+    "dynamic_linkage": {
+      "returncode": 0,
+      "stdout": "linux-vdso.so.1 (0x00007db5b5d3d000)\n\tlibntl.so.44 => /usr/lib/x86_64-linux-gnu/libntl.so.44 (0x00007db5b5a00000)\n\tlibstdc++.so.6 => /usr/lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007db5b5600000)\n\tlibm.so.6 => /usr/lib/x86_64-linux-gnu/libm.so.6 (0x00007db5b58da000)\n\tlibgcc_s.so.1 => /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007db5b5c96000)\n\tlibc.so.6 => /usr/lib/x86_64-linux-gnu/libc.so.6 (0x00007db5b5200000)\n\tlibgmp.so.10 => /usr/lib/x86_64-linux-gnu/libgmp.so.10 (0x00007db5b557a000)\n\tlibgf2x.so.3 => /usr/lib/x86_64-linux-gnu/libgf2x.so.3 (0x00007db5b5c86000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007db5b5d3f000)",
+      "stderr": "",
+      "libraries": [
+        {
+          "name": "libntl.so.44",
+          "path": "/usr/lib/x86_64-linux-gnu/libntl.so.44",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/libntl.so.44.0.1",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "4a3417a1d158235655750410afbf56dd84d3cc66abbf0a7ab33c7989c3cf8c17",
+          "package_versions": [
+            {
+              "package": "libntl44:amd64",
+              "version": "11.5.1-1build1"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [
+              "CXXABI_1.3",
+              "CXXABI_1.3.3",
+              "CXXABI_1.3.8",
+              "CXXABI_1.3.9",
+              "CXXABI_1.3.13",
+              "CXXABI_1.3.15"
+            ],
+            "max_cxxabi_tag": "CXXABI_1.3.15",
+            "error": ""
+          },
+          "library_filename_version": "libntl.so.44.0.1",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        },
+        {
+          "name": "libstdc++.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.35",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "5bb0d21308f123b6ad46c6f35b42cedfcb8d6d439a53aa3dae04d880aaffdde3",
+          "package_versions": [
+            {
+              "package": "libstdc++6:amd64",
+              "version": "16-20260322-1ubuntu1"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [
+              "CXXABI_1.3",
+              "CXXABI_1.3.1",
+              "CXXABI_1.3.2",
+              "CXXABI_1.3.3",
+              "CXXABI_1.3.4",
+              "CXXABI_1.3.5",
+              "CXXABI_1.3.6",
+              "CXXABI_1.3.7",
+              "CXXABI_1.3.8",
+              "CXXABI_1.3.9",
+              "CXXABI_1.3.10",
+              "CXXABI_1.3.11",
+              "CXXABI_1.3.12",
+              "CXXABI_1.3.13",
+              "CXXABI_1.3.14",
+              "CXXABI_1.3.15",
+              "CXXABI_1.3.17"
+            ],
+            "max_cxxabi_tag": "CXXABI_1.3.17",
+            "error": ""
+          },
+          "library_filename_version": "libstdc++.so.6.0.35",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        },
+        {
+          "name": "libm.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/libm.so.6",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "1c488db6f4fe8cecb72456bc018de000b7a9b539c2994864b0416b5e8371b3d8",
+          "package_versions": [
+            {
+              "package": "libc6:amd64",
+              "version": "2.43-2ubuntu2.4"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [],
+            "max_cxxabi_tag": null,
+            "error": ""
+          },
+          "library_filename_version": "libm.so.6",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        },
+        {
+          "name": "libgcc_s.so.1",
+          "path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "9d339ecb409578d6a5d587e6c537a8f9589b8a13fefba30d167433a4b5758bee",
+          "package_versions": [
+            {
+              "package": "libgcc-s1:amd64",
+              "version": "16-20260322-1ubuntu1"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [],
+            "max_cxxabi_tag": null,
+            "error": ""
+          },
+          "library_filename_version": "libgcc_s.so.1",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        },
+        {
+          "name": "libc.so.6",
+          "path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/libc.so.6",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "85e64f97e348786a8fb4d9f3d52fec289e2fb86bba20f0731dfe61990525e0f7",
+          "package_versions": [
+            {
+              "package": "libc6:amd64",
+              "version": "2.43-2ubuntu2.4"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [],
+            "max_cxxabi_tag": null,
+            "error": ""
+          },
+          "library_filename_version": "libc.so.6",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        },
+        {
+          "name": "libgmp.so.10",
+          "path": "/usr/lib/x86_64-linux-gnu/libgmp.so.10",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/libgmp.so.10.5.0",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "fda9699eef15deda5f1c626e9140377a7f5d88c41516a54278ac02429cb20fa5",
+          "package_versions": [
+            {
+              "package": "libgmp10:amd64",
+              "version": "2:6.3.0+dfsg-5ubuntu2"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [],
+            "max_cxxabi_tag": null,
+            "error": ""
+          },
+          "library_filename_version": "libgmp.so.10.5.0",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        },
+        {
+          "name": "libgf2x.so.3",
+          "path": "/usr/lib/x86_64-linux-gnu/libgf2x.so.3",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/libgf2x.so.3.0.0",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "65bf076a8c160fafdc699fdf6451d379fe25f7025025ac7bfe2c1a66d8bd7606",
+          "package_versions": [
+            {
+              "package": "libgf2x3:amd64",
+              "version": "1.3.0-3build1"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [],
+            "max_cxxabi_tag": null,
+            "error": ""
+          },
+          "library_filename_version": "libgf2x.so.3.0.0",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        },
+        {
+          "name": "ld-linux-x86-64.so.2",
+          "path": "/lib64/ld-linux-x86-64.so.2",
+          "resolved_path": "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2",
+          "is_usr_local": false,
+          "exists": true,
+          "sha256": "bda779ea9e9ad234f60315477d7cfd0bdde861cd8ddd9df8cdaf62f18c4cec14",
+          "package_versions": [
+            {
+              "package": "libc6:amd64",
+              "version": "2.43-2ubuntu2.4"
+            }
+          ],
+          "abi_version_tags": {
+            "available": true,
+            "cxxabi_tags": [],
+            "max_cxxabi_tag": null,
+            "error": ""
+          },
+          "library_filename_version": "ld-linux-x86-64.so.2",
+          "version_note": "软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
+        }
+      ],
+      "missing_libraries": [],
+      "loader_errors": [],
+      "ok": true
+    },
+    "serial_policy": {
+      "expected_openmp": false,
+      "expected_cuda": false,
+      "expected_coverage": false,
+      "openmp_flags_found": [],
+      "openmp_libraries_found": [],
+      "cuda_flags_found": [],
+      "cuda_libraries_found": [],
+      "coverage_flags_found": [],
+      "violations": [],
+      "ntl_threads_expected": 1,
+      "ntl_runtime_threads_confirmed": false,
+      "ntl_runtime_threads_note": "本脚本不运行基准程序；ldd 成功不能证明 NTL 已在运行时设为 1 线程。请核对基准启动日志。",
+      "evidence_note": "选项与动态链接证据覆盖当前构建；无法仅凭 ldd 排除人为加入的静态库。-pthread 不等同于 OpenMP。"
+    },
+    "environment_search_paths": {
+      "LD_LIBRARY_PATH": "/usr/local/cuda-13.4/lib64:",
+      "LIBRARY_PATH": null,
+      "CPATH": null,
+      "CPLUS_INCLUDE_PATH": null
+    },
+    "checks": {
+      "ok": true,
+      "errors": []
+    }
+  },
+  "runtime_identity": {
+    "binary_sha256": "85f0b6638fd4b42b1ea624be0e2761af5fd6d9f6cbd1e51d7bec249ca2ea46aa",
+    "build_info_sha256": "7fa8ad08a46e7141db992b257ae0d98c37c95829411c75c4d1c033e3bc687028",
+    "library_fingerprints": {
+      "/usr/lib/x86_64-linux-gnu/libntl.so.44.0.1": "4a3417a1d158235655750410afbf56dd84d3cc66abbf0a7ab33c7989c3cf8c17",
+      "/usr/lib/x86_64-linux-gnu/libstdc++.so.6.0.35": "5bb0d21308f123b6ad46c6f35b42cedfcb8d6d439a53aa3dae04d880aaffdde3",
+      "/usr/lib/x86_64-linux-gnu/libm.so.6": "1c488db6f4fe8cecb72456bc018de000b7a9b539c2994864b0416b5e8371b3d8",
+      "/usr/lib/x86_64-linux-gnu/libgcc_s.so.1": "9d339ecb409578d6a5d587e6c537a8f9589b8a13fefba30d167433a4b5758bee",
+      "/usr/lib/x86_64-linux-gnu/libc.so.6": "85e64f97e348786a8fb4d9f3d52fec289e2fb86bba20f0731dfe61990525e0f7",
+      "/usr/lib/x86_64-linux-gnu/libgmp.so.10.5.0": "fda9699eef15deda5f1c626e9140377a7f5d88c41516a54278ac02429cb20fa5",
+      "/usr/lib/x86_64-linux-gnu/libgf2x.so.3.0.0": "65bf076a8c160fafdc699fdf6451d379fe25f7025025ac7bfe2c1a66d8bd7606",
+      "/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2": "bda779ea9e9ad234f60315477d7cfd0bdde861cd8ddd9df8cdaf62f18c4cec14"
+    },
+    "missing_libraries": [],
+    "dependency_inspection_returncode": 0
+  },
+  "runtime_fingerprint": "dcf836e8c839b91feddc7c9533012bccbdf2433d8d3af213bebef5fdee0cbce1"
+}

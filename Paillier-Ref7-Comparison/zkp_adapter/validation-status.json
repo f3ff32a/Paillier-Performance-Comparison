@@ -1,0 +1,12 @@
+{
+  "python_syntax": "PASS",
+  "fixture_mathematics": "PASS",
+  "installer_idempotency": "PASS",
+  "installer_backup": "PASS",
+  "installer_overwrite_guard": "PASS",
+  "cpp_compile": "PASS_WINDOWS_CPU",
+  "cpp_runtime_contract": "PASS_27_CASES",
+  "cuda_runtime": "NOT_RUN",
+  "performance_claims": "NONE",
+  "note": "Portable Windows GCC16.2.0/OpenMP/GMP6.3.0 built the original CPU scheduler and CUDA stub. 27 CPU contract cases and real shared-input FATE/C++ integration passed. This does not validate target Linux CUDA build/runtime."
+}

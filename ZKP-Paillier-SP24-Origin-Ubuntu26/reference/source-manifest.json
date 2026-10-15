@@ -1,0 +1,384 @@
+{
+  "input_archive_sha256": "68d76be3b06a4d9f5a19645fca7dd0241457295670f10c649b611f3e2dcf4fc2",
+  "created_date": "2026-10-12",
+  "files": [
+    {
+      "path": ".editorconfig",
+      "change": "unchanged",
+      "original_sha256": "880a2497cb733950e510550fcb0bcc3c6b0580d079074c249017c659abc7c771",
+      "compatible_sha256": "880a2497cb733950e510550fcb0bcc3c6b0580d079074c249017c659abc7c771"
+    },
+    {
+      "path": ".gitignore",
+      "change": "unchanged",
+      "original_sha256": "cf6b4feea8b1311dc9a2d77c1f44d7cc6973163fb7ac2fae2f4156d94cb12040",
+      "compatible_sha256": "cf6b4feea8b1311dc9a2d77c1f44d7cc6973163fb7ac2fae2f4156d94cb12040"
+    },
+    {
+      "path": ".gitlab-ci.yml",
+      "change": "unchanged",
+      "original_sha256": "27db883de1ded6f4ed2b8fd6d47400ec9251f89062304bdebf91d635ec7f0779",
+      "compatible_sha256": "27db883de1ded6f4ed2b8fd6d47400ec9251f89062304bdebf91d635ec7f0779"
+    },
+    {
+      "path": ".gitmodules",
+      "change": "unchanged",
+      "original_sha256": "5308581b3b845ed10a18271681a006917bb9d455f251c105a36c193f471482e1",
+      "compatible_sha256": "5308581b3b845ed10a18271681a006917bb9d455f251c105a36c193f471482e1"
+    },
+    {
+      "path": "Doxyfile",
+      "change": "unchanged",
+      "original_sha256": "b85fee6222c1a848131277a2f1303b00415c4a7f8d67fd2e98c97d5451ff9acf",
+      "compatible_sha256": "b85fee6222c1a848131277a2f1303b00415c4a7f8d67fd2e98c97d5451ff9acf"
+    },
+    {
+      "path": "Makefile",
+      "change": "modified",
+      "original_sha256": "28d402d80cda641aa57793e6b53dbe39e997441886e634dba3058df6490291a4",
+      "compatible_sha256": "099e588261754bc07acbd6cdafdabf51ff80ab2c429d8036d236a8c096773a35"
+    },
+    {
+      "path": "README.md",
+      "change": "modified",
+      "original_sha256": "08a1c353b229221344e44f8666750a6c794c5bfc82eb47cc68d99118c52559a2",
+      "compatible_sha256": "08c995f7be19f73d85593f157bdeb4d651ebed458777d0c8309ce299fe1dca9c"
+    },
+    {
+      "path": "docs/COMPATIBILITY.md",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "f21104c38eb5db2bcf1a55614de1e8b999abd7ddf332657578a4889112eea0b7"
+    },
+    {
+      "path": "docs/README-author.md",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "08a1c353b229221344e44f8666750a6c794c5bfc82eb47cc68d99118c52559a2"
+    },
+    {
+      "path": "docs/images/class_diagram.png",
+      "change": "unchanged",
+      "original_sha256": "af98deeafbba5cb446bf76116a44c977d016c292b85e48cd645b09f646b7b236",
+      "compatible_sha256": "af98deeafbba5cb446bf76116a44c977d016c292b85e48cd645b09f646b7b236"
+    },
+    {
+      "path": "scripts/build_config.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "f1c6a178ac792389ce7e8e44c75bbda88412039b793685b480943deffe1724bb"
+    },
+    {
+      "path": "scripts/build_info.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "5b40f769868881d5eb241640bd0df3408172ad5c885c6334fece4801c892b2d9"
+    },
+    {
+      "path": "scripts/doctor.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "33d1badfac19b63aeb769295171460d78917acde7c34bed2d05732ba8f4060e7"
+    },
+    {
+      "path": "scripts/install_ubuntu.sh",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "0474309d7073032337b10d171a2fb1cfaae0f184540effd1fbca332cc7b779d9"
+    },
+    {
+      "path": "scripts/run_experiments.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "7fbf910b8ccba25c2f347347a29a0ea48b3c808ff261bc607483c13686c69b63"
+    },
+    {
+      "path": "scripts/serial_experiment_utils.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "3bcb1e21354d6d911cb7ab7f66c37b35623ebcf31483956722ef3041adf872ac"
+    },
+    {
+      "path": "scripts/summarize.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "fb7f5563b8cc632828ad65fe4e617760dedbb521a09a9b311c598bd0d4c21330"
+    },
+    {
+      "path": "scripts/test_experiment_scripts.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "066b356b1c8f5872e55f5da0b100a8ed559d8fa97d46698178874a0f4bd9a009"
+    },
+    {
+      "path": "src/cpp/Makefile",
+      "change": "unchanged",
+      "original_sha256": "f312ff6a22b3a416312d98c35437af796fc0e139432e6501e7503ca28d0affe5",
+      "compatible_sha256": "f312ff6a22b3a416312d98c35437af796fc0e139432e6501e7503ca28d0affe5"
+    },
+    {
+      "path": "src/cpp/app/App.cpp",
+      "change": "unchanged",
+      "original_sha256": "3a8754b505cb651d1859da1eb6f2251c728751097f921f97f036e2f55fe0fe61",
+      "compatible_sha256": "3a8754b505cb651d1859da1eb6f2251c728751097f921f97f036e2f55fe0fe61"
+    },
+    {
+      "path": "src/cpp/app/App.hpp",
+      "change": "unchanged",
+      "original_sha256": "8333c29f1e9b9acb46bb4721ea3c30d6001e7e89cebdc2a447cd9d5026099253",
+      "compatible_sha256": "8333c29f1e9b9acb46bb4721ea3c30d6001e7e89cebdc2a447cd9d5026099253"
+    },
+    {
+      "path": "src/cpp/app/CBase.cpp",
+      "change": "unchanged",
+      "original_sha256": "79ae9d6ff804f60074cd9222c61f2ed519ae598f03a1e3a2b5bdd174ea06088b",
+      "compatible_sha256": "79ae9d6ff804f60074cd9222c61f2ed519ae598f03a1e3a2b5bdd174ea06088b"
+    },
+    {
+      "path": "src/cpp/app/CBase.hpp",
+      "change": "unchanged",
+      "original_sha256": "b146818c39ec0790aac25834b26e2f78b7c012d9a9f9fdc7411e895a01e61c66",
+      "compatible_sha256": "b146818c39ec0790aac25834b26e2f78b7c012d9a9f9fdc7411e895a01e61c66"
+    },
+    {
+      "path": "src/cpp/app/CBatchEnc.cpp",
+      "change": "modified",
+      "original_sha256": "574bb6a6711baac8875b63c66aace8ac2706fd7bd3588b3f92b98987643ece4a",
+      "compatible_sha256": "0a05b941f31fc116a827ecea9fd47ab2277d52612908c1ac19803af704da9399"
+    },
+    {
+      "path": "src/cpp/app/CBatchEnc.hpp",
+      "change": "unchanged",
+      "original_sha256": "febb55c2e49d48c44f30d8b33e33bb0cdd4e550116d6a8d117724515267ce921",
+      "compatible_sha256": "febb55c2e49d48c44f30d8b33e33bb0cdd4e550116d6a8d117724515267ce921"
+    },
+    {
+      "path": "src/cpp/app/CEnc.cpp",
+      "change": "unchanged",
+      "original_sha256": "f48d4ff63765ad3a1242ad67ac2229ad8057872eb807b1a5a6825f5107c2c5e1",
+      "compatible_sha256": "f48d4ff63765ad3a1242ad67ac2229ad8057872eb807b1a5a6825f5107c2c5e1"
+    },
+    {
+      "path": "src/cpp/app/CEnc.hpp",
+      "change": "unchanged",
+      "original_sha256": "7d878c7a98405da3088399cf7e42af78045d35f87ca58fb7b1bd9bbf88243b19",
+      "compatible_sha256": "7d878c7a98405da3088399cf7e42af78045d35f87ca58fb7b1bd9bbf88243b19"
+    },
+    {
+      "path": "src/cpp/app/CircuitZKPProver.cpp",
+      "change": "unchanged",
+      "original_sha256": "1149416675293ceffc016dee7bb0c5f7e1c86b0ae1b31c4f0e473c9a83a1c263",
+      "compatible_sha256": "1149416675293ceffc016dee7bb0c5f7e1c86b0ae1b31c4f0e473c9a83a1c263"
+    },
+    {
+      "path": "src/cpp/app/CircuitZKPProver.hpp",
+      "change": "unchanged",
+      "original_sha256": "5ae42b5b04940bbb1c803dfd29797764cc5804ebd5c12bbc5e06d896f930c7bc",
+      "compatible_sha256": "5ae42b5b04940bbb1c803dfd29797764cc5804ebd5c12bbc5e06d896f930c7bc"
+    },
+    {
+      "path": "src/cpp/app/CircuitZKPVerifier.cpp",
+      "change": "unchanged",
+      "original_sha256": "9a2f9ddae96d89b838b7d5b4ee321d8019a687c4e47d42982bd81764dd25d287",
+      "compatible_sha256": "9a2f9ddae96d89b838b7d5b4ee321d8019a687c4e47d42982bd81764dd25d287"
+    },
+    {
+      "path": "src/cpp/app/CircuitZKPVerifier.hpp",
+      "change": "unchanged",
+      "original_sha256": "03ad806ca22458438a78c952ad4c3ee608b82e7a2ecad3d559c9feb4f7ae8bd9",
+      "compatible_sha256": "03ad806ca22458438a78c952ad4c3ee608b82e7a2ecad3d559c9feb4f7ae8bd9"
+    },
+    {
+      "path": "src/cpp/app/EndToEnd.cpp",
+      "change": "modified",
+      "original_sha256": "c4031284bbb208d07994da83d8131aa1e7de3be8f9929a04e4150512bd18010b",
+      "compatible_sha256": "8d43d859ef712c1131fab5721a77cbcec3baef1219b7be9bc203a657ea632a66"
+    },
+    {
+      "path": "src/cpp/app/EndToEnd.hpp",
+      "change": "modified",
+      "original_sha256": "7494d7d587daac8c2dd1b162e7055acb70b37c880fc1197ee6f4e2f5ebae549a",
+      "compatible_sha256": "4f3fb04555ae70802a0f9d0e280d36e144954ff18cf521286c67848f5ee36fda"
+    },
+    {
+      "path": "src/cpp/app/PaillierEncryption.cpp",
+      "change": "unchanged",
+      "original_sha256": "c28fa5522678c018d9cd217c6740f7ab48c7674e028d6b9d0aad615b55228ed9",
+      "compatible_sha256": "c28fa5522678c018d9cd217c6740f7ab48c7674e028d6b9d0aad615b55228ed9"
+    },
+    {
+      "path": "src/cpp/app/PaillierEncryption.hpp",
+      "change": "unchanged",
+      "original_sha256": "7c9065a2fc7a7d95a21b015fbf0d09fd60e027fca811520954e6169d7dcb6bf3",
+      "compatible_sha256": "7c9065a2fc7a7d95a21b015fbf0d09fd60e027fca811520954e6169d7dcb6bf3"
+    },
+    {
+      "path": "src/cpp/app/PolynomialCommitment.cpp",
+      "change": "modified",
+      "original_sha256": "0520af6f5c5d6df8cafffa7f9141c3acda07ee03844ed94e2d512bc39e5dcb63",
+      "compatible_sha256": "372460f4588bdef5a794e8ccc3ce09eba45dcea1f2985435059f31654301cf7f"
+    },
+    {
+      "path": "src/cpp/app/PolynomialCommitment.hpp",
+      "change": "unchanged",
+      "original_sha256": "d28d8af783d7d8cad21b8229c5f4bef181762fe4dd9feb89827f686188682b6c",
+      "compatible_sha256": "d28d8af783d7d8cad21b8229c5f4bef181762fe4dd9feb89827f686188682b6c"
+    },
+    {
+      "path": "src/cpp/app/math/MathUtils.cpp",
+      "change": "unchanged",
+      "original_sha256": "f8153720a371e26f8d572599f57f583b53c5529958ef75ccb6aa348badb83013",
+      "compatible_sha256": "f8153720a371e26f8d572599f57f583b53c5529958ef75ccb6aa348badb83013"
+    },
+    {
+      "path": "src/cpp/app/math/MathUtils.hpp",
+      "change": "unchanged",
+      "original_sha256": "fd4efb2647692f67e65f67499ecf048af73a6a4f7669095eeef8f3c4e75c4acf",
+      "compatible_sha256": "fd4efb2647692f67e65f67499ecf048af73a6a4f7669095eeef8f3c4e75c4acf"
+    },
+    {
+      "path": "src/cpp/app/math/Matrix.cpp",
+      "change": "modified",
+      "original_sha256": "bc8c877e43656196d9116f580270e91106b2b11d9621813ec482c635ad937a9e",
+      "compatible_sha256": "81790f8d219d262f5311a0cde4bbc7ea9093b28fda4512239f922bcab97e8244"
+    },
+    {
+      "path": "src/cpp/app/math/Matrix.hpp",
+      "change": "unchanged",
+      "original_sha256": "86dfb7d00a8153d0010b1b25fa46a54988a11ea2802a8dd0fbb0b9cc137b7a95",
+      "compatible_sha256": "86dfb7d00a8153d0010b1b25fa46a54988a11ea2802a8dd0fbb0b9cc137b7a95"
+    },
+    {
+      "path": "src/cpp/app/namespace.hpp",
+      "change": "unchanged",
+      "original_sha256": "311c06d0867dd4d54543ec9e57e72774ec016e0c6e74a74b31a8523f9c8cc849",
+      "compatible_sha256": "311c06d0867dd4d54543ec9e57e72774ec016e0c6e74a74b31a8523f9c8cc849"
+    },
+    {
+      "path": "src/cpp/app/utils/ConvertUtils.cpp",
+      "change": "unchanged",
+      "original_sha256": "00b8aecaad641d881a166227e335e0594b661a136e3f8342ee8931c6780af3cd",
+      "compatible_sha256": "00b8aecaad641d881a166227e335e0594b661a136e3f8342ee8931c6780af3cd"
+    },
+    {
+      "path": "src/cpp/app/utils/ConvertUtils.hpp",
+      "change": "unchanged",
+      "original_sha256": "d79ef31151079120dd0a6a402735b2d0fa4f112d6bef54b30de09e6f246113df",
+      "compatible_sha256": "d79ef31151079120dd0a6a402735b2d0fa4f112d6bef54b30de09e6f246113df"
+    },
+    {
+      "path": "src/cpp/app/utils/Timer.cpp",
+      "change": "unchanged",
+      "original_sha256": "b28654ec10a2b16e5b04dad01968df21d376579ed91dfe8cc222917e96876da1",
+      "compatible_sha256": "b28654ec10a2b16e5b04dad01968df21d376579ed91dfe8cc222917e96876da1"
+    },
+    {
+      "path": "src/cpp/app/utils/Timer.hpp",
+      "change": "unchanged",
+      "original_sha256": "fa61b909d2a9a05c8024aebb1ff45d0d9784d9dde2f01388deb2f65d1f41409f",
+      "compatible_sha256": "fa61b909d2a9a05c8024aebb1ff45d0d9784d9dde2f01388deb2f65d1f41409f"
+    },
+    {
+      "path": "src/cpp/vendor/json/fifo_map.hpp",
+      "change": "unchanged",
+      "original_sha256": "47c8844d0972994223d9e4e4d55986ab0e3b69a4c7690a9c5c1bc134aa1c2c91",
+      "compatible_sha256": "47c8844d0972994223d9e4e4d55986ab0e3b69a4c7690a9c5c1bc134aa1c2c91"
+    },
+    {
+      "path": "src/cpp/vendor/json/json.hpp",
+      "change": "unchanged",
+      "original_sha256": "663d1320e9dedfcc5bff0eb671f4a6baf2dc6677bd8ccc83ebe257cdc13ea313",
+      "compatible_sha256": "663d1320e9dedfcc5bff0eb671f4a6baf2dc6677bd8ccc83ebe257cdc13ea313"
+    },
+    {
+      "path": "test/cpp/.gitignore",
+      "change": "unchanged",
+      "original_sha256": "98cbab852d8c0c6ecdcfb4ec5fe22a56d90d96b7e2894bd4e3b1f46087619d66",
+      "compatible_sha256": "98cbab852d8c0c6ecdcfb4ec5fe22a56d90d96b7e2894bd4e3b1f46087619d66"
+    },
+    {
+      "path": "test/cpp/App_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "0315853f8f3d2588eda5a96f3fac1e081a268f2b3c08497b21213441ac5150fd",
+      "compatible_sha256": "0315853f8f3d2588eda5a96f3fac1e081a268f2b3c08497b21213441ac5150fd"
+    },
+    {
+      "path": "test/cpp/CBase_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "83082b42bc304ff227ddbb791c107f135b4ea874dcbc99c112084da70ea9bb72",
+      "compatible_sha256": "83082b42bc304ff227ddbb791c107f135b4ea874dcbc99c112084da70ea9bb72"
+    },
+    {
+      "path": "test/cpp/CBatchEnc_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "5ef842041bbd599a4dd4363903c18cdfc71fd32ac1efa329257cfc0486f12503",
+      "compatible_sha256": "5ef842041bbd599a4dd4363903c18cdfc71fd32ac1efa329257cfc0486f12503"
+    },
+    {
+      "path": "test/cpp/CEnc_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "f48f3b09ee362f33ddd6919e655eab83b809ef7b70dedd329263c84128c6e3ca",
+      "compatible_sha256": "f48f3b09ee362f33ddd6919e655eab83b809ef7b70dedd329263c84128c6e3ca"
+    },
+    {
+      "path": "test/cpp/CircuitZKP_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "ea732b341ea07c61fda0a81e4e37854801d9010da89f874972b30e77b57ddb66",
+      "compatible_sha256": "ea732b341ea07c61fda0a81e4e37854801d9010da89f874972b30e77b57ddb66"
+    },
+    {
+      "path": "test/cpp/Makefile",
+      "change": "unchanged",
+      "original_sha256": "b1711f823859da9a223b6cc390fca8699f46c90cea32e849a449cc0f0b8ba7cb",
+      "compatible_sha256": "b1711f823859da9a223b6cc390fca8699f46c90cea32e849a449cc0f0b8ba7cb"
+    },
+    {
+      "path": "test/cpp/Ntl_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "ff14e062ba019e13fd0f9d03702a872a7d106c6213747571568b1b3cf295c0d7",
+      "compatible_sha256": "ff14e062ba019e13fd0f9d03702a872a7d106c6213747571568b1b3cf295c0d7"
+    },
+    {
+      "path": "test/cpp/PolynomialCommitment_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "94ef286c72fe9b4c6feabf26fa9e3e88a31ba613fc577bf188b654a02094b912",
+      "compatible_sha256": "94ef286c72fe9b4c6feabf26fa9e3e88a31ba613fc577bf188b654a02094b912"
+    },
+    {
+      "path": "test/cpp/matrix_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "c39ec204bed91a68bf102d979545ef3f8d65f18c144e7020045c6f00758ee4fd",
+      "compatible_sha256": "c39ec204bed91a68bf102d979545ef3f8d65f18c144e7020045c6f00758ee4fd"
+    },
+    {
+      "path": "test/cpp/paillier_test.cpp",
+      "change": "unchanged",
+      "original_sha256": "7548bec9f78a066a79e2da3ea6f87cb5636cbab16ca77674d0e386607418f6da",
+      "compatible_sha256": "7548bec9f78a066a79e2da3ea6f87cb5636cbab16ca77674d0e386607418f6da"
+    },
+    {
+      "path": "test/cpp/unit_test1.cpp",
+      "change": "unchanged",
+      "original_sha256": "6f74d0a464e3503d5e67563624778e6fea0b1db93c59064c77ff27e868726595",
+      "compatible_sha256": "6f74d0a464e3503d5e67563624778e6fea0b1db93c59064c77ff27e868726595"
+    },
+    {
+      "path": "tests/serial_core_check.cpp",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "4152b5727e7cdbab4895a913f52467ac064849a7cf3a17e8e026f2abdfd1cfd7"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "a5c37833bf23d6403744fc65b3ff476a54681f15bf327c81490ea5bbb2dc8fb4"
+    },
+    {
+      "path": "tools/serial_benchmark.cpp",
+      "change": "added",
+      "original_sha256": null,
+      "compatible_sha256": "6923d5969ca77dd22d6c542b6c1808c0b45df47376030c271eaf586dbd668375"
+    }
+  ]
+}

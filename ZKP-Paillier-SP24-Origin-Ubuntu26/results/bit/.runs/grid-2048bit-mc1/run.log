@@ -1,0 +1,15 @@
+project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1 NTL_VERSION=11.5.1 bits=2048 messages=1 repeat=1 seed=random
+KEYGEN_SECONDS=0.343767783 KEYGEN_INCLUDED_IN_WALL=0
+====================
+P.encrypt time: 0.769
+P.Ljir time: 0
+P.Lj time: 0
+P.wireUp time: 0.674
+P.run time: 1.839
+P.circuit time: 1.178
+message count: 1
+byte length: 2048-bit
+single encrypt circuit's N: 3079
+single encrypt circuit's Q: 6157
+batch encrypt circuit's N: 400334
+batch encrypt circuit's Q: 800668

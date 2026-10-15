@@ -1,0 +1,2791 @@
+--- a/Makefile
++++ b/Makefile
+@@ -1,64 +1,51 @@
+-VERSION ?=1.0.0
+-OUT_DIR ?= build
+-RELEASE_NAME ?= cryptoplus-$(VERSION)
+-RELEASE_OUT ?= $(OUT_DIR)/release/$(RELEASE_NAME)
+-DEPS_DIR ?= deps
++CXX := g++
++BUILD_DIR ?= build
++CPPFLAGS += -Isrc/cpp -Isrc/cpp/app $(EXTRA_CPPFLAGS)
++CXXFLAGS := -std=c++17 -O3 -Wall -Wextra -Wno-sign-compare -Wno-unused-variable -Wno-unused-parameter
++CXXFLAGS += $(EXTRA_CXXFLAGS)
++LDLIBS := -lntl -lgmp -pthread
++LDFLAGS += $(EXTRA_LDFLAGS)
++ifeq ($(NATIVE),1)
++CXXFLAGS += -march=native
++endif
+ 
+-all: deps_build lib_build
++# Compile on the target computer. This baseline never enables OpenMP or CUDA.
++SOURCES := $(shell find src/cpp/app -name '*.cpp' -type f)
++OBJECTS := $(patsubst %.cpp,$(BUILD_DIR)/%.o,$(SOURCES))
++TARGET := $(BUILD_DIR)/serial_benchmark
+ 
+-.PHONY: deps_build
+-deps_build: gtest_build
++.PHONY: all clean check smoke build-info FORCE
++all: $(TARGET) build-info
+ 
+-.PHONY: lib_build
+-lib_build: cpp_clean cpp_build cpp_test_clean cpp_test cpp_coverage pack_cpp
++$(BUILD_DIR)/.build-config: FORCE
++	@python3 scripts/build_config.py --compiler "$(CXX)" --flags "$(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)" --out "$@"
+ 
+-# Build dependency Google Test
+-.PHONY: gtest_build
+-gtest_build:
+-	@cd test/cpp && make compile_gtest
++$(OBJECTS) $(BUILD_DIR)/tools/serial_benchmark.o $(BUILD_DIR)/tests/serial_core_check.o: $(BUILD_DIR)/.build-config
+ 
+-# Clean project
+-.PHONY: cpp_clean
+-cpp_clean:
+-	@cd src/cpp && make clean
++$(BUILD_DIR)/%.o: %.cpp
++	@mkdir -p $(dir $@)
++	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -MMD -MP -c $< -o $@
+ 
+-# Build project
+-.PHONY: cpp_build
+-cpp_build:
+-	@cd src/cpp && make -j 16 library
++$(TARGET): $(OBJECTS) $(BUILD_DIR)/tools/serial_benchmark.o
++	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
++	chmod +x $@
+ 
+-# Clean test case
+-.PHONY: cpp_test_clean
+-cpp_test_clean:
+-	@cd test/cpp && make clean
++$(BUILD_DIR)/serial_core_check: $(OBJECTS) $(BUILD_DIR)/tests/serial_core_check.o
++	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
++	chmod +x $@
+ 
+-# Run test case
+-.PHONY: cpp_test
+-cpp_test:
+-	@cd test/cpp && make -j 16 compile_test
+-	@cd test/cpp && make run_test
++build-info: $(TARGET)
++	@python3 scripts/build_info.py --compiler "$(CXX)" --flags "$(CPPFLAGS) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS)" --binary "$(TARGET)" --out "$(BUILD_DIR)/build-info.json"
+ 
+-.PHONY: cpp_coverage
+-cpp_coverage:
+-	@cd test/cpp && make test_coverage
++check: all $(BUILD_DIR)/serial_core_check
++	$(BUILD_DIR)/serial_core_check
++	python3 scripts/test_experiment_scripts.py
++	python3 tests/test_cli.py --binary "$(TARGET)"
+ 
+-# Package necessary C++ compiled files
+-# eg. header and object files
+-.PHONY: pack_cpp
+-pack_cpp:
+-	@echo "\033[33mPack Crypto Library...\033[0m"
+-	@rm -rf build/cpp
+-	@mkdir -p build/cpp
+-	@rm -rf src/cpp/**/*.gcno src/cpp/**/*.gcno
+-	@rm -rf src/cpp/**/**/*.gcno src/cpp/**/**/*.gcno
+-	@rm -rf src/cpp/**/*.gcda src/cpp/**/*.gcda
+-	@rm -rf src/cpp/**/**/*.gcda src/cpp/**/**/*.gcda
+-	@rsync -avzq --exclude="*.cpp" --exclude="Makefile" src/cpp/./ build/cpp
++smoke: all
++	python3 scripts/run_experiments.py --suite smoke --repeat 1
+ 
+-cpp_doc:
+-	@echo "\033[33mGenerate readme document...\033[0m"
+-	@md-to-pdf README.md
+-	@mv README.pdf ./docs
+-	@echo "\033[33mGenerate API document...\033[0m"
+-	@rm -rf ./docs/api
+-	@doxygen Doxyfile
++clean:
++	rm -rf -- $(BUILD_DIR)
++
++-include $(OBJECTS:.o=.d) $(BUILD_DIR)/tools/serial_benchmark.d $(BUILD_DIR)/tests/serial_core_check.d
+--- a/README.md
++++ b/README.md
+@@ -1,182 +1,176 @@
+-# Crypto Library
++# ZKP-Paillier-SP24-Serial-Ubuntu26
+ 
+-## Design
++本项目从你上传的原作者串行源码修改，作为同机比较原串行程序、OpenMP 版本和 GPU 版本的基线。保留原作者的串行加密、桶式 Commit、多项式承诺、证明及验证流程。
+ 
+-![Class Diagram](./docs/images/class_diagram.png)
++**运行固定为串行 CPU，NTL 内部线程数为 1。** 你的 RTX 4060 笔记本及其他 Ubuntu 机器均使用各自 CPU 运行此基线，不需要显卡、CUDA、OpenMP、Google Test、CMake 或修改驱动。
+ 
+-In the library, there are mainly 8 classes, with some utils classes. The relationship of the major classes are illustrated in above class diagram, and the description of each major classes are listed below:
++## 1. 安装与编译（Ubuntu 26.04）
+ 
+-### PaillierEncryption
+-
+-_PaillierEncryption_ represents the paillier group elements with at least a public key or a public-key-private-key pair. Depends on the value it has, it is used in encryption, decryption, commitment and zero-knowledge(ZKP) prove protocols. Also, there are some static function for you to generate a new key pair and find the generator in the group.
+-
+-### PolynomialCommitment
+-
+-_PolynomialCommitment_ handles the commitment scheme for polynomial. It requires the a _PaillierEncryption_ group and a list of independent generators as a setup parameters.
+-
+-### CBase
+-
+-_CBase_ refers to the basic interface of a circuit. The paillier group elements (_GP_Q_, _GP_P_, _GP_G_) and linear constrains (_Wqa_, _Wqb_, _Wqc_ and _Kq_) are common inputs for both prover and verifier, while the circuit arguments' assignments (_A_, _B_, _C_) are the secret inputs for prover. The ZKP protocol run on a _CBase_ instance.
+-
+-### CEnc
+-
+-_CEnc_ represents a circuit for paillier encryption of a single message, it inherits from _CBase_. It help you to generate the linear constrains and assign values to circuit arguments base on the given inputs (ciphertext, original message or randomness).
+-
+-### CBatchEnc
+-
+-_CBatchEnc_ represents a circuit for paillier encryption of multiple structured messages, it inherits from _CBase_. It help you to generate the linear constrains and assign values to circuit arguments base on the given inputs (ciphertexts, original messages or randomnesses). Internally it reuses the _CEnc_ object, and aggregates to a larger circuit with additional constrains.
+-
+-### CircuitZKPVerifier
+-
+-_CircuitZKPVerifier_ handles the ZKP for verifier, it contains functions needed by verifier and some common functions between prover and verifier. The ZKP will run on a circuit (_CBase_), and depends on a paillier group (_PaillierEncryption_) and a commitment scheme (_PolynomialCommitment_).
+-
+-### CircuitZKPProver
+-
+-_CircuitZKPProver_ handles the ZKP for prover, it contains the function needed by prover. Since some common functions are already implemented in verify protocol (_CircuitZKPVerifier_), it reuses the code by composite a verifier object. The circuit arguments' must be assigned in order to run the prove protocol successfully.
+-
+-### App
+-
+-_App_ is an example (also the benchmark test script) for the library. It shows how to construct the circuit for both prover and verifier, how to run the protocol and how to validate the result.
+-
+-## Development
+-
+-The library is implemented in C++, and relies on NTL library to do the mathematic calculation. Unit tests and end-to-end test are conducted by Google Test framework.
+-
+-### Dependencies
+-
+-- Build tools
+-  - CMake
+-  - g++ compiler
+-  - lcov (C++ coverage testing tool)
+-  - Doxygen (C++ document generator)
+-- Library dependencies
+-  - [NTL 11.4.3](https://www.shoup.net/ntl/)
+-
+-In mac, you can install NTL through Homebrew
++解压后，在本文件所在的项目根目录执行：
+ 
+ ```bash
+-brew install ntl
++cd ZKP-Paillier-SP24-Serial-Ubuntu26
++bash scripts/install_ubuntu.sh
++python3 scripts/doctor.py
++make -j2
+ ```
+ 
+-### Git Submodule
++安装脚本仅安装 Ubuntu 仓库中的 `build-essential python3 libntl-dev libgmp-dev`，首次安装可能需要管理员密码。未启用 universe 时会提示；现有第三方软件源报错时，先修复软件源再安装。`-j2` 只是并行编译两个源文件，**不会让实验程序并行**。
+ 
+-- Google Test
+-
+-You need to update the submodule after project clone.
++手动安装也可以：
+ 
+ ```bash
+-git submodule update --init --recursive
++sudo apt update
++sudo apt install build-essential python3 libntl-dev libgmp-dev
++make -j2
+ ```
+ 
+-### File Structure
++每台机器都在本机编译。包内不带预编译程序或 NTL/GMP 动态库，避免不同 Ubuntu / C++ ABI 混用。默认 `-std=c++17 -O3`，无覆盖率插桩、无 `-fopenmp`，不启用 `-march=native`。如果对比程序采用本机指令集优化，可以统一双方选项后用 `make -j2 NATIVE=1`。**更换编译器、依赖或选项后，先 `make clean`。**
+ 
+-```file
+-.
+-+-- build     // header files and compiled object files
+-+-- deps      // git submodule dependencies folder (eg. googletest)
+-+-- src       // source codes
+-+-- test      // test scripts
+-+-- docs      // documentation
+-+-- README.md // readme file
+-+-- Makefile  // make script
++## 2. 先做小检查
++
++```bash
++make check
++python3 scripts/run_experiments.py --suite smoke --repeat 1
+ ```
+ 
+-### Build Commands
++`make check` 检查完整证明、篡改拒绝、承诺算术、边界输入、批量输出、超时/中断/续跑，以及 MC=1 零聚合回归，不会运行完整的大参数实验。smoke 使用 64 bit，仅作功能测试。
++
++512 bit、MC=1 的正式参数小检查：
+ 
+ ```bash
+-# full rebuild for C++ project
+-make
+-
+-# build submodules
+-make deps_build
+-
+-# build core library and run test case
+-make lib_build
++python3 scripts/run_experiments.py --suite long512 --mc 1 --repeat 3 --out results/serial-check512
+ ```
+ 
+-### How to use
++日志中应出现：
+ 
+-#### Generate Paillier Encryption Key
+-
+-```c++
+-// Generate new keys
+-size_t byteLength = 128;
+-auto crypto = make_shared<PaillierEncryption>(byteLength);
+-auto sk1 = crypto->getPrivateElement1(); // private key component
+-auto sk2 = crypto->getPrivateElement2(); // private key component
+-auto pk = crypto->getPublicKey();        // public key
+-auto GP_Q = crypto->getGroupQ();         // public parameter: group element Q
+-auto GP_P = crypto->getGroupP();         // public parameter: group order p
+-auto GP_G = crypto->getGroupG();         // public parameter: group generator g
+-auto GP_Gi = crypto->genGenerators(10);  // public parameter: more generators if you want
+-
+-// import from private key
+-auto decryptor = make_shared<PaillierEncryption>(pk, sk1, sk2, GP_Q, GP_P, GP_G);
+-
+-// import form public key
+-auto encryptor = make_shared<PaillierEncryption>(pk, GP_Q, GP_P, GP_G);
++```text
++backend=serial CPU_THREADS=1 OpenMP=OFF CUDA=OFF NTL_THREADS=1
++VERIFICATION=PASS run=1 WALL_SECONDS=...
+ ```
+ 
+-#### Message format
++## 3. 对应此前实验的批量命令
+ 
+-```c++
+-// binary and big integer conversion
+-auto m1Binary = vector<uint8_t>({0xcd, 0xab, 0x34, 0x12}); // 0x1234abcd
+-auto m1Num = ConvertUtils::toZZ(m1Binary);                 // 305441741
++**A：512 bit，MC=1–2000，三次重复**
+ 
+-// structured message
+-// eg. message size is 8 bytes, and slot size is 4 bytes
+-auto m2Binary = vector<uint8_t>({1, 0, 0, 0, 1, 0, 0, 0});
++```bash
++python3 scripts/run_experiments.py --suite long512 --repeat 3 --out results/serial-A
+ ```
+ 
+-#### Example for ZKP prove and verify flows
++MC 为 `1,10,20,40,80,100,200,400,800,1000,2000`，共 11 个配置，每个 MC 独立 CSV/log。
+ 
+-Please refer to the benchmark test script ([./src/cpp/app/App.cpp](./src/cpp/app/App.cpp)). There is a complete showcase for the execution of the ZKP protocol.
+-
+-### How to test
+-
+-All unit tests and end-to-end tests are coded and run with Google Test framework. When you full compile the project, all tests are automatically run. If you want to re-run the tests, you can type the following command:
++**B：256/512/1024/2048 bit，MC=1–400，三次重复**
+ 
+ ```bash
+-make cpp_test
++python3 scripts/run_experiments.py --suite grid --repeat 3 --out results/serial-B
+ ```
+ 
+-By default, the test script will scan through the `/test/cpp` folder, and run all test cases found. If you want to run a specific test case, you should modify the `TEST_LIST` variable in the [./test/cpp/Makefile](./test/cpp/Makefile).
++每个位数的 MC 为 `1,10,20,40,80,100,200,400`，共 32 个配置。256/512/1024 bit 各合并为一个 CSV/log；2048 bit 位于独立 `2048bit` 文件夹，按 MC 分文件。
++
++**一条命令完成 A 和 B**
+ 
+ ```bash
+-# for example, we only run the benchmark test
+-TEST_LIST := App_test
++python3 scripts/run_experiments.py --suite both --repeat 3 --out results/serial-all
+ ```
+ 
+-#### End-to-end Test/Benchmark Test
++A/B 的 512 bit 数据分开保存，不混成六次重复。所有配置逐个运行，默认无超时，失败后继续下一个。大位数与大 MC 可能很慢或超过内存；源码兼容不能保证任意参数均完成。
+ 
+-Two files ([./src/cpp/app/App.cpp](./src/cpp/app/App.cpp) and [./test/cpp/App_test.cpp](./test/cpp/App_test.cpp)) are the most important test case you should take a look. You can adjust the variable in order to benchmark the library under different settings.
+-
+-### API Documents
+-
+-C++ documentation is generated by _Doxygen_ and default output folder is [./docs/api](./docs/api). You can use the following command to generate the documents:
++只补跑 2048 bit：
+ 
+ ```bash
+-doxygen Doxyfile
++python3 scripts/run_experiments.py --suite grid --bits 2048 --repeat 3 --out results/serial-2048
+ ```
+ 
+-### Troubleshoot
+-
+-### Windows Tips
+-
+-#### Linux CLI Tools
+-
+-You may use `scoop` to install the following useful tools:
+-
+-- cmake
+-- gcc
+-- make
+-
+-You can install `rsync` through `MinGW`, then run the following command to port the binary to Git Bash.
++自选位数和 MC：
+ 
+ ```bash
+-echo '/c/MinGW/msys/1.0/bin/rsync "$@"' >/usr/bin/rsync
+-chmod +x /usr/bin/rsync
++python3 scripts/run_experiments.py --suite grid --bits 256 512 --mc 1 100 400 --repeat 3 --out results/serial-custom
+ ```
+ 
+-And you should install `clang` / `llvm`.
++按 Ctrl+C 停止后，已完成结果会保留。使用同一输出目录及原重复数/种子续跑：
++
++```bash
++python3 scripts/run_experiments.py --suite both --repeat 3 --out results/serial-all --resume
++```
++
++续跑核对参数、可执行文件、运行环境指纹、CSV 行数与内容及 PASS 状态，只跳过完整成功的配置。失败/中断配置重新执行，旧尝试保留；换程序或依赖后使用新目录。
++
++可选：每个配置限制 3600 秒，包含密钥生成和三次运行：
++
++```bash
++python3 scripts/run_experiments.py --suite both --repeat 3 --timeout 3600 --out results/serial-limited
++```
++
++达到上限记 TIMEOUT，不能据此断言机器绝对跑不动或测得无穷耗时。加 `--stop-on-error` 可在首个失败或超时后停止。
++
++## 4. 输出与汇总
++
++以 `results/serial-all` 为例：
++
++```text
++long512/serial_512bit_mc1.csv、.log …… mc2000
++ grid/serial_256bit.csv、.log
++ grid/serial_512bit.csv、.log
++ grid/serial_1024bit.csv、.log
++ grid/2048bit/serial_2048bit_mc1.csv、.log …… mc400
++ summary.csv
++ statuses.csv
++ manifest.json
++ environment.json
++```
++
++CSV 前 **35 列**保留原作者与现有 GPU 实验的列名和顺序。追加 7 列：`wall_seconds,verification,run_index,keygen_seconds,seed,execution_backend,ntl_threads`。
++
++正式 CSV 仅合并达到请求重复数且全部 PASS 的配置。部分成功、失败和中断的原始证据仍保存在输出目录内部的运行记录中。`statuses.csv` 区分 PASS、FAIL、TIMEOUT、INTERRUPTED 等状态。`summary.csv` 对不完整配置保留状态、留空测量值，不写假的零或无穷数值；论文 Word 表格可按实际未完成原因标“∞”，并说明它是状态符号。
++
++脚本自动更新 `summary.csv`，也可重算：
++
++```bash
++python3 scripts/summarize.py results/serial-all
++```
++
++汇总包含墙钟和阶段合计的中位数、Commit/Prove/Verify 中位数、每消息耗时、吞吐量、证明字节数/消息及样本 CV。CV = 样本标准差 ÷ 算术平均数 × 100%；不足 2 次时留空。阶段合计先逐次相加，再取中位数。
++
++## 5. 不用批量脚本，直接运行 C++
++
++无需改源码或重编译就能换参数：
++
++```bash
++mkdir -p results
++./build/serial_benchmark --bits 512 --mc 100 --range 128 --slot 4 --batch 15 --repeat 3 --csv results/one512mc100.csv > results/one512mc100.log 2>&1
++```
++
++CSV 必须是新文件，不覆盖已有文件。支持原 GPU 参数别名 `--messages / --range-proofs / --slot-bytes / --output`；`--threads` 只允许 1，`--backend` 只接受 serial 或 cpu。
++
++可选固定随机种子，仅用于可复现实验：
++
++```bash
++python3 scripts/run_experiments.py --suite grid --bits 512 --mc 1 10 --seed 20261012 --out results/serial-seeded
++```
++
++默认不固定种子。不同程序/依赖版本的相同数字种子不自动保证同输入，须实际核对密钥、电路和证明记录。
++
++## 6. 如何做性能对比
++
++- `--bits` 的单位是 **bit**：256/512/1024/2048 bit 对应 32/64/128/256 bytes。旧列名 `byte length(bit)` 保留以兼容历史数据。
++- 默认参数与此前实验相同：range proofs=128、slot bytes=4、batch=15、repeat=3。每个 MC 配置生成一次密钥，三次运行复用密钥。
++- `wall_seconds` 用 `steady_clock` 包围一次 `end_to_end(crypto,...)`，不包含外部密钥生成；调用内的参数生成、初始化、聚合、日志及清理计入墙钟。不要与整进程时间或 GPU 内核时间混用。
++- 阶段计时保留原 Timer 的毫秒截断口径；`circuit create time` 为 P/V 构建时间之和除以 2。`phase1+phase2` 是 CSV 阶段合计，不是真实墙钟。`amo.*` 按消息数×槽数分摊，不是每消息墙钟。
++- 本次修复了附属解包/平均值演示的越界、ASCII 求和、位序及整数除法错误；它不参与证明。修复后的 phase3 不应与旧错误演示的 phase3 作同算法比较。
++- 串行加速比 = **同机、同参数串行墙钟中位数 ÷ 并行墙钟中位数**。阶段加速比使用对应阶段。建议同机重新跑两版，统一编译优化、依赖及供电状态，不同时启动其他实验；保留三次数据及 CV，不自动剔除慢轮次。
++- 跨机 CPU、线程数、系统和电路规模可能不同，整机倍数不能直接归因于显卡。若 v6/GPU 版还包含算法/生命周期优化，总加速体现所有改动，不能只称为新增并行化的贡献。
++- 256/512/1024/2048 bit 是已有实验的测试参数；本项目未据此评估生产部署安全等级。
++
++## 7. 验证范围与排错
++
++实际修复和验证范围见 [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md)，原作者说明见 [docs/README-author.md](docs/README-author.md)。`reference` 中有上传源码归档、修改清单和补丁，便于论文核查。
++
++已经在提供的 Linux 测试环境完成编译和小规模功能验证；Ubuntu 26.04 和你的电脑需用 `make check` 及 512 bit 小检查确认实际运行。完整 43 配置的性能数据由你在目标机器测量，包内不填入模拟性能数据。
++
++若头文件缺失、动态库找不到或出现 `CXXABI_1.3.15`：
++
++```bash
++python3 scripts/doctor.py
++```
++
++依据诊断核对编译器、系统 NTL/GMP 和实际加载的 libstdc++。留意旧 `/usr/local` 自编译库及 `LD_LIBRARY_PATH`，不要混用另一系统复制的动态库。诊断脚本只读检查，不删除库或改系统。
+--- /dev/null
++++ b/docs/COMPATIBILITY.md
+@@ -0,0 +1,44 @@
++# 串行兼容改动与验证范围
++
++此版本的输入是用户上传的 `ZKP-Paillier-SP24-master(4).zip`，不是 OpenMP/v6/GPU 代码的 CPU 模式。原作者串行算法保留，无 OpenMP/CUDA 内核；默认优化为 `-O3`，去掉原构建中默认的覆盖率插桩。基准入口调用 NTL::SetNumThreads(1)，并在日志与结果行记录实际 AvailableThreads()=1。
++
++## 必要修复
++
++| 文件 | 原问题 | 改动及影响 |
++|---|---|---|
++| Makefile | 依赖未随 ZIP 提供的 gtest、自动跑大参数与覆盖率、没有可直接调参的程序 | 新的本机串行构建入口，独立 check/smoke，不默认跑大实验 |
++| CBatchEnc.cpp | RandomBits_ZZ 转换会省略高位零字节，后续按固定长度下标读取 | 固定长度补零并拒绝错误长度；相同随机整数不变 |
++| PolynomialCommitment.cpp | 空向量读 mi[0]，缺少生成元/随机数数量校验 | 空积定义为 g^r，增加输入边界检查；正常桶式 Commit 计算保留 |
++| math/Matrix.cpp | group(0) 除零；稀疏键比较误用 0..size-1 | 参数拒绝及按实际稀疏键比较；正常电路计算不变 |
++| EndToEnd.cpp/.hpp | 解密后二进制串可能不足固定宽度；附属演示 ASCII、位序、整数除法错误；验证失败仍写 CSV | 补零并修复附属平均值演示，检查聚合解密；验证失败在写行前抛错；ostream 输出可选择不结束旧行以追加元数据 |
++| tools/serial_benchmark.cpp | 只能改测试源码调参数，无单线程执行声明或可靠重复输出 | 新 CLI、参数校验、重复运行、新文件保护、独立 keygen/wall 与验证状态 |
++| scripts 与 tests | 缺少可核查批量运行/续跑/环境/失败状态 | 每配置独立子进程，按请求分组，严格 PASS/次数核验、环境指纹及汇总；自包含测试不依赖 gtest |
++
++没有将 v6 的 generateProverAndRelease 等生命周期优化移植为“原作者串行基线”。没有改变证明关系、挑战计算公式或承诺公式；补零修复只补随机整数的零高位。
++
++## 计时口径
++
++1. 旧 35 列保留名称、顺序及阶段定义；原 Timer 文件保留。阶段以毫秒截断后换成秒；附属 phase3 另记纳秒。
++2. `wall_seconds` 从进入一次 end_to_end 开始，到函数正常返回、局部对象析构后结束。旧 CSV 前 35 列的写出/flush 在调用内，与旧 GPU 入口一致；新增 7 列与 PASS 行在捕获墙钟后输出。密钥生成在外部，单独记 `keygen_seconds`。
++3. 每个 MC 配置生成一个 key，三次重复复用。和现有 GPU 批量入口一致；与原作者旧 App_test 的跨多个 MC 复用 key 有差异，应在方法中说明。
++4. 附属 phase3 纠错不参与 Commit/Prove/Verify。它的测量不可与旧错误实现作为同算法性能比较；整个墙钟中包含这项纠错以及新增聚合一致性检查的微小开销。
++5. 串行与现有 v6/GPU 若同时有其他优化，对比结果代表总实现变化。纯并行贡献需额外在同一算法/生命周期基础上做消融对照。
++
++## 已完成验证
++
++- 原作者核心源码与兼容核心源码：同一固定输入的完整证明记录逐字节一致。记录包含密文、辅助/范围密文、Kq、生成元、ABC/D 承诺、多项式承诺、挑战 x/y、proofs；测试参数为 128 bit、MC=3、range=8、slot=4、batch=15。
++- 两份记录 SHA-256：`d625c72686034c4dcf78087bc756c87bc641e0bf43f3a87e85189e9394552b5a`。
++- 完整证明接受、篡改拒绝、解密、承诺与定义一致、NTL 模数恢复、对象销毁、零高位挑战和非法长度回归通过。
++- CLI 的 MC=1/零聚合、三次/多次重复、旧 CSV 前缀、单线程声明、新文件保护及非法并行参数拒绝通过。
++- 批量脚本用受控测试程序检查成功、失败、超时、中断、参数/结果损坏后的续跑、A/B 分组和 2048 bit 单独输出；没有用模拟性能数据填入正式结果。
++
++具体编译器与补充端到端结果记录在随包的 `reference/VALIDATION.txt`。当前验证在远程 Linux 环境进行，并非用户电脑上的 Ubuntu 26.04 真机验收；实际 Ubuntu 26.04 依赖应使用其同版本官方包，在目标机器本机编译和运行 `make check`。
++
++## 可复核
++
++- `reference/author-source.zip`：未修改的输入归档。
++- `reference/compatibility.patch`：原作者文本文件到本版本的补丁。
++- `reference/source-manifest.json`：原始和修改后的文件 SHA-256。
++- `tests/serial_core_check.cpp --snapshot`：可用于输出固定输入完整记录。需要编译测试程序后执行 `./build/serial_core_check --snapshot`。
++
++以上是兼容性与功能回归测试，不是协议安全性证明；未在六台用户机器上重新测量性能，也未承诺机器能完成任意大参数。
+--- /dev/null
++++ b/docs/README-author.md
+@@ -0,0 +1,182 @@
++# Crypto Library
++
++## Design
++
++![Class Diagram](./docs/images/class_diagram.png)
++
++In the library, there are mainly 8 classes, with some utils classes. The relationship of the major classes are illustrated in above class diagram, and the description of each major classes are listed below:
++
++### PaillierEncryption
++
++_PaillierEncryption_ represents the paillier group elements with at least a public key or a public-key-private-key pair. Depends on the value it has, it is used in encryption, decryption, commitment and zero-knowledge(ZKP) prove protocols. Also, there are some static function for you to generate a new key pair and find the generator in the group.
++
++### PolynomialCommitment
++
++_PolynomialCommitment_ handles the commitment scheme for polynomial. It requires the a _PaillierEncryption_ group and a list of independent generators as a setup parameters.
++
++### CBase
++
++_CBase_ refers to the basic interface of a circuit. The paillier group elements (_GP_Q_, _GP_P_, _GP_G_) and linear constrains (_Wqa_, _Wqb_, _Wqc_ and _Kq_) are common inputs for both prover and verifier, while the circuit arguments' assignments (_A_, _B_, _C_) are the secret inputs for prover. The ZKP protocol run on a _CBase_ instance.
++
++### CEnc
++
++_CEnc_ represents a circuit for paillier encryption of a single message, it inherits from _CBase_. It help you to generate the linear constrains and assign values to circuit arguments base on the given inputs (ciphertext, original message or randomness).
++
++### CBatchEnc
++
++_CBatchEnc_ represents a circuit for paillier encryption of multiple structured messages, it inherits from _CBase_. It help you to generate the linear constrains and assign values to circuit arguments base on the given inputs (ciphertexts, original messages or randomnesses). Internally it reuses the _CEnc_ object, and aggregates to a larger circuit with additional constrains.
++
++### CircuitZKPVerifier
++
++_CircuitZKPVerifier_ handles the ZKP for verifier, it contains functions needed by verifier and some common functions between prover and verifier. The ZKP will run on a circuit (_CBase_), and depends on a paillier group (_PaillierEncryption_) and a commitment scheme (_PolynomialCommitment_).
++
++### CircuitZKPProver
++
++_CircuitZKPProver_ handles the ZKP for prover, it contains the function needed by prover. Since some common functions are already implemented in verify protocol (_CircuitZKPVerifier_), it reuses the code by composite a verifier object. The circuit arguments' must be assigned in order to run the prove protocol successfully.
++
++### App
++
++_App_ is an example (also the benchmark test script) for the library. It shows how to construct the circuit for both prover and verifier, how to run the protocol and how to validate the result.
++
++## Development
++
++The library is implemented in C++, and relies on NTL library to do the mathematic calculation. Unit tests and end-to-end test are conducted by Google Test framework.
++
++### Dependencies
++
++- Build tools
++  - CMake
++  - g++ compiler
++  - lcov (C++ coverage testing tool)
++  - Doxygen (C++ document generator)
++- Library dependencies
++  - [NTL 11.4.3](https://www.shoup.net/ntl/)
++
++In mac, you can install NTL through Homebrew
++
++```bash
++brew install ntl
++```
++
++### Git Submodule
++
++- Google Test
++
++You need to update the submodule after project clone.
++
++```bash
++git submodule update --init --recursive
++```
++
++### File Structure
++
++```file
++.
+++-- build     // header files and compiled object files
+++-- deps      // git submodule dependencies folder (eg. googletest)
+++-- src       // source codes
+++-- test      // test scripts
+++-- docs      // documentation
+++-- README.md // readme file
+++-- Makefile  // make script
++```
++
++### Build Commands
++
++```bash
++# full rebuild for C++ project
++make
++
++# build submodules
++make deps_build
++
++# build core library and run test case
++make lib_build
++```
++
++### How to use
++
++#### Generate Paillier Encryption Key
++
++```c++
++// Generate new keys
++size_t byteLength = 128;
++auto crypto = make_shared<PaillierEncryption>(byteLength);
++auto sk1 = crypto->getPrivateElement1(); // private key component
++auto sk2 = crypto->getPrivateElement2(); // private key component
++auto pk = crypto->getPublicKey();        // public key
++auto GP_Q = crypto->getGroupQ();         // public parameter: group element Q
++auto GP_P = crypto->getGroupP();         // public parameter: group order p
++auto GP_G = crypto->getGroupG();         // public parameter: group generator g
++auto GP_Gi = crypto->genGenerators(10);  // public parameter: more generators if you want
++
++// import from private key
++auto decryptor = make_shared<PaillierEncryption>(pk, sk1, sk2, GP_Q, GP_P, GP_G);
++
++// import form public key
++auto encryptor = make_shared<PaillierEncryption>(pk, GP_Q, GP_P, GP_G);
++```
++
++#### Message format
++
++```c++
++// binary and big integer conversion
++auto m1Binary = vector<uint8_t>({0xcd, 0xab, 0x34, 0x12}); // 0x1234abcd
++auto m1Num = ConvertUtils::toZZ(m1Binary);                 // 305441741
++
++// structured message
++// eg. message size is 8 bytes, and slot size is 4 bytes
++auto m2Binary = vector<uint8_t>({1, 0, 0, 0, 1, 0, 0, 0});
++```
++
++#### Example for ZKP prove and verify flows
++
++Please refer to the benchmark test script ([./src/cpp/app/App.cpp](./src/cpp/app/App.cpp)). There is a complete showcase for the execution of the ZKP protocol.
++
++### How to test
++
++All unit tests and end-to-end tests are coded and run with Google Test framework. When you full compile the project, all tests are automatically run. If you want to re-run the tests, you can type the following command:
++
++```bash
++make cpp_test
++```
++
++By default, the test script will scan through the `/test/cpp` folder, and run all test cases found. If you want to run a specific test case, you should modify the `TEST_LIST` variable in the [./test/cpp/Makefile](./test/cpp/Makefile).
++
++```bash
++# for example, we only run the benchmark test
++TEST_LIST := App_test
++```
++
++#### End-to-end Test/Benchmark Test
++
++Two files ([./src/cpp/app/App.cpp](./src/cpp/app/App.cpp) and [./test/cpp/App_test.cpp](./test/cpp/App_test.cpp)) are the most important test case you should take a look. You can adjust the variable in order to benchmark the library under different settings.
++
++### API Documents
++
++C++ documentation is generated by _Doxygen_ and default output folder is [./docs/api](./docs/api). You can use the following command to generate the documents:
++
++```bash
++doxygen Doxyfile
++```
++
++### Troubleshoot
++
++### Windows Tips
++
++#### Linux CLI Tools
++
++You may use `scoop` to install the following useful tools:
++
++- cmake
++- gcc
++- make
++
++You can install `rsync` through `MinGW`, then run the following command to port the binary to Git Bash.
++
++```bash
++echo '/c/MinGW/msys/1.0/bin/rsync "$@"' >/usr/bin/rsync
++chmod +x /usr/bin/rsync
++```
++
++And you should install `clang` / `llvm`.
+--- /dev/null
++++ b/scripts/build_config.py
+@@ -0,0 +1,23 @@
++#!/usr/bin/env python3
++"""Only update a build prerequisite when compiler/options actually change."""
++import argparse
++import json
++from pathlib import Path
++import shlex
++import subprocess
++
++parser = argparse.ArgumentParser()
++parser.add_argument('--compiler', required=True)
++parser.add_argument('--flags', required=True)
++parser.add_argument('--out', type=Path, required=True)
++args = parser.parse_args()
++command = shlex.split(args.compiler)
++result = subprocess.run(command + ['--version'], capture_output=True, text=True,
++                        check=True, timeout=15)
++content = json.dumps({'compiler': args.compiler, 'compiler_version': result.stdout,
++                      'flags': args.flags}, sort_keys=True, indent=2) + '\n'
++if not args.out.is_file() or args.out.read_text() != content:
++    args.out.parent.mkdir(parents=True, exist_ok=True)
++    temp = args.out.with_name(args.out.name + '.tmp')
++    temp.write_text(content)
++    temp.replace(args.out)
+--- /dev/null
++++ b/scripts/build_info.py
+@@ -0,0 +1,368 @@
++#!/usr/bin/env python3
++"""记录串行程序的构建证据；不执行基准程序，不修改系统环境。"""
++
++import argparse
++import datetime
++import hashlib
++import json
++import os
++from pathlib import Path
++import platform
++import re
++import shlex
++import shutil
++import subprocess
++import sys
++
++
++PROJECT_ROOT = Path(__file__).resolve().parents[1]
++STAGE_HEADERS = "#include <NTL/ZZ.h>\n#include <NTL/version.h>\n#include <gmp.h>\n"
++
++
++def run(command, input_text=None, timeout=15):
++    """所有命令均使用参数数组；不通过 shell 展开用户输入。"""
++    try:
++        result = subprocess.run(command, input=input_text, text=True,
++                                capture_output=True, timeout=timeout,
++                                env={**os.environ, "LC_ALL": "C"})
++        return {"command": command, "returncode": result.returncode,
++                "stdout": result.stdout.strip(), "stderr": result.stderr.strip()}
++    except (OSError, subprocess.TimeoutExpired) as error:
++        return {"command": command, "returncode": None,
++                "stdout": "", "stderr": str(error)}
++
++
++def compiler_command(value):
++    command = shlex.split(value)
++    if not command:
++        raise ValueError("编译器命令不能为空")
++    return command
++
++
++def include_options(flags):
++    """只向预处理器传递头文件相关选项，避免引入链接/插桩行为。"""
++    values = shlex.split(flags)
++    selected = []
++    separate = {"-I", "-D", "-U", "-isystem", "-iquote", "-idirafter",
++                "-include", "-imacros", "--sysroot", "-isysroot"}
++    index = 0
++    while index < len(values):
++        value = values[index]
++        if value in separate:
++            selected.append(value)
++            if index + 1 < len(values):
++                index += 1
++                selected.append(values[index])
++        elif value.startswith(("-I", "-D", "-U", "--sysroot=", "-std=")):
++            selected.append(value)
++        elif value in ("-nostdinc", "-nostdinc++"):
++            selected.append(value)
++        index += 1
++    return selected
++
++
++def header_probe(compiler, flags=""):
++    options = include_options(flags)
++    result = run(compiler + options + ["-E", "-dM", "-x", "c++", "-"], STAGE_HEADERS)
++    macros = {}
++    if result["returncode"] == 0:
++        for line in result["stdout"].splitlines():
++            match = re.match(r"#define\s+(\w+)\s*(.*)", line)
++            if match:
++                macros[match.group(1)] = match.group(2)
++    dependencies = run(compiler + options + ["-M", "-x", "c++", "-"], STAGE_HEADERS)
++    paths = sorted(set(re.findall(r"(?:/|\./)[^\s\\]+", dependencies["stdout"].replace("\\\n", " "))))
++    versions = {name: macros.get(name) for name in (
++        "NTL_VERSION", "NTL_MAJOR_VERSION", "NTL_MINOR_VERSION", "NTL_REVISION",
++        "__GNU_MP_VERSION", "__GNU_MP_VERSION_MINOR", "__GNU_MP_VERSION_PATCHLEVEL")}
++    return {"ok": result["returncode"] == 0, "returncode": result["returncode"],
++            "error": result["stderr"], "command": result["command"],
++            "versions": versions, "ntl_headers_built_with_threads": "NTL_THREADS" in macros,
++            "header_paths": [p for p in paths if "/NTL/" in p or p.endswith("gmp.h")]}
++
++
++def file_hash(path):
++    digest = hashlib.sha256()
++    with Path(path).open("rb") as handle:
++        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
++            digest.update(chunk)
++    return digest.hexdigest()
++
++
++def os_information():
++    release = {}
++    try:
++        for line in Path("/etc/os-release").read_text().splitlines():
++            if "=" in line and not line.lstrip().startswith("#"):
++                key, value = line.split("=", 1)
++                try:
++                    parsed = shlex.split(value)
++                    release[key] = parsed[0] if len(parsed) == 1 else value
++                except ValueError:
++                    release[key] = value
++    except OSError:
++        pass
++    cpu_models = []
++    try:
++        for line in Path("/proc/cpuinfo").read_text().splitlines():
++            key, _, value = line.partition(":")
++            if key.strip() in ("model name", "Hardware") and value.strip() not in cpu_models:
++                cpu_models.append(value.strip())
++    except OSError:
++        pass
++    ram_bytes = None
++    try:
++        memory = Path("/proc/meminfo").read_text()
++        found = re.search(r"^MemTotal:\s+(\d+)\s+kB", memory, re.M)
++        if found:
++            ram_bytes = int(found.group(1)) * 1024
++    except OSError:
++        pass
++    affinity_count = None
++    if hasattr(os, "sched_getaffinity"):
++        try:
++            affinity_count = len(os.sched_getaffinity(0))
++        except OSError:
++            pass
++    return {"os_release": release, "kernel": platform.release(),
++            "system": platform.system(), "architecture": platform.machine(),
++            "cpu_models": cpu_models, "logical_cpus_os": os.cpu_count(),
++            "logical_cpus_process_affinity": affinity_count,
++            "ram_total_bytes": ram_bytes,
++            "ram_total_gib": ram_bytes / (1024 ** 3) if ram_bytes is not None else None,
++            "memory_note": "物理内存来自 /proc/meminfo；未测量运行时峰值或容器内存上限。"}
++
++
++def package_information(path):
++    if not shutil.which("dpkg-query"):
++        return []
++    results = []
++    paths = list(dict.fromkeys([str(path), str(Path(path).resolve())]))
++    for candidate in paths:
++        owner = run(["dpkg-query", "-S", candidate])
++        if owner["returncode"] != 0:
++            continue
++        for line in owner["stdout"].splitlines():
++            if ": " not in line:
++                continue
++            package = line.split(": ", 1)[0]
++            info = run(["dpkg-query", "-W", "-f=${binary:Package}\t${Version}", package])
++            if info["returncode"] == 0:
++                entry = {"package": package, "version": info["stdout"].split("\t", 1)[-1]}
++                if entry not in results:
++                    results.append(entry)
++    return results
++
++
++def abi_versions(path):
++    """记录库的 CXXABI 版本标签；供诊断参考，不替代实际加载检查。"""
++    if not shutil.which("readelf"):
++        return {"available": False, "note": "readelf 不可用"}
++    result = run(["readelf", "--version-info", str(path)])
++    found = sorted(set(re.findall(r"CXXABI_([0-9]+(?:\.[0-9]+)+)", result["stdout"])),
++                   key=lambda item: tuple(map(int, item.split("."))))
++    return {"available": result["returncode"] == 0,
++            "cxxabi_tags": ["CXXABI_" + item for item in found],
++            "max_cxxabi_tag": "CXXABI_" + found[-1] if found else None,
++            "error": result["stderr"]}
++
++
++def library_record(name, path):
++    resolved = Path(path).resolve()
++    record = {"name": name, "path": path, "resolved_path": str(resolved),
++              "is_usr_local": str(resolved).startswith("/usr/local/"),
++              "exists": resolved.is_file()}
++    if resolved.is_file():
++        record.update({"sha256": file_hash(resolved),
++                       "package_versions": package_information(path),
++                       "abi_version_tags": abi_versions(resolved)})
++        record["library_filename_version"] = resolved.name
++        record["version_note"] = ("软件包版本来自 dpkg-query；库文件名中的 SONAME 版本不等同于项目发行版本。"
++                                  if record["package_versions"] else
++                                  "未找到 dpkg 软件包归属，实际发行版本未知；保留文件名和 SHA256，不能用头文件版本代替运行库版本。")
++    return record
++
++
++def dynamic_libraries(path):
++    result = run(["ldd", str(path)])
++    combined = result["stdout"] + "\n" + result["stderr"]
++    libraries = []
++    missing = []
++    for line in combined.splitlines():
++        match = re.match(r"\s*(\S+)\s+=>\s+(\S+)", line)
++        if match:
++            name, target = match.groups()
++            if target == "not":
++                missing.append(name)
++            elif target.startswith("/"):
++                libraries.append(library_record(name, target))
++        else:
++            match = re.match(r"\s*(/\S+)\s+\(", line)
++            if match:
++                libraries.append(library_record(Path(match.group(1)).name, match.group(1)))
++    loader_errors = [line.strip() for line in combined.splitlines()
++                     if "not found" in line or "version `" in line or "undefined symbol" in line]
++    return {"returncode": result["returncode"], "stdout": result["stdout"],
++            "stderr": result["stderr"], "libraries": libraries,
++            "missing_libraries": sorted(set(missing)), "loader_errors": loader_errors,
++            "ok": result["returncode"] == 0 and not missing and not loader_errors}
++
++
++def compiler_library(compiler, name, flags=""):
++    # GCC -print-file-name does not reliably honour -L. Check explicit -L first,
++    # in its linker search order, then ask GCC for its default library path.
++    options = []
++    library_dirs = []
++    values = shlex.split(flags)
++    index = 0
++    while index < len(values):
++        value = values[index]
++        if value in ("-L", "--sysroot"):
++            options.append(value)
++            if index + 1 < len(values):
++                index += 1
++                options.append(values[index])
++                if value == "-L":
++                    library_dirs.append(values[index])
++        elif value.startswith(("-L", "--sysroot=")):
++            options.append(value)
++            if value.startswith("-L"):
++                library_dirs.append(value[2:])
++        index += 1
++    for directory in library_dirs:
++        names = [name, name[:-3] + ".a"] if name.endswith(".so") else [name]
++        for candidate_name in names:
++            candidate = Path(directory) / candidate_name
++            if candidate.is_file():
++                record = library_record(candidate_name, str(candidate))
++                record["requested_library"] = name
++                record["link_kind"] = "static archive" if candidate_name.endswith(".a") else "shared library"
++                record["search_evidence"] = "explicit -L directory; actual runtime path is recorded separately by ldd"
++                return record
++    result = run(compiler + options + ["-print-file-name=" + name])
++    value = result["stdout"].strip()
++    if result["returncode"] == 0 and value and value != name and Path(value).is_file():
++        record = library_record(name, value)
++        record["link_kind"] = "shared library"
++        record["search_evidence"] = "compiler -print-file-name"
++        return record
++    if name.endswith(".so"):
++        archive_name = name[:-3] + ".a"
++        archive = run(compiler + options + ["-print-file-name=" + archive_name])
++        archive_path = archive["stdout"].strip()
++        if archive["returncode"] == 0 and archive_path != archive_name and Path(archive_path).is_file():
++            record = library_record(archive_name, archive_path)
++            record.update({"requested_library": name, "link_kind": "static archive",
++                           "search_evidence": "compiler -print-file-name; static fallback"})
++            return record
++    return {"name": name, "exists": False, "path": value or None,
++            "error": result["stderr"]}
++
++
++def source_manifest():
++    sources = []
++    roots = [PROJECT_ROOT / "src/cpp/app", PROJECT_ROOT / "src/cpp/vendor",
++             PROJECT_ROOT / "tools", PROJECT_ROOT / "scripts"]
++    for root in roots:
++        if root.exists():
++            sources.extend(path for path in root.rglob("*")
++                           if path.is_file() and path.suffix in (".cpp", ".hpp", ".h", ".cc", ".py", ".sh"))
++    if (PROJECT_ROOT / "Makefile").is_file():
++        sources.append(PROJECT_ROOT / "Makefile")
++    records = [{"path": str(path.relative_to(PROJECT_ROOT)), "sha256": file_hash(path)}
++               for path in sorted(set(sources))]
++    digest = hashlib.sha256()
++    for record in records:
++        digest.update((record["path"] + "\0" + record["sha256"] + "\n").encode("utf-8"))
++    return {"sha256": digest.hexdigest(), "algorithm": "SHA256(relative_path + NUL + file_sha256 + LF), sorted paths",
++            "files": records,
++            "note": "构建信息生成时的源码和构建脚本快照；不包含结果文件、文档或旧 Makefile。"}
++
++
++def serial_policy(flags, linkage):
++    tokens = shlex.split(flags)
++    names = [record["name"] for record in linkage.get("libraries", [])]
++    openmp_flags = [token for token in tokens if "openmp" in token.lower() or token in ("-lomp", "-lgomp")]
++    cuda_flags = [token for token in tokens if token.lower().startswith(("-lcuda", "-lcudart")) or "nvcc" in token.lower()]
++    coverage_flags = [token for token in tokens if token in ("--coverage", "-fprofile-arcs", "-ftest-coverage", "-lgcov", "-fcoverage-mapping")
++                      or token.startswith("-fprofile-instr-generate")]
++    openmp_libraries = [name for name in names if re.search(r"^lib(?:gomp|omp|iomp)", name)]
++    cuda_libraries = [name for name in names if re.search(r"^lib(?:cuda|cudart|cublas|nvrtc)", name)]
++    violations = []
++    if openmp_flags or openmp_libraries:
++        violations.append("发现 OpenMP 编译选项或动态库")
++    if cuda_flags or cuda_libraries:
++        violations.append("发现 CUDA 编译选项或动态库")
++    if coverage_flags:
++        violations.append("发现 coverage 插桩编译选项")
++    return {"expected_openmp": False, "expected_cuda": False, "expected_coverage": False,
++            "openmp_flags_found": openmp_flags, "openmp_libraries_found": openmp_libraries,
++            "cuda_flags_found": cuda_flags, "cuda_libraries_found": cuda_libraries,
++            "coverage_flags_found": coverage_flags, "violations": violations,
++            "ntl_threads_expected": 1, "ntl_runtime_threads_confirmed": False,
++            "ntl_runtime_threads_note": "本脚本不运行基准程序；ldd 成功不能证明 NTL 已在运行时设为 1 线程。请核对基准启动日志。",
++            "evidence_note": "选项与动态链接证据覆盖当前构建；无法仅凭 ldd 排除人为加入的静态库。-pthread 不等同于 OpenMP。"}
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description="记录原作者串行基线的构建和依赖信息，不运行实验。")
++    parser.add_argument("--compiler", default="g++", help="编译器命令，与 Makefile 的 CXX 一致")
++    parser.add_argument("--flags", default="", help="完整编译/链接选项；手动使用时建议 --flags='...' ")
++    parser.add_argument("--binary", default="build/serial_benchmark", help="已编译程序路径")
++    parser.add_argument("--out", default="build/build-info.json", help="JSON 输出路径")
++    args = parser.parse_args(argv)
++    try:
++        compiler = compiler_command(args.compiler)
++        shlex.split(args.flags)
++    except ValueError as error:
++        parser.error(str(error))
++    binary = Path(args.binary).resolve()
++    exists = binary.is_file()
++    version = run(compiler + ["--version"])
++    headers = header_probe(compiler, args.flags)
++    linkage = dynamic_libraries(binary) if exists else {
++        "ok": False, "libraries": [], "error": "程序不存在；尚未核对运行时动态库路径"}
++    policy = serial_policy(args.flags, linkage)
++    errors = []
++    if version["returncode"] != 0:
++        errors.append("编译器不可用：" + version["stderr"])
++    if not headers["ok"]:
++        errors.append("NTL/GMP 头文件检查失败：" + headers["error"])
++    if not exists:
++        errors.append("未找到程序：" + str(binary))
++    elif not linkage["ok"]:
++        errors.append("动态库解析失败；查看 dynamic_linkage 中的缺失库或 ABI 错误")
++    errors.extend(policy["violations"])
++    info = {
++        "schema_version": 1,
++        "project": "ZKP-Paillier-SP24-Serial-Ubuntu26",
++        "generated_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
++        "project_root": str(PROJECT_ROOT), "working_directory": str(Path.cwd()),
++        "environment": os_information(),
++        "compiler": {"requested": args.compiler, "command": compiler,
++                     "executable_resolved": shutil.which(compiler[0]), "version_probe": version},
++        "flags": args.flags, "headers": headers,
++        "linker_library_search": [compiler_library(compiler, name, args.flags)
++                                  for name in ("libntl.so", "libgmp.so", "libstdc++.so.6")],
++        "binary": {"path": str(binary), "exists": exists,
++                   "sha256": file_hash(binary) if exists else None},
++        "source": source_manifest(), "dynamic_linkage": linkage,
++        "serial_policy": policy,
++        "environment_search_paths": {key: os.environ.get(key) for key in
++                                     ("LD_LIBRARY_PATH", "LIBRARY_PATH", "CPATH", "CPLUS_INCLUDE_PATH")},
++        "checks": {"ok": not errors, "errors": errors}}
++    output = Path(args.out)
++    output.parent.mkdir(parents=True, exist_ok=True)
++    output.write_text(json.dumps(info, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++    print("构建信息已写入：" + str(output))
++    if errors:
++        for error in errors:
++            print("[未通过] " + error, file=sys.stderr)
++        print("请先执行 python3 scripts/doctor.py；本脚本未修改或安装系统依赖。", file=sys.stderr)
++        return 1
++    print("编译器、头文件和动态库检查通过；NTL 的实际运行线程数仍须核对启动日志。")
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+--- /dev/null
++++ b/scripts/doctor.py
+@@ -0,0 +1,160 @@
++#!/usr/bin/env python3
++"""只读诊断串行项目所需编译器、NTL/GMP 和动态库；不安装或改配置。"""
++
++import argparse
++import os
++from pathlib import Path
++import re
++import shlex
++import shutil
++import sys
++
++# 导入辅助代码时也不向项目目录写入 __pycache__。
++sys.dont_write_bytecode = True
++
++from build_info import (compiler_command, compiler_library,
++                        dynamic_libraries, header_probe, os_information, run,
++                        serial_policy)
++
++
++def version_tuple(value):
++    if not value:
++        return ()
++    match = re.search(r"CXXABI_([0-9]+(?:\.[0-9]+)+)", value)
++    return tuple(map(int, match.group(1).split("."))) if match else ()
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description="只读检查 Ubuntu 串行实验依赖；不执行基准程序。")
++    parser.add_argument("--compiler", default=os.environ.get("CXX", "g++"))
++    parser.add_argument("--flags", default="", help="自定义头文件/库搜索选项，建议 --flags='...' ")
++    parser.add_argument("--binary", default="build/serial_benchmark", help="可选：已编译程序，缺失时仍检查依赖")
++    args = parser.parse_args(argv)
++    try:
++        compiler = compiler_command(args.compiler)
++        shlex.split(args.flags)
++    except ValueError as error:
++        parser.error(str(error))
++    errors = []
++    warnings = []
++    environment = os_information()
++    release = environment["os_release"]
++    print("串行基线依赖诊断（只读，不运行实验）")
++    print("系统：{}；内核：{}；架构：{}".format(
++        release.get("PRETTY_NAME", environment["system"]), environment["kernel"], environment["architecture"]))
++    print("编译器：" + args.compiler)
++    compiler_version = run(compiler + ["--version"])
++    if compiler_version["returncode"] != 0:
++        errors.append("编译器不可用：" + compiler_version["stderr"])
++    else:
++        print("[通过] " + compiler_version["stdout"].splitlines()[0])
++    headers = header_probe(compiler, args.flags)
++    if headers["ok"]:
++        versions = headers["versions"]
++        gmp_version = ".".join(versions.get(name) or "?" for name in
++                              ("__GNU_MP_VERSION", "__GNU_MP_VERSION_MINOR", "__GNU_MP_VERSION_PATCHLEVEL"))
++        print("[通过] NTL 头文件版本={}；GMP 头文件版本={}".format(versions.get("NTL_VERSION"), gmp_version))
++        for path in headers["header_paths"]:
++            if path.endswith(("NTL/ZZ.h", "NTL/version.h", "NTL/config.h", "gmp.h")):
++                print("  头文件：" + path)
++        print("  NTL 头文件启用线程支持：{}（支持线程不代表本程序使用多线程）".format(
++            "是" if headers["ntl_headers_built_with_threads"] else "否"))
++        if any(path.startswith("/usr/local/") for path in headers["header_paths"]):
++            warnings.append("NTL/GMP 头文件来自 /usr/local；请确认它与实际链接库为同一次安装，避免混用版本。")
++    else:
++        errors.append("NTL/GMP 头文件检查失败：\n" + headers["error"])
++    linker_libraries = [compiler_library(compiler, name, args.flags)
++                        for name in ("libntl.so", "libgmp.so", "libstdc++.so.6")]
++    for library in linker_libraries:
++        if library["exists"]:
++            print("[通过] 编译器找到 {}：{}".format(library["name"], library["resolved_path"]))
++            if library.get("link_kind") == "static archive":
++                print("  静态库回退候选；实际二进制的动态依赖另由 ldd 核对。")
++            for package in library.get("package_versions", []):
++                print("  软件包 {} {}".format(package["package"], package["version"]))
++        else:
++            errors.append("编译器找不到 {}；需要对应开发包及正确的库搜索路径。".format(library["name"]))
++    ldconfig = shutil.which("ldconfig")
++    if not ldconfig:
++        ldconfig = next((path for path in ("/sbin/ldconfig", "/usr/sbin/ldconfig") if Path(path).is_file()), None)
++    cached_paths = []
++    if ldconfig:
++        cache = run([ldconfig, "-p"])
++        if cache["returncode"] == 0:
++            matches = [line.strip() for line in cache["stdout"].splitlines()
++                       if re.search(r"\blib(?:ntl|gmp|stdc\+\+)\.", line)]
++            print("动态库缓存（ldconfig -p）：")
++            for line in matches:
++                print("  " + line)
++                if "=>" in line:
++                    cached_paths.append(line.split("=>", 1)[1].strip())
++            if not matches:
++                warnings.append("动态库缓存中未找到 NTL/GMP；自定义库可能需要显式 rpath 或正确加载路径。")
++        else:
++            warnings.append("无法读取 ldconfig 缓存：" + cache["stderr"])
++    else:
++        warnings.append("ldconfig 不可用，无法读取动态库缓存。")
++    binary = Path(args.binary).resolve()
++    inspected = []
++    if binary.is_file():
++        linkage = dynamic_libraries(binary)
++        inspected.append(("基准程序", linkage))
++        print("已编译程序：" + str(binary))
++    else:
++        linkage = {"libraries": []}
++        print("[未构建] " + str(binary))
++        print("  继续诊断依赖；构建后再次执行 doctor 以确认程序实际加载的库。")
++    policy = serial_policy(args.flags, linkage)
++    errors.extend(policy["violations"])
++    # Even before a build, inspect the linker-selected NTL's runtime dependencies.
++    for library in linker_libraries:
++        if library["name"] == "libntl.so" and library["exists"]:
++            inspected.append(("链接器选择的 NTL", dynamic_libraries(library["resolved_path"])))
++    runtime_records = []
++    for label, linkage in inspected:
++        print("{}的 ldd 结果：".format(label))
++        for line in (linkage.get("stdout", "") + "\n" + linkage.get("stderr", "")).strip().splitlines():
++            print("  " + line)
++        if not linkage["ok"]:
++            errors.append(label + "动态库加载检查未通过；注意上面的 not found / CXXABI 错误。")
++        runtime_records.extend(linkage.get("libraries", []))
++    local_records = [library for library in linker_libraries + runtime_records
++                     if library.get("is_usr_local")]
++    if local_records or any(path.startswith("/usr/local/") for path in cached_paths):
++        warnings.append("存在 /usr/local 下的 NTL/GMP/libstdc++ 候选或已加载库。该目录中的旧库可能优先于 apt 库；请以程序 ldd 的实际路径为准。")
++    for key in ("LD_LIBRARY_PATH", "LIBRARY_PATH", "CPATH", "CPLUS_INCLUDE_PATH"):
++        if os.environ.get(key):
++            print("搜索路径 {}={}".format(key, os.environ[key]))
++            warnings.append(key + " 已设置，可能影响编译或加载路径；请检查是否指向旧安装。")
++    # Compare selected/loaded NTL requirements with its own runtime libstdc++.
++    for library in linker_libraries + runtime_records:
++        if library.get("name", "").startswith("libntl") and library.get("exists") and library.get("link_kind") != "static archive":
++            required = library.get("abi_version_tags", {}).get("max_cxxabi_tag")
++            ntl_linkage = dynamic_libraries(library["resolved_path"])
++            stdlibs = [item for item in ntl_linkage["libraries"] if item["name"].startswith("libstdc++")]
++            for stdlib in stdlibs:
++                available = stdlib.get("abi_version_tags", {}).get("max_cxxabi_tag")
++                if required and available and version_tuple(required) > version_tuple(available):
++                    errors.append("NTL 需要 {}，但实际加载的 {} 最高仅 {}；这是 CXXABI 不匹配。".format(
++                        required, stdlib["resolved_path"], available))
++    print("线程与串行边界：NTL 目标线程数为 1；doctor 不运行程序，ldd 成功不代表运行时线程数已确认。")
++    print("  -pthread 仅用于依赖链接；本项目不启用 OpenMP、CUDA 或 coverage。")
++    for warning in dict.fromkeys(warnings):
++        print("[注意] " + warning)
++    for error in dict.fromkeys(errors):
++        print("[未通过] " + error)
++    if errors or warnings:
++        print("建议：")
++        print("  1. 缺少标准依赖时，执行 bash scripts/install_ubuntu.sh，再 make clean && make。")
++        print("  2. 若 /usr/local 与 apt 版本混用，先核对上面头文件、库路径及软件包归属，再选择同一套依赖重新构建。")
++        print("  3. CXXABI 错误应使 NTL 与运行时 libstdc++ 来自兼容工具链；不要随意替换 libstdc++.so 或删除系统库。")
++        print("本诊断没有安装软件、删除文件或修改系统配置。")
++    if errors:
++        print("结果：依赖或链接检查未通过。")
++        return 1
++    print("结果：当前依赖检查通过{}。".format("；程序实际链接仍须在构建后确认" if not binary.is_file() else ""))
++    return 0
++
++
++if __name__ == "__main__":
++    sys.exit(main())
+--- /dev/null
++++ b/scripts/install_ubuntu.sh
+@@ -0,0 +1,53 @@
++#!/usr/bin/env bash
++# 用户主动运行时，仅安装 Ubuntu 仓库中的串行构建依赖。
++set -euo pipefail
++
++if [[ ! -r /etc/os-release ]]; then
++    printf '%s\n' '无法读取 /etc/os-release；请在 Ubuntu 上执行此脚本。' >&2
++    exit 1
++fi
++# 系统提供的标准发行版标识文件；不读取项目中的外部 shell 配置。
++source /etc/os-release
++if [[ "${ID:-}" != "ubuntu" ]]; then
++    printf '%s\n' '此安装脚本仅适用于 Ubuntu；其他发行版请手动安装 C++、Python、NTL 和 GMP 开发包。' >&2
++    exit 1
++fi
++if ! command -v apt-get >/dev/null || ! command -v apt-cache >/dev/null; then
++    printf '%s\n' '找不到 apt-get 或 apt-cache；请检查 Ubuntu 软件包管理器。' >&2
++    exit 1
++fi
++
++dependencies=(build-essential python3 libntl-dev libgmp-dev)
++printf '系统：%s\n' "${PRETTY_NAME:-Ubuntu}"
++printf '%s\n' '将安装串行实验所需依赖：build-essential python3 libntl-dev libgmp-dev。'
++printf '%s\n' '不安装 CUDA、NVIDIA 驱动、GoogleTest 或 CMake；不自动修改软件源。'
++privilege=()
++if (( EUID != 0 )); then
++    if ! command -v sudo >/dev/null; then
++        printf '%s\n' '当前用户不是 root，且未安装 sudo；请由管理员运行此脚本。' >&2
++        exit 1
++    fi
++    privilege=(sudo)
++fi
++
++if ! "${privilege[@]}" apt-get update; then
++    printf '%s\n' 'apt-get update 失败；请先修复网络或已有的软件源错误，再重新执行。脚本未修改软件源。' >&2
++    exit 1
++fi
++missing=()
++for package in "${dependencies[@]}"; do
++    candidate=$(LC_ALL=C apt-cache policy "$package" | awk '$1 == "Candidate:" { print $2; exit }')
++    if [[ -z "$candidate" || "$candidate" == '(none)' ]]; then
++        missing+=("$package")
++    fi
++done
++if (( ${#missing[@]} > 0 )); then
++    printf '软件源中没有可安装版本：%s\n' "${missing[*]}" >&2
++    if [[ " ${missing[*]} " == *' libntl-dev '* ]]; then
++        printf '%s\n' 'libntl-dev 通常需要 Ubuntu universe 软件源。请在“软件和更新”中启用 universe，或由管理员执行 sudo add-apt-repository universe，然后 sudo apt-get update。' >&2
++    fi
++    printf '%s\n' '请确认软件源对应当前 Ubuntu 版本和架构；本脚本不会自动添加或改写仓库。' >&2
++    exit 1
++fi
++"${privilege[@]}" apt-get install --no-install-recommends "${dependencies[@]}"
++printf '%s\n' '依赖安装完成。回到项目根目录执行：python3 scripts/doctor.py，然后 make。'
+--- /dev/null
++++ b/scripts/run_experiments.py
+@@ -0,0 +1,342 @@
++#!/usr/bin/env python3
++"""Run serial experiments sequentially with verified resume and explicit failure states."""
++import argparse
++import csv
++import datetime as dt
++import fcntl
++import hashlib
++import json
++import math
++import os
++from pathlib import Path
++import platform
++import re
++import signal
++import subprocess
++import sys
++import time
++from serial_experiment_utils import (
++    SERIAL_ENV, atomic_bytes, atomic_csv, atomic_json, job_key, load_json,
++    read_valid_csv, sha256, valid_resume,
++)
++from summarize import summarize_directory
++
++ROOT = Path(__file__).resolve().parent.parent
++MC_LONG = [1, 10, 20, 40, 80, 100, 200, 400, 800, 1000, 2000]
++MC_GRID = MC_LONG[:8]
++STATUS_FIELDS = ['series', 'bits', 'mc', 'repeat', 'status', 'returncode', 'reason', 'csv', 'log', 'updated_utc']
++
++
++def now():
++    return dt.datetime.now(dt.timezone.utc).isoformat()
++
++
++def stamp():
++    return dt.datetime.now(dt.timezone.utc).strftime('%Y%m%d-%H%M%S-%fZ')
++
++
++def numbers(tokens):
++    values = []
++    for token in tokens:
++        for part in token.split(','):
++            if not part.isascii() or not part.isdecimal() or int(part) <= 0:
++                raise argparse.ArgumentTypeError('lists require positive decimal integers')
++            values.append(int(part))
++    if len(set(values)) != len(values):
++        raise argparse.ArgumentTypeError('duplicate parameter value')
++    return sorted(values)
++
++
++def terminate_group(process):
++    try:
++        os.killpg(process.pid, signal.SIGTERM)
++    except ProcessLookupError:
++        return
++    try:
++        process.wait(timeout=2)
++    except subprocess.TimeoutExpired:
++        pass
++    # Also remove a descendant that ignored SIGTERM after its parent exited.
++    try:
++        os.killpg(process.pid, signal.SIGKILL)
++    except ProcessLookupError:
++        pass
++    process.wait()
++
++
++def runtime_identity(binary, build_info):
++    """Fingerprint actual resolved libraries, as well as recorded build metadata."""
++    libraries = {}
++    missing = []
++    try:
++        result = subprocess.run(['ldd', str(binary)], capture_output=True, text=True,
++                                timeout=10, check=False)
++        if result.returncode == 0:
++            for line in result.stdout.splitlines():
++                if 'not found' in line:
++                    missing.append(line.strip())
++                for value in re.findall(r'(/[^\s]+)', line):
++                    path = Path(value).resolve()
++                    if path.is_file():
++                        libraries[str(path)] = sha256(path)
++    except (OSError, subprocess.TimeoutExpired):
++        # An executable mock script is not a dynamically linked ELF program.
++        # Real ELF runs record whether dependency inspection was available.
++        result = None
++    info_hash = sha256(build_info) if build_info.is_file() else None
++    identity = dict(binary_sha256=sha256(binary), build_info_sha256=info_hash,
++                    library_fingerprints=libraries, missing_libraries=sorted(missing),
++                    dependency_inspection_returncode=result.returncode if result else None)
++    # Build-info timestamps are useful provenance but may change after an
++    # otherwise identical make. Resume follows actual executable/libraries.
++    fingerprinted = {key: value for key, value in identity.items() if key != 'build_info_sha256'}
++    digest = hashlib.sha256(json.dumps(fingerprinted, sort_keys=True).encode()).hexdigest()
++    return identity, digest
++
++
++def configurations(args):
++    mcs = numbers(args.mc) if args.mc else None
++    bits = numbers(args.bits) if args.bits else None
++    if bits and any(bit < 64 or bit % 8 for bit in bits):
++        raise ValueError('bits must be a multiple of 8 and at least 64')
++    if args.suite == 'long512' and bits not in (None, [512]):
++        raise ValueError('long512 has fixed --bits 512; use grid for custom lengths')
++    jobs = []
++    if args.suite in ('long512', 'both'):
++        jobs.extend(('long512', 512, mc) for mc in (mcs or MC_LONG))
++    if args.suite in ('grid', 'both'):
++        jobs.extend(('grid', bit, mc) for bit in (bits or [256, 512, 1024, 2048]) for mc in (mcs or MC_GRID))
++    if args.suite == 'smoke':
++        jobs.extend(('smoke', bit, mc) for bit in (bits or [64]) for mc in (mcs or [1]))
++    return jobs
++
++
++def stored_metadata(out):
++    """Repair malformed state into explicit FAIL without losing its original bytes."""
++    manifest = load_json(out / 'manifest.json')
++    entries = []
++    for path in sorted((out / '.runs').glob('*/metadata.json')):
++        match = re.fullmatch(r'(long512|grid|smoke)-(\d+)bit-mc(\d+)', path.parent.name)
++        if not match:
++            continue
++        series, bits, mc = match.groups()
++        expected = dict(bits=int(bits), mc=int(mc), **manifest['protocol_parameters'])
++        meta = load_json(path)
++        if (not isinstance(meta, dict) or meta.get('series') != series or
++                meta.get('parameters') != expected or not isinstance(meta.get('updated_utc'), str) or
++                meta.get('status') not in ('PASS', 'FAIL', 'TIMEOUT', 'INTERRUPTED', 'RUNNING') or
++                meta.get('binary_sha256') != manifest['binary_sha256']):
++            atomic_bytes(path.parent / ('metadata.invalid-' + stamp() + '.json'), path.read_bytes())
++            meta = dict(series=series, parameters=expected, binary_sha256=manifest['binary_sha256'],
++                        status='FAIL', reason='stored metadata is malformed or does not match manifest parameters',
++                        updated_utc=now())
++            atomic_json(path, meta)
++        entries.append((path, meta))
++    return entries
++
++
++def write_statuses(out):
++    rows = []
++    for file, meta in stored_metadata(out):
++        params = meta['parameters']
++        rows.append(dict(series=meta['series'], bits=params['bits'], mc=params['mc'], repeat=params['repeat'],
++                         status=meta['status'], returncode=meta.get('returncode', ''), reason=meta.get('reason', ''),
++                         csv=str((file.parent / 'result.csv').relative_to(out)),
++                         log=str((file.parent / 'run.log').relative_to(out)), updated_utc=meta['updated_utc']))
++    rows.sort(key=lambda r: (r['series'], r['bits'], r['mc']))
++    atomic_csv(out / 'statuses.csv', STATUS_FIELDS, rows)
++
++
++def rebuild_outputs(out):
++    """Only validated PASS configurations enter public CSVs; logs include all attempts."""
++    buckets = {}
++    for path, meta in stored_metadata(out):
++        params = meta['parameters']; series = meta['series']; bit = params['bits']; mc = params['mc']
++        destination = out / series
++        if series == 'grid' and bit == 2048:
++            destination /= '2048bit'
++        stem = f'serial_{bit}bit' if series == 'grid' and bit != 2048 else f'serial_{bit}bit_mc{mc}'
++        bucket = buckets.setdefault(destination / stem, [])
++        bucket.append((path, meta))
++    for stem, entries in buckets.items():
++        entries.sort(key=lambda item: item[1]['parameters']['mc'])
++        headers = None; merged = []; logs = []
++        for path, meta in entries:
++            params = meta['parameters']
++            fields = None; rows = []; error = None
++            if meta['status'] == 'PASS':
++                fields, rows, error = read_valid_csv(path.parent / 'result.csv', params)
++                if not error and meta.get('csv_sha256') != sha256(path.parent / 'result.csv'):
++                    error = 'CSV content differs from recorded successful result'
++                if error:
++                    meta.update(status='FAIL', original_status='PASS', reason='stored CSV is invalid: ' + error,
++                                updated_utc=now())
++                    atomic_json(path, meta)
++            logs.append(f"\nCONFIGURATION {meta['series']} bits={params['bits']} mc={params['mc']} status={meta['status']}\n".encode())
++            log_path = path.parent / 'run.log'
++            if log_path.exists():
++                logs.append(log_path.read_bytes())
++            if meta['status'] != 'PASS':
++                continue
++            if headers is not None and headers != fields:
++                raise ValueError('inconsistent CSV header within merged length: ' + str(stem))
++            headers = fields; merged.extend(rows)
++        if merged:
++            atomic_csv(stem.with_suffix('.csv'), headers, merged)
++        else:
++            stem.with_suffix('.csv').unlink(missing_ok=True)
++        atomic_bytes(stem.with_suffix('.log'), b''.join(logs))
++    write_statuses(out)
++    summarize_directory(out)
++
++
++def run_job(out, series, params, binary, binary_hash, timeout, resume):
++    state = out / '.runs' / job_key(series, params['bits'], params['mc'])
++    metadata_path = state / 'metadata.json'
++    previous = load_json(metadata_path)
++    if resume and valid_resume(previous, params, binary_hash, state):
++        print(f"RESUME PASS {series} bits={params['bits']} mc={params['mc']}", flush=True)
++        return 'PASS'
++    if state.exists() and any(state.iterdir()):
++        archive = out / '.attempts' / (state.name + '-' + stamp())
++        archive.parent.mkdir(parents=True, exist_ok=True)
++        state.rename(archive)
++    state.mkdir(parents=True, exist_ok=True)
++    raw_csv = state / 'result.csv'; log_path = state / 'run.log'
++    command = [str(binary), '--bits', str(params['bits']), '--mc', str(params['mc']),
++               '--range', str(params['range']), '--slot', str(params['slot']),
++               '--batch', str(params['batch']), '--repeat', str(params['repeat']), '--csv', str(raw_csv)]
++    if params['seed'] is not None:
++        command.extend(['--seed', params['seed']])
++    meta = dict(series=series, parameters=params, binary_sha256=binary_hash, status='RUNNING',
++                command=command, timeout_seconds=timeout, started_utc=now(), updated_utc=now(), reason='')
++    atomic_json(metadata_path, meta)
++    environment = os.environ.copy(); environment.update(SERIAL_ENV)
++    interrupted = False; process = None; started = time.monotonic()
++    print(f"RUN {series} bits={params['bits']} mc={params['mc']} repeat={params['repeat']}", flush=True)
++    with log_path.open('wb') as log:
++        try:
++            process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT,
++                                       cwd=ROOT, env=environment, start_new_session=True)
++            returncode = process.wait(timeout=timeout)
++            terminate_group(process)
++            meta['returncode'] = returncode
++            headers, rows, error = read_valid_csv(raw_csv, params)
++            transcript = log_path.read_text(encoding='utf-8', errors='replace')
++            passes = len(re.findall(r'VERIFICATION=PASS\b', transcript))
++            fails = len(re.findall(r'VERIFICATION=FAIL\b', transcript))
++            if returncode != 0:
++                error = f'child exited with code {returncode}'
++            elif passes != params['repeat'] or fails:
++                error = f'stdout verification mismatch: PASS={passes}, FAIL={fails}'
++            meta.update(status='FAIL' if error else 'PASS', reason=error or '', csv_rows=len(rows))
++            if not error:
++                meta['csv_sha256'] = sha256(raw_csv)
++        except subprocess.TimeoutExpired:
++            terminate_group(process)
++            meta.update(status='TIMEOUT', reason=f'per-configuration timeout ({timeout} seconds)', returncode=process.returncode)
++        except KeyboardInterrupt:
++            if process is not None:
++                terminate_group(process)
++            meta.update(status='INTERRUPTED', reason='interrupted by Ctrl-C', returncode=process.returncode if process else None)
++            interrupted = True
++        except OSError as error:
++            if process is not None:
++                terminate_group(process)
++            meta.update(status='FAIL', reason=str(error), returncode=process.returncode if process else None)
++    meta.update(updated_utc=now(), elapsed_process_seconds=time.monotonic() - started)
++    atomic_json(metadata_path, meta)
++    rebuild_outputs(out)
++    print(f"{meta['status']} {series} bits={params['bits']} mc={params['mc']} {meta['reason']}", flush=True)
++    if interrupted:
++        raise KeyboardInterrupt
++    return meta['status']
++
++
++def main(argv=None):
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('--suite', choices=['long512', 'grid', 'both', 'smoke'], default='smoke')
++    parser.add_argument('--bits', nargs='+', help='custom lengths, separated by spaces or commas')
++    parser.add_argument('--mc', nargs='+', help='custom message counts, separated by spaces or commas')
++    parser.add_argument('--repeat', type=int, default=3)
++    parser.add_argument('--out', type=Path, help='default ROOT/results/serial-UTC-timestamp')
++    parser.add_argument('--binary', type=Path, default=ROOT / 'build/serial_benchmark')
++    parser.add_argument('--timeout', type=float, help='optional timeout per configuration; default unlimited')
++    parser.add_argument('--seed', help='nonnegative decimal seed; omitted means fresh randomness')
++    parser.add_argument('--resume', action='store_true')
++    stop = parser.add_mutually_exclusive_group()
++    stop.add_argument('--keep-going', dest='keep_going', action='store_true', default=True)
++    stop.add_argument('--no-keep-going', '--stop-on-error', dest='keep_going', action='store_false')
++    args = parser.parse_args(argv)
++    lock_stream = None
++    try:
++        if args.repeat < 1 or (args.timeout is not None and (args.timeout <= 0 or not math.isfinite(args.timeout))):
++            raise ValueError('repeat and optional timeout must be positive')
++        if args.seed is not None:
++            if not args.seed.isascii() or not args.seed.isdecimal() or len(args.seed) > 4096:
++                raise ValueError('seed must be a nonnegative ASCII decimal integer (up to 4096 digits)')
++            args.seed = str(int(args.seed))
++        jobs = configurations(args)
++        binary = args.binary.expanduser().resolve()
++        if not binary.is_file() or not os.access(binary, os.X_OK):
++            raise ValueError('benchmark executable not found or not executable: ' + str(binary))
++        binary_hash = sha256(binary)
++        build_info = binary.parent / 'build-info.json'
++        runtime, runtime_hash = runtime_identity(binary, build_info)
++        out = (args.out or ROOT / 'results' / ('serial-' + stamp())).expanduser().resolve()
++        if out.exists() and not out.is_dir():
++            raise ValueError('output path exists and is not a directory')
++        out.mkdir(parents=True, exist_ok=True)
++        lock_stream = (out / '.experiment.lock').open('a+')
++        try:
++            fcntl.flock(lock_stream.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
++        except BlockingIOError:
++            raise ValueError('another experiment is already running in this --out directory')
++        nonempty = any(path.name != '.experiment.lock' for path in out.iterdir())
++        if nonempty and not args.resume:
++            raise ValueError('output directory is not empty; use --resume or a new --out')
++        previous = load_json(out / 'manifest.json')
++        protocol = dict(range=128, slot=4, batch=15, repeat=args.repeat, seed=args.seed)
++        if args.resume and nonempty:
++            if (not previous or previous.get('protocol_parameters') != protocol or
++                    previous.get('binary_sha256') != binary_hash or previous.get('runtime_fingerprint') != runtime_hash):
++                raise ValueError('resume manifest parameters, executable or runtime libraries differ; choose a new --out')
++        manifest = previous or dict(format_version=1, created_utc=now(), protocol_parameters=protocol,
++                                     binary=str(binary), binary_sha256=binary_hash,
++                                     runtime_fingerprint=runtime_hash, invocations=[])
++        manifest['invocations'].append(dict(utc=now(), suite=args.suite, jobs=[list(job) for job in jobs], resume=args.resume, timeout=args.timeout, keep_going=args.keep_going))
++        atomic_json(out / 'manifest.json', manifest)
++        env = dict(recorded_utc=now(), platform=platform.platform(), uname=list(platform.uname()),
++                   python=sys.version, cpu_count=os.cpu_count(), child_environment_overrides=SERIAL_ENV,
++                   binary=str(binary), binary_sha256=binary_hash,
++                   build_info_path=str(build_info), build_info=load_json(build_info),
++                   runtime_identity=runtime, runtime_fingerprint=runtime_hash)
++        atomic_json(out / 'environment.json', env)
++        atomic_json(out / 'build.json', dict(binary=str(binary), runtime_identity=runtime,
++                                            runtime_fingerprint=runtime_hash, build_info=load_json(build_info)))
++        failed = False
++        try:
++            for series, bits, mc in jobs:
++                parameters = dict(bits=bits, mc=mc, **protocol)
++                status = run_job(out, series, parameters, binary, binary_hash, args.timeout, args.resume)
++                if status != 'PASS':
++                    failed = True
++                    if not args.keep_going:
++                        break
++        except KeyboardInterrupt:
++            rebuild_outputs(out)
++            print('INTERRUPTED. Saved completed results and interrupted logs.', file=sys.stderr)
++            return 130
++        rebuild_outputs(out)
++        print('Results: ' + str(out))
++        return 1 if failed else 0
++    except (ValueError, argparse.ArgumentTypeError) as error:
++        parser.error(str(error))
++    finally:
++        if lock_stream is not None:
++            fcntl.flock(lock_stream.fileno(), fcntl.LOCK_UN)
++            lock_stream.close()
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null
++++ b/scripts/serial_experiment_utils.py
+@@ -0,0 +1,125 @@
++"""Shared, standard-library-only result validation and atomic file writes."""
++import csv
++import hashlib
++import io
++import json
++import math
++import os
++from pathlib import Path
++
++PHASES = (
++    'encryption time', 'circuit create time', 'value assign time',
++    'commit time', 'prove time', 'verify time', 'attach time-V(s)',
++)
++SERIAL_ENV = {
++    'OMP_NUM_THREADS': '1', 'OMP_THREAD_LIMIT': '1',
++    'OPENBLAS_NUM_THREADS': '1', 'MKL_NUM_THREADS': '1',
++    'BLIS_NUM_THREADS': '1', 'VECLIB_MAXIMUM_THREADS': '1',
++    'NUMEXPR_NUM_THREADS': '1',
++}
++
++
++def atomic_bytes(path, data):
++    path = Path(path)
++    path.parent.mkdir(parents=True, exist_ok=True)
++    temporary = path.with_name(path.name + '.tmp-' + str(os.getpid()))
++    try:
++        with temporary.open('wb') as stream:
++            stream.write(data)
++            stream.flush()
++            os.fsync(stream.fileno())
++        temporary.replace(path)
++    finally:
++        temporary.unlink(missing_ok=True)
++
++
++def atomic_json(path, data):
++    atomic_bytes(path, (json.dumps(data, ensure_ascii=False, indent=2,
++                                  allow_nan=False) + '\n').encode('utf-8'))
++
++
++def atomic_csv(path, headers, rows):
++    stream = io.StringIO(newline='')
++    writer = csv.DictWriter(stream, fieldnames=headers)
++    writer.writeheader()
++    writer.writerows(rows)
++    atomic_bytes(path, stream.getvalue().encode('utf-8'))
++
++
++def sha256(path):
++    digest = hashlib.sha256()
++    with Path(path).open('rb') as stream:
++        for block in iter(lambda: stream.read(1024 * 1024), b''):
++            digest.update(block)
++    return digest.hexdigest()
++
++
++def load_json(path):
++    try:
++        with Path(path).open(encoding='utf-8') as stream:
++            return json.load(stream)
++    except (OSError, ValueError):
++        return None
++
++
++def read_valid_csv(path, parameters):
++    """Return (headers, rows, error); reject partial/failed/non-serial results."""
++    try:
++        with Path(path).open(newline='', encoding='utf-8-sig') as stream:
++            reader = csv.DictReader(stream)
++            headers = reader.fieldnames
++            rows = list(reader)
++        if not headers or len(headers) != len(set(headers)):
++            raise ValueError('missing or duplicate CSV header')
++        required = set(PHASES) | {
++            'message count', 'byte length(bit)', 'proof size/message',
++            'message/batch', 'slot size(byte)', 'range proof count', 'byte length(byte)',
++            'wall_seconds', 'verification', 'run_index',
++            'keygen_seconds', 'seed', 'execution_backend', 'ntl_threads',
++        }
++        if required - set(headers):
++            raise ValueError('missing CSV columns: ' + ', '.join(sorted(required - set(headers))))
++        if len(rows) != parameters['repeat']:
++            raise ValueError(f"expected {parameters['repeat']} rows, found {len(rows)}")
++        for index, row in enumerate(rows, 1):
++            if None in row or any(value is None for value in row.values()):
++                raise ValueError('malformed CSV row')
++            if row['verification'].strip() != 'PASS':
++                raise ValueError(f'run {index} is not PASS')
++            if int(row['message count']) != parameters['mc'] or int(row['byte length(bit)']) != parameters['bits']:
++                raise ValueError('CSV parameters do not match configuration')
++            expected = {'message/batch': parameters['batch'], 'slot size(byte)': parameters['slot'],
++                        'range proof count': parameters['range'], 'byte length(byte)': parameters['bits'] // 8}
++            if any(int(row[key]) != value for key, value in expected.items()):
++                raise ValueError('CSV protocol parameters do not match configuration')
++            if int(row['run_index']) != index:
++                raise ValueError('run_index must be 1..repeat in order')
++            if row['execution_backend'].strip() != 'serial' or int(row['ntl_threads']) != 1:
++                raise ValueError('result does not declare serial execution with one NTL thread')
++            if row['seed'].strip() != (parameters['seed'] or ''):
++                raise ValueError('CSV seed does not match configuration')
++            for key in (*PHASES, 'wall_seconds', 'keygen_seconds', 'proof size/message'):
++                value = float(row[key])
++                if not math.isfinite(value) or value < 0:
++                    raise ValueError('invalid finite nonnegative measurement: ' + key)
++                if key in ('wall_seconds', 'proof size/message') and value <= 0:
++                    raise ValueError('measurement must be strictly positive: ' + key)
++        return headers, rows, None
++    except (OSError, ValueError, TypeError, KeyError) as error:
++        return None, [], str(error)
++
++
++def job_key(series, bits, mc):
++    return f'{series}-{bits}bit-mc{mc}'
++
++
++def valid_resume(metadata, parameters, binary_hash, state_dir):
++    if not isinstance(metadata, dict):
++        return False
++    if metadata.get('status') != 'PASS' or metadata.get('parameters') != parameters:
++        return False
++    if metadata.get('binary_sha256') != binary_hash:
++        return False
++    path = Path(state_dir) / 'result.csv'
++    headers, rows, error = read_valid_csv(path, parameters)
++    return error is None and metadata.get('csv_sha256') == sha256(path)
+--- /dev/null
++++ b/scripts/summarize.py
+@@ -0,0 +1,75 @@
++#!/usr/bin/env python3
++"""Summarize validated configurations, retaining failed statuses with blank metrics."""
++import argparse
++from pathlib import Path
++import statistics
++from serial_experiment_utils import PHASES, atomic_csv, load_json, read_valid_csv, sha256
++
++FIELDS = [
++    'series', 'bits', 'mc', 'status', 'n', 'csv_sum_median_s', 'csv_sum_cv_pct',
++    'wall_median_s', 'wall_cv_pct', 'wall_per_message_ms', 'messages_per_second',
++    'commit_median_s', 'prove_median_s', 'verify_median_s',
++    'proof_per_message_median_bytes', 'csv_source', 'reason',
++]
++
++
++def cv(values):
++    if len(values) < 2 or statistics.mean(values) == 0:
++        return ''
++    return statistics.stdev(values) / statistics.mean(values) * 100
++
++
++def summarize_directory(directory, output=None):
++    directory = Path(directory)
++    summaries = []
++    for path in sorted((directory / '.runs').glob('*/metadata.json')):
++        meta = load_json(path)
++        if (not isinstance(meta, dict) or not isinstance(meta.get('parameters'), dict) or
++                meta.get('series') not in ('long512', 'grid', 'smoke') or not isinstance(meta.get('status'), str)):
++            continue
++        params = meta['parameters']
++        if not all(isinstance(params.get(key), int) and params[key] > 0 for key in ('bits', 'mc', 'repeat')):
++            continue
++        row = {key: '' for key in FIELDS}
++        row.update(series=meta['series'], bits=params['bits'], mc=params['mc'],
++                   status=meta['status'], n=0, reason=meta.get('reason', ''),
++                   csv_source=str((path.parent / 'result.csv').relative_to(directory)))
++        if meta['status'] == 'PASS':
++            _, observations, error = read_valid_csv(path.parent / 'result.csv', params)
++            if not error and meta.get('csv_sha256') != sha256(path.parent / 'result.csv'):
++                error = 'CSV content differs from recorded successful result'
++            if error:
++                row.update(status='INVALID_RESULT', reason=error)
++            else:
++                sums = [sum(float(r[key]) for key in PHASES) for r in observations]
++                walls = [float(r['wall_seconds']) for r in observations]
++                wall = statistics.median(walls)
++                row.update(n=len(observations), csv_sum_median_s=statistics.median(sums),
++                    csv_sum_cv_pct=cv(sums), wall_median_s=wall, wall_cv_pct=cv(walls),
++                    wall_per_message_ms=wall * 1000 / params['mc'],
++                    messages_per_second=params['mc'] / wall if wall else '',
++                    commit_median_s=statistics.median(float(r['commit time']) for r in observations),
++                    prove_median_s=statistics.median(float(r['prove time']) for r in observations),
++                    verify_median_s=statistics.median(float(r['verify time']) for r in observations),
++                    proof_per_message_median_bytes=statistics.median(float(r['proof size/message']) for r in observations))
++        summaries.append(row)
++    summaries.sort(key=lambda r: (r['series'], r['bits'], r['mc']))
++    target = Path(output) if output else directory / 'summary.csv'
++    atomic_csv(target, FIELDS, summaries)
++    return summaries
++
++
++def main():
++    parser = argparse.ArgumentParser(description=__doc__)
++    parser.add_argument('directory', type=Path, help='output directory created by run_experiments.py')
++    parser.add_argument('--out', type=Path, help='summary CSV path (default DIRECTORY/summary.csv)')
++    args = parser.parse_args()
++    if not (args.directory / 'manifest.json').is_file():
++        parser.error('directory does not contain an experiment manifest.json')
++    rows = summarize_directory(args.directory, args.out)
++    print(f'Summarized {len(rows)} configurations; failed/missing metrics remain blank.')
++    return 0
++
++
++if __name__ == '__main__':
++    raise SystemExit(main())
+--- /dev/null
++++ b/scripts/test_experiment_scripts.py
+@@ -0,0 +1,279 @@
++#!/usr/bin/env python3
++"""End-to-end CLI tests using a mock executable, never long real experiments."""
++import csv
++import json
++import os
++from pathlib import Path
++import signal
++import subprocess
++import sys
++import tempfile
++import time
++import unittest
++
++SCRIPTS = Path(__file__).resolve().parent
++RUNNER = SCRIPTS / 'run_experiments.py'
++
++MOCK = r'''
++import argparse, csv, json, os, subprocess, sys, time
++from pathlib import Path
++p=argparse.ArgumentParser()
++for name in ('bits','mc','range','slot','batch','repeat'):
++ p.add_argument('--'+name,type=int,required=True)
++p.add_argument('--csv',required=True);p.add_argument('--seed',default='')
++a=p.parse_args()
++with open(os.environ['MOCK_CALLS'],'a') as f:f.write(json.dumps(vars(a))+'\n')
++if str(a.mc)==os.environ.get('MOCK_SLEEP_MC'):
++ child=subprocess.Popen([sys.executable,'-c','import time,signal; signal.signal(signal.SIGTERM,signal.SIG_IGN); time.sleep(60)',a.csv])
++ print('MOCK_SLEEP grandchild='+str(child.pid),flush=True)
++ time.sleep(60)
++fields=['message count','byte length(bit)','message/batch','slot size(byte)','range proof count','byte length(byte)','encryption time','circuit create time','value assign time','commit time','prove time','verify time','attach time-V(s)','proof size/message','wall_seconds','verification','run_index','keygen_seconds','seed','execution_backend','ntl_threads']
++with open(a.csv,'w',newline='') as f:
++ w=csv.DictWriter(f,fieldnames=fields);w.writeheader()
++ for i in range(1,a.repeat+1):
++  status='FAIL' if str(a.mc)==os.environ.get('MOCK_FAIL_MC') and i==a.repeat else 'PASS'
++  r={'message count':a.mc,'byte length(bit)':a.bits,'message/batch':a.batch,'slot size(byte)':a.slot,'range proof count':a.range,'byte length(byte)':a.bits//8,'encryption time':i,'circuit create time':0,'value assign time':0,'commit time':.5*i,'prove time':.3*i,'verify time':.2*i,'attach time-V(s)':0,'proof size/message':1000/a.mc,'wall_seconds':3*i,'verification':status,'run_index':i,'keygen_seconds':.1,'seed':a.seed,'execution_backend':'serial','ntl_threads':1}
++  w.writerow(r);f.flush()
++  print('VERIFICATION='+status+' run='+str(i)+' WALL_SECONDS='+str(3*i),flush=True)
++if str(a.mc)==os.environ.get('MOCK_EXIT_MC'):sys.exit(7)
++'''
++
++
++def read_csv(path):
++    with Path(path).open(newline='') as stream:
++        return list(csv.DictReader(stream))
++
++
++class ScriptTests(unittest.TestCase):
++    def setUp(self):
++        self.temp = tempfile.TemporaryDirectory()
++        self.root = Path(self.temp.name)
++        self.mock = self.root / 'mock_benchmark'
++        self.mock.write_text('#!' + sys.executable + '\n' + MOCK)
++        self.mock.chmod(0o755)
++        self.calls = self.root / 'calls.jsonl'
++        self.out = self.root / 'results'
++        self.env = dict(os.environ, MOCK_CALLS=str(self.calls))
++
++    def tearDown(self):
++        self.temp.cleanup()
++
++    def command(self, *args):
++        return [sys.executable, str(RUNNER), '--binary', str(self.mock), '--out', str(self.out), *args]
++
++    def run_cli(self, *args, expected=0, env=None):
++        result = subprocess.run(self.command(*args), capture_output=True, text=True,
++                                env=env or self.env, timeout=15)
++        self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
++        return result
++
++    def call_count(self):
++        return len(self.calls.read_text().splitlines()) if self.calls.exists() else 0
++
++    def test_merge_and_sample_statistics(self):
++        self.run_cli('--suite', 'grid', '--bits', '64,128', '--mc', '1', '2')
++        self.assertEqual(self.call_count(), 4)
++        for bits in [64, 128]:
++            rows = read_csv(self.out / 'grid' / f'serial_{bits}bit.csv')
++            self.assertEqual(len(rows), 6)
++            self.assertEqual([int(r['message count']) for r in rows], [1]*3 + [2]*3)
++        summaries = read_csv(self.out / 'summary.csv')
++        self.assertEqual(len(summaries), 4)
++        self.assertEqual(float(summaries[0]['wall_median_s']), 6)
++        self.assertEqual(float(summaries[0]['wall_cv_pct']), 50)
++        self.assertEqual(float(summaries[0]['csv_sum_median_s']), 4)
++        self.assertEqual(float(summaries[0]['csv_sum_cv_pct']), 50)
++        self.assertEqual(float(summaries[0]['proof_per_message_median_bytes']), 1000)
++        self.assertTrue((self.out / 'environment.json').exists())
++        self.assertTrue((self.out / 'build.json').exists())
++
++    def test_resume_requires_valid_metadata_count_and_pass(self):
++        args = ['--suite', 'grid', '--bits', '64', '--mc', '1', '2']
++        self.run_cli(*args)
++        self.run_cli(*args, '--resume')
++        self.assertEqual(self.call_count(), 2)
++        state = self.out / '.runs/grid-64bit-mc1'
++        csv_path = state / 'result.csv'
++        lines = csv_path.read_text().splitlines()
++        csv_path.write_text('\n'.join(lines[:-1]) + '\n')
++        self.run_cli(*args, '--resume')
++        self.assertEqual(self.call_count(), 3)
++        meta_path = state / 'metadata.json'
++        meta = json.loads(meta_path.read_text());meta['parameters']['repeat'] = 2
++        meta_path.write_text(json.dumps(meta))
++        self.run_cli(*args, '--resume')
++        self.assertEqual(self.call_count(), 4)
++        lines = csv_path.read_text().replace(',PASS,', ',FAIL,')
++        csv_path.write_text(lines)
++        self.run_cli(*args, '--resume')
++        self.assertEqual(self.call_count(), 5)
++        self.assertEqual(len(list((self.out / '.attempts').iterdir())), 3)
++        lines = csv_path.read_text().splitlines()
++        lines[-1] += ',unexpected-tail-column'
++        csv_path.write_text('\n'.join(lines) + '\n')
++        self.run_cli(*args, '--resume')
++        self.assertEqual(self.call_count(), 6)
++        self.run_cli(*args, '--resume', '--repeat', '2', expected=2)
++        self.assertEqual(self.call_count(), 6)
++
++    def test_build_timestamp_change_allows_resume(self):
++        info = self.root / 'build-info.json'
++        info.write_text('{"generated_utc":"fixture-1","compiler":"fixture","libraries":[]}')
++        self.run_cli('--suite', 'smoke')
++        info.write_text('{"generated_utc":"fixture-2","compiler":"fixture","libraries":[]}')
++        self.run_cli('--suite', 'smoke', '--resume')
++        self.assertEqual(self.call_count(), 1)
++
++    def test_protocol_parameters_and_positive_measurements_are_checked(self):
++        from serial_experiment_utils import read_valid_csv
++        self.run_cli('--suite', 'smoke')
++        state = self.out / '.runs/smoke-64bit-mc1'
++        path = state / 'result.csv';original = read_csv(path)
++        parameters = json.loads((state / 'metadata.json').read_text())['parameters']
++        for column, value in [('message/batch', '16'), ('slot size(byte)', '8'),
++                              ('range proof count', '127'), ('byte length(byte)', '64'),
++                              ('wall_seconds', '0'), ('proof size/message', '0')]:
++            changed = [dict(row) for row in original];changed[0][column] = value
++            with path.open('w', newline='') as stream:
++                writer = csv.DictWriter(stream, fieldnames=list(changed[0]));writer.writeheader();writer.writerows(changed)
++            self.assertIsNotNone(read_valid_csv(path, parameters)[2], column)
++
++    def test_actual_library_change_rejects_resume(self):
++        tools = self.root / 'tools';tools.mkdir()
++        library = self.root / 'library-fixture.so';library.write_bytes(b'library-version-1')
++        ldd = tools / 'ldd'
++        ldd.write_text('#!' + sys.executable + '\nprint(' + repr('fixture => ' + str(library) + ' (0x0001)') + ')\n')
++        ldd.chmod(0o755)
++        env = dict(self.env, PATH=str(tools) + os.pathsep + self.env['PATH'])
++        self.run_cli('--suite', 'smoke', env=env)
++        library.write_bytes(b'library-version-2')
++        self.run_cli('--suite', 'smoke', '--resume', expected=2, env=env)
++        self.assertEqual(self.call_count(), 1)
++
++    def test_corruption_outside_requested_resume_configs_does_not_merge(self):
++        self.run_cli('--suite', 'grid', '--bits', '64', '--mc', '1', '2', '3')
++        corrupt_meta = self.out / '.runs/grid-64bit-mc1/metadata.json'
++        corrupt_meta.write_text('{"status":"PASS"}')
++        data = self.out / '.runs/grid-64bit-mc3/result.csv'
++        rows = read_csv(data)
++        rows[0]['encryption time'] = '10000'
++        with data.open('w', newline='') as stream:
++            writer = csv.DictWriter(stream, fieldnames=list(rows[0]));writer.writeheader();writer.writerows(rows)
++        self.run_cli('--suite', 'grid', '--bits', '64', '--mc', '2', '--resume')
++        self.assertEqual(self.call_count(), 3)
++        self.assertEqual([r['status'] for r in read_csv(self.out / 'statuses.csv')], ['FAIL', 'PASS', 'FAIL'])
++        self.assertEqual([r['message count'] for r in read_csv(self.out / 'grid/serial_64bit.csv')], ['2']*3)
++        self.assertTrue(list(corrupt_meta.parent.glob('metadata.invalid-*.json')))
++
++    def test_ascii_input_and_seed_length_match_cpp(self):
++        self.run_cli('--bits', '６４', expected=2)
++        self.run_cli('--seed', '١٢٣', expected=2)
++        self.run_cli('--seed', '1' * 4097, expected=2)
++        self.assertEqual(self.call_count(), 0)
++
++    def test_failed_validation_excluded_and_keep_going(self):
++        env = dict(self.env, MOCK_FAIL_MC='2')
++        self.run_cli('--suite', 'grid', '--bits', '64', '--mc', '1', '2', '3', expected=1, env=env)
++        statuses = read_csv(self.out / 'statuses.csv')
++        self.assertEqual([r['status'] for r in statuses], ['PASS', 'FAIL', 'PASS'])
++        rows = read_csv(self.out / 'grid/serial_64bit.csv')
++        self.assertEqual([int(r['message count']) for r in rows], [1]*3 + [3]*3)
++        failed = [r for r in read_csv(self.out / 'summary.csv') if r['status'] == 'FAIL'][0]
++        self.assertEqual(failed['n'], '0')
++        self.assertEqual(failed['wall_median_s'], '')
++        self.assertNotIn('inf', failed['wall_median_s'])
++        self.assertTrue((self.out / '.runs/grid-64bit-mc2/result.csv').exists())
++
++    def test_exit_failure_and_stop_on_error(self):
++        self.run_cli('--suite', 'grid', '--bits', '64', '--mc', '1', '2', '3',
++                     '--no-keep-going', expected=1, env=dict(self.env, MOCK_EXIT_MC='2'))
++        self.assertEqual(self.call_count(), 2)
++        self.assertEqual([r['status'] for r in read_csv(self.out / 'statuses.csv')], ['PASS', 'FAIL'])
++
++    def test_timeout_kills_child_group_and_continues(self):
++        self.run_cli('--suite', 'grid', '--bits', '64', '--mc', '1', '2', '3',
++                     '--timeout', '0.5', expected=1, env=dict(self.env, MOCK_SLEEP_MC='2'))
++        self.assertEqual([r['status'] for r in read_csv(self.out / 'statuses.csv')], ['PASS', 'TIMEOUT', 'PASS'])
++        self.assert_grandchild_stopped(self.out / '.runs/grid-64bit-mc2/run.log')
++
++    def assert_grandchild_stopped(self, log_path):
++        import re
++        pid = int(re.search(r'grandchild=(\d+)', log_path.read_text()).group(1))
++        deadline = time.monotonic() + 2
++        while time.monotonic() < deadline:
++            stat = Path(f'/proc/{pid}/stat')
++            try:
++                command = Path(f'/proc/{pid}/cmdline').read_bytes()
++                state = stat.read_text().split()[2]
++            except FileNotFoundError:
++                return
++            # A PID may be reused by another concurrent test or benchmark.
++            if str(log_path.parent / 'result.csv').encode() not in command or state == 'Z':
++                return
++            time.sleep(.02)
++        self.fail('mock grandchild remained running after group termination')
++
++    def test_interrupt_preserves_logs_and_results(self):
++        process = subprocess.Popen(self.command('--suite', 'grid', '--bits', '64', '--mc', '1', '2', '3'),
++                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
++                                   env=dict(self.env, MOCK_SLEEP_MC='2'))
++        log = self.out / '.runs/grid-64bit-mc2/run.log'
++        try:
++            deadline = time.monotonic() + 8
++            while time.monotonic() < deadline:
++                if log.exists() and 'MOCK_SLEEP' in log.read_text():
++                    break
++                if process.poll() is not None:
++                    self.fail('runner exited before interruption point')
++                time.sleep(.02)
++            else:
++                self.fail('mock did not enter interruptible run')
++            process.send_signal(signal.SIGINT)
++            stdout, stderr = process.communicate(timeout=8)
++            self.assertEqual(process.returncode, 130, stdout + stderr)
++            self.assertEqual([r['status'] for r in read_csv(self.out / 'statuses.csv')], ['PASS', 'INTERRUPTED'])
++            self.assertEqual(len(read_csv(self.out / 'grid/serial_64bit.csv')), 3)
++            self.assertIn('MOCK_SLEEP', log.read_text())
++            self.assert_grandchild_stopped(log)
++        finally:
++            if process.poll() is None:
++                process.kill();process.wait()
++
++    def test_same_output_directory_cannot_run_concurrently(self):
++        process = subprocess.Popen(self.command('--suite', 'smoke'), stdout=subprocess.PIPE,
++                                   stderr=subprocess.PIPE, text=True,
++                                   env=dict(self.env, MOCK_SLEEP_MC='1'))
++        log = self.out / '.runs/smoke-64bit-mc1/run.log'
++        try:
++            deadline = time.monotonic() + 8
++            while time.monotonic() < deadline:
++                if log.exists() and 'MOCK_SLEEP' in log.read_text():
++                    break
++                time.sleep(.02)
++            else:
++                self.fail('first runner did not acquire its output directory')
++            result = self.run_cli('--suite', 'smoke', '--resume', expected=2)
++            self.assertIn('already running', result.stderr)
++            self.assertEqual(self.call_count(), 1)
++            process.send_signal(signal.SIGINT)
++            process.communicate(timeout=8)
++            self.assertEqual(process.returncode, 130)
++            self.assert_grandchild_stopped(log)
++            self.run_cli('--suite', 'smoke', '--resume')
++            self.assertEqual(self.call_count(), 2)
++        finally:
++            if process.poll() is None:
++                process.kill();process.wait()
++
++    def test_long_and_grid_2048_outputs_are_separate(self):
++        self.run_cli('--suite', 'both', '--bits', '512', '2048', '--mc', '1', '--repeat', '1', '--seed', '00042')
++        self.assertEqual(self.call_count(), 3)
++        self.assertTrue((self.out / 'long512/serial_512bit_mc1.csv').exists())
++        self.assertTrue((self.out / 'grid/serial_512bit.csv').exists())
++        self.assertTrue((self.out / 'grid/2048bit/serial_2048bit_mc1.csv').exists())
++        self.assertEqual([r['seed'] for r in read_csv(self.out / 'long512/serial_512bit_mc1.csv')], ['42'])
++        self.assertEqual([r['wall_cv_pct'] for r in read_csv(self.out / 'summary.csv')], ['', '', ''])
++
++
++if __name__ == '__main__':
++    unittest.main(verbosity=2)
+--- a/src/cpp/app/CBatchEnc.cpp
++++ b/src/cpp/app/CBatchEnc.cpp
+@@ -134,11 +134,20 @@
+ 
+   SetSeed(seed.data(), seed.size());
+   auto Ljir = RandomBits_ZZ(len * 8);
+-  return ConvertUtils::toBinary(Ljir);
++  auto bytes = ConvertUtils::toBinary(Ljir);
++  // NTL encodes an integer using the minimum number of little-endian bytes.
++  // Zero high bytes still belong to this fixed-size bit challenge.
++  ConvertUtils::fixBinary(bytes, len);
++  return bytes;
+ }
+ 
+ Vec<ZZ_p> CBatchEnc::calculateLj(const binary_t &Ljir)
+ {
++  if (Ljir.size() < getLjLength())
++    throw invalid_argument("range-proof challenge is shorter than the configured bit count");
++  if (m.length() != msgCount || Rj.length() != rangeProofCount)
++    throw invalid_argument("encrypt messages before calculating the range-proof response");
++
+   ZZ_pPush push(GP_P);
+ 
+   Vec<ZZ_p> Lj;
+@@ -179,6 +188,11 @@
+ 
+ void CBatchEnc::wireUp(const binary_t &Ljir, const Vec<ZZ_p> &Lj)
+ {
++  if (Ljir.size() < getLjLength() || Lj.length() != rangeProofCount)
++    throw invalid_argument("range-proof challenge or response length does not match settings");
++  if (Cm.length() != msgCount || Cm_.length() != batchCount || CRj.length() != rangeProofCount)
++    throw invalid_argument("set ciphertexts before wiring the circuit");
++
+   ZZ_pPush push(GP_P);
+ 
+   auto encCir = make_shared<CEnc>(crypto);
+--- a/src/cpp/app/EndToEnd.cpp
++++ b/src/cpp/app/EndToEnd.cpp
+@@ -3,13 +3,13 @@
+ // for end to end implementation
+ 
+ 
+-void polyu::end_to_end(size_t byteLength, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ofstream &fs)
++void polyu::end_to_end(size_t byteLength, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ostream &fs, bool finishRow)
+ {
+   auto crypto = make_shared<PaillierEncryption>(byteLength);
+-  polyu::end_to_end(crypto, msgCount, rangeProofCount, slotSize, msgPerBatch, fs);
++  polyu::end_to_end(crypto, msgCount, rangeProofCount, slotSize, msgPerBatch, fs, finishRow);
+ }
+ 
+-void polyu::end_to_end(const shared_ptr<PaillierEncryption> &crypto, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ofstream &fs)
++void polyu::end_to_end(const shared_ptr<PaillierEncryption> &crypto, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ostream &fs, bool finishRow)
+ {
+   // extract system parameters from private keys
+   auto GP_Q = crypto->getGroupQ(); // public parameter: group element Q
+@@ -213,6 +213,10 @@
+   auto isValid = verifier->verify(proofs, y, x);
+   verifyTime += Timer::end("V.verify");
+ 
++  // Failed verification must never be recorded as a successful benchmark row.
++  if (!isValid)
++    throw invalid_argument("zkp is not valid");
++
+   // todo: 1. Verifier: attach Wi
+   // 2. Verifier: calculate the result 
+   // 3. Prover: decypt
+@@ -243,24 +247,33 @@
+ // 3. P: decrypt
+ 
+ ZZ sum_m = crypto->decrypt(result);
++if (sum_m != sum % pk)
++  throw invalid_argument("homomorphic aggregate decryption does not match plaintext sum");
+ //todo: to be deleted
+ // cout << "decrypt final result is " << sum_m << endl;
+ // cout << "should be " << sum << endl;
+ 
+ // 4. P: decopmpose and calculate the average
+ string m_decmp = ConvertUtils::toBinaryString(sum_m);
++// The conversion is big-endian and may omit leading zero bytes (including all
++// bytes for zero). The author's fixed-width loops otherwise read out of bounds.
++const size_t fixed_bits = byteLength * 8;
++if (m_decmp.size() > fixed_bits)
++  throw invalid_argument("decrypted aggregate exceeds the configured width");
++m_decmp.insert(0, fixed_bits - m_decmp.size(), '0');
+ size_t slot_num = byteLength / slotSize;
+ vector<double> ave_result1, ave_result2;
+ 
+ Timer::start("P.decompose");
+ for (size_t i = 0; i < slot_num; i++) {
+-    size_t agg_result = 0;
++    ZZ agg_result(0);
++    const size_t slot_start = fixed_bits - (i + 1) * slotSize * 8;
+ 
+     for (size_t j = 0; j < slotSize * 8; j++) {
+-        agg_result += static_cast<size_t>(m_decmp[i * slotSize * 8 + j]);
++        agg_result = (agg_result << 1) + (m_decmp[slot_start + j] - '0');
+     }
+     // cout << i << "-th slot aggregation result is" << agg_result << endl;
+-    ave_result1.push_back(agg_result/msgCount);
++    ave_result1.push_back(conv<double>(agg_result)/static_cast<double>(msgCount));
+ }
+ decomposeTime1 += Timer::endNan("P.decompose");
+ 
+@@ -269,11 +282,11 @@
+     double agg_result = 0;
+ 
+     for (size_t j = 0; j < slotSize * 8; j++) {
+-      if (m_decmp[i * slotSize * 8 + j] == '1')
++      if (m_decmp[fixed_bits - i * slotSize * 8 - j - 1] == '1')
+         agg_result += pow(2, j);
+         // agg_result += static_cast<size_t>(m_decmp[i * slotSize * 8 + j]);
+     }
+-    ave_result2.push_back(agg_result/msgCount);
++    ave_result2.push_back(agg_result/static_cast<double>(msgCount));
+ }
+ decomposeTime2 += Timer::endNan("P.decompose-complex");
+ 
+@@ -379,10 +392,12 @@
+   fs << amoCmtTime << ",";
+   fs << amoTotalProofTime << ",";
+   fs << amotVrfTime << ",";
+-  fs << amoProofCost << endl;
+-
+-  if (!isValid)
+-    throw invalid_argument("zkp is not valid");
++  fs << amoProofCost;
++  if (finishRow)
++    fs << endl;
++  else
++    fs.flush(); // Keep the original CSV write/flush inside the wall boundary.
++
+ }
+ 
+ // ZZ_p polyu:: help_random (ZZ max) {
+--- a/src/cpp/app/EndToEnd.hpp
++++ b/src/cpp/app/EndToEnd.hpp
+@@ -21,8 +21,8 @@
+ namespace polyu
+ {
+ 
+-void end_to_end(size_t byteLength, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ofstream &fs);
+-void end_to_end(const shared_ptr<PaillierEncryption> &crypto, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ofstream &fs);
++void end_to_end(size_t byteLength, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ostream &fs, bool finishRow = true);
++void end_to_end(const shared_ptr<PaillierEncryption> &crypto, size_t msgCount, size_t rangeProofCount, size_t slotSize, size_t msgPerBatch, ostream &fs, bool finishRow = true);
+ 
+ // ZZ_p help_random(ZZ max);
+ } // namespace polyu
+--- a/src/cpp/app/PolynomialCommitment.cpp
++++ b/src/cpp/app/PolynomialCommitment.cpp
+@@ -54,6 +54,9 @@
+  // allen's version
+ ZZ_p PolynomialCommitment::commit(const Vec<ZZ_p> &mi, const ZZ_p &r)
+ {
++  if (mi.length() > gi.length())
++    throw invalid_argument("not enough generators for the committed message");
++
+   //unsigned short bitlength = r.ModulusSize();
+   
+   //cout << "is this correct bitlength?:" << p.size() << endl; 
+@@ -63,7 +66,9 @@
+   zmi.SetLength(mi.length());
+   conv(zmi,mi);
+   
+-  unsigned long bitlength = NumBits(zmi[0]);
++  // An empty message is the empty product, so its commitment is g^r.
++  // Initializing at zero also preserves the author's bucket algorithm.
++  unsigned long bitlength = 0;
+   for (int i=0;i<mi.length();i++) {
+  //   cout << "zmi[" << i << "]=" << zmi[i] << endl;
+  //   cout << "mi[" << i << "]=" << mi[i] << endl; 
+@@ -144,6 +149,11 @@
+   auto m = ms.NumRows();
+   auto n = ms.NumCols();
+ 
++  if (rs.length() != m)
++    throw invalid_argument("randomness count does not match commitment matrix rows");
++  if (n > gi.length())
++    throw invalid_argument("not enough generators for the commitment matrix");
++
+   ret.SetLength(m);
+   for (size_t i = 0; i < m; i++)
+   {
+--- a/src/cpp/app/math/Matrix.cpp
++++ b/src/cpp/app/math/Matrix.cpp
+@@ -98,6 +98,8 @@
+ {
+   if (m != 1)
+     throw invalid_argument("only allow group from vector to matrix");
++  if (newN == 0)
++    throw invalid_argument("grouped matrix column count must be positive");
+ 
+   if (newM == 0)
+   {
+@@ -169,6 +171,8 @@
+ 
+ bool Matrix::eq(const shared_ptr<Matrix> &b)
+ {
++  if (b == nullptr)
++    return false;
+   if (this->m != b->m || this->n != b->n || this->values.size() != b->values.size())
+     return false;
+ 
+@@ -177,9 +181,10 @@
+     if (this->values[i].size() != b->values[i].size())
+       return false;
+ 
+-    for (size_t j = 0; j < this->values[i].size(); j++)
+-    {
+-      if (this->cell(i, j) != b->cell(i, j))
++    // Sparse column indices are not the consecutive range [0, size).
++    for (const auto &entry : this->values[i])
++    {
++      if (entry.second != b->cell(i, entry.first))
+         return false;
+     }
+   }
+--- /dev/null
++++ b/tests/serial_core_check.cpp
+@@ -0,0 +1,238 @@
++// Small semantic and boundary checks; never used by the timing benchmark.
++#include "CBatchEnc.hpp"
++#include "PolynomialCommitment.hpp"
++
++#include <functional>
++#include <memory>
++
++static void require(bool condition, const char *message)
++{
++  if (!condition)
++    throw std::runtime_error(message);
++}
++
++static void invalid(const std::function<void()> &operation)
++{
++  try
++  {
++    operation();
++  }
++  catch (const std::invalid_argument &)
++  {
++    return;
++  }
++  throw std::runtime_error("invalid input was not rejected");
++}
++
++static json values(const Vec<ZZ_p> &v)
++{
++  json ret = json::array();
++  for (long i = 0; i < v.length(); ++i)
++    ret.push_back(ConvertUtils::toString(v[i]));
++  return ret;
++}
++
++// All protocol messages are included so the same test can be compiled against
++// the uploaded author sources and the compatibility sources for comparison.
++static json transcript()
++{
++  std::weak_ptr<PaillierEncryption> weakCrypto;
++  std::weak_ptr<CircuitZKPProver> weakProver;
++  std::weak_ptr<CircuitZKPVerifier> weakVerifier;
++  std::weak_ptr<PolynomialCommitment> weakCommitment;
++  json out;
++  {
++    const auto seed = ConvertUtils::toBinary("serial-compatibility-transcript-v1");
++    auto crypto = std::make_shared<PaillierEncryption>(16, seed);
++    weakCrypto = crypto;
++    ZZ_p::init(crypto->getGroupP());
++    auto circuit = std::make_shared<CBatchEnc>(crypto, 3, 8, 4, 15);
++    auto gi = crypto->genGenerators(circuit->estimateGeneratorsRequired());
++    Vec<ZZ> messages;
++    messages.append(conv<ZZ>(0));
++    messages.append(conv<ZZ>(1));
++    messages.append(conv<ZZ>(1) << 32);
++    circuit->encrypt(messages);
++    auto challenge = circuit->calculateLjir();
++    auto response = circuit->calculateLj(challenge);
++    circuit->wireUp(challenge, response);
++    circuit->run(challenge, response);
++
++    out["N"] = ConvertUtils::toString(crypto->n);
++    out["Q"] = ConvertUtils::toString(crypto->Q);
++    out["G"] = ConvertUtils::toString(crypto->G);
++    out["gates"] = circuit->gateCount;
++    out["constraints"] = circuit->linearCount;
++    out["ciphertexts"] = values(circuit->Cm);
++    out["auxiliary_ciphertexts"] = values(circuit->Cm_);
++    out["range_ciphertexts"] = values(circuit->CRj);
++    out["challenge"] = ConvertUtils::toString(ConvertUtils::toZZ(challenge));
++    out["response"] = values(response);
++    out["generators"] = values(gi);
++    out["Kq"] = values(circuit->Kq);
++
++    Vec<ZZ_p> cipher = circuit->Cm;
++    Vec<ZZ_p> auxiliary = circuit->Cm_;
++    Vec<ZZ_p> range = circuit->CRj;
++    auto prover = circuit->generateProver(gi);
++    weakProver = prover;
++    weakVerifier = prover->zkp;
++    weakCommitment = prover->zkp->commitScheme;
++    circuit.reset();
++
++    Vec<ZZ_p> commits, pc, proofs;
++    prover->commit(commits);
++    prover->zkp->setCommits(commits);
++    auto y = prover->zkp->calculateY();
++    prover->polyCommit(y, pc);
++    prover->zkp->setPolyCommits(pc);
++    auto x = prover->zkp->calculateX();
++    prover->prove(y, x, proofs);
++    out["commits"] = values(commits);
++    out["pc"] = values(pc);
++    out["proofs"] = values(proofs);
++    out["y"] = ConvertUtils::toString(y);
++    out["x"] = ConvertUtils::toString(x);
++    prover.reset();
++    require(weakProver.expired() && weakVerifier.expired() && weakCommitment.expired(),
++            "proof objects retain a shared ownership cycle");
++
++    auto pk = crypto->getPublicKey();
++    auto groupQ = crypto->getGroupQ();
++    auto groupP = crypto->getGroupP();
++    auto groupG = crypto->getGroupG();
++    auto encryptor = std::make_shared<PaillierEncryption>(pk, groupQ, groupP, groupG);
++    auto verifierCircuit = std::make_shared<CBatchEnc>(encryptor, 3, 8, 4, 15);
++    verifierCircuit->setCipher(cipher, auxiliary, range);
++    auto verifierChallenge = verifierCircuit->calculateLjir();
++    require(ConvertUtils::eq(challenge, verifierChallenge), "cipher challenge mismatch");
++    verifierCircuit->wireUp(verifierChallenge, response);
++    auto verifier = verifierCircuit->generateVerifier(gi);
++    verifierCircuit.reset();
++    verifier->setCommits(commits);
++    auto verifierY = verifier->calculateY();
++    verifier->setPolyCommits(pc);
++    auto verifierX = verifier->calculateX();
++    require(y == verifierY && x == verifierX, "Fiat-Shamir challenge mismatch");
++    require(verifier->verify(proofs, verifierY, verifierX), "valid proof was rejected");
++
++    {
++      ZZ_pPush push(groupP);
++      proofs[0] += 1;
++    }
++    require(!verifier->verify(proofs, verifierY, verifierX), "modified proof was accepted");
++    require(crypto->decrypt(cipher[1]) == messages[1], "Paillier decrypt mismatch");
++  }
++  require(weakCrypto.expired(), "crypto object was retained after its scope");
++  return out;
++}
++
++static void boundaries()
++{
++  ZZ_p::init(conv<ZZ>(101));
++  auto first = std::make_shared<Matrix>(1, 12);
++  auto second = std::make_shared<Matrix>(1, 12);
++  first->cell(0, 11, 1);
++  second->cell(0, 11, 2);
++  require(!first->eq(second), "sparse matrix equality ignores high columns");
++  require(first->eq(first->clone()), "matrix clone mismatch");
++  invalid([&] { first->group(0); });
++
++  auto crypto = std::make_shared<PaillierEncryption>(16, ConvertUtils::toBinary("serial-boundary-test-v1"));
++  ZZ_p::init(crypto->getGroupP());
++  auto circuit = std::make_shared<CBatchEnc>(crypto, 1, 8, 4, 15);
++  Vec<ZZ> message;
++  message.append(conv<ZZ>(0));
++  circuit->encrypt(message);
++  invalid([&] { circuit->calculateLj(binary_t()); });
++  Vec<ZZ_p> response;
++  invalid([&] { circuit->wireUp(binary_t(), response); });
++
++  // Reconstruct the exact deterministic integer to verify explicit zero padding.
++  // Vary only the ciphertext representation to find a challenge with a zero
++  // high byte; this regression hit the author's out-of-bounds access.
++  bool sawZeroHighByte = false;
++  for (long trial = 0; trial < 4096 && !sawZeroHighByte; ++trial)
++  {
++    circuit->Cm[0] = conv<ZZ_p>(trial);
++    binary_t seed;
++    for (auto c : circuit->Cm)
++      ConvertUtils::append(seed, ConvertUtils::toBinary(c));
++    for (auto c : circuit->Cm_)
++      ConvertUtils::append(seed, ConvertUtils::toBinary(c));
++    for (auto c : circuit->CRj)
++      ConvertUtils::append(seed, ConvertUtils::toBinary(c));
++    SetSeed(seed.data(), seed.size());
++    auto expected = RandomBits_ZZ(circuit->getLjLength() * 8);
++    auto bytes = circuit->calculateLjir();
++    require(bytes.size() == circuit->getLjLength(), "challenge is not fixed size");
++    require(ConvertUtils::toZZ(bytes) == expected, "challenge padding changes the integer");
++    sawZeroHighByte = ConvertUtils::toBinary(expected).size() < bytes.size();
++  }
++  require(sawZeroHighByte, "zero-high-byte challenge regression was not exercised");
++
++  auto gi = crypto->genGenerators(8);
++  PolynomialCommitment scheme(crypto, gi);
++  // Compare the original serial bucket implementation with the defining group
++  // product, including 8-bit digit boundaries and empty/zero messages.
++  for (long len = 0; len <= 8; ++len)
++  {
++    ZZ_p::init(crypto->getGroupP());
++    Vec<ZZ_p> ms;
++    ms.SetLength(len);
++    for (long i = 0; i < len; ++i)
++      ms[i] = conv<ZZ_p>((conv<ZZ>(1) << (i * 9)) + (i * 255));
++    auto randomness = conv<ZZ_p>(257);
++    auto originalModulus = ZZ_p::modulus();
++    auto bucketResult = scheme.commit(ms, randomness);
++    require(ZZ_p::modulus() == originalModulus, "commit failed to restore the NTL modulus");
++    {
++      ZZ_pPush push(crypto->getGroupQ());
++      auto reference = power(crypto->G, conv<ZZ>(randomness));
++      for (long i = 0; i < len; ++i)
++        reference *= power(gi[i], conv<ZZ>(ms[i]));
++      require(bucketResult == reference, "bucket commitment differs from group product");
++    }
++  }
++  Vec<ZZ_p> tooLong;
++  tooLong.SetLength(9);
++  invalid([&] { scheme.commit(tooLong, ZZ_p()); });
++  Mat<ZZ_p> matrix;
++  matrix.SetDims(2, 2);
++  Vec<ZZ_p> wrongRandomness, ignored;
++  wrongRandomness.SetLength(1);
++  invalid([&] { scheme.commit(matrix, wrongRandomness, ignored); });
++}
++
++int main(int argc, char **argv)
++{
++  try
++  {
++    // Suppress instrumentation text, whose values are timing-dependent.
++    std::ostringstream trace;
++    auto *prior = std::cout.rdbuf(trace.rdbuf());
++    json snapshot;
++    try
++    {
++      snapshot = transcript();
++      if (!(argc == 2 && std::string(argv[1]) == "--snapshot"))
++        boundaries();
++    }
++    catch (...)
++    {
++      std::cout.rdbuf(prior);
++      throw;
++    }
++    std::cout.rdbuf(prior);
++    if (argc == 2 && std::string(argv[1]) == "--snapshot")
++      std::cout << snapshot.dump() << '\n';
++    else
++      std::cout << "serial core semantic and boundary checks: PASS\n";
++    return 0;
++  }
++  catch (const std::exception &error)
++  {
++    std::cerr << "serial core check: FAIL: " << error.what() << '\n';
++    return 1;
++  }
++}
+--- /dev/null
++++ b/tests/test_cli.py
+@@ -0,0 +1,72 @@
++#!/usr/bin/env python3
++"""End-to-end zero-message regression and input/output contract checks."""
++import argparse
++import csv
++from pathlib import Path
++import subprocess
++import tempfile
++import unittest
++
++parser = argparse.ArgumentParser()
++parser.add_argument('--binary', default='build/serial_benchmark')
++args, remaining = parser.parse_known_args()
++BINARY = str(Path(args.binary).resolve())
++
++
++class CliCheck(unittest.TestCase):
++    def call(self, *args):
++        return subprocess.run([BINARY, *map(str, args)], capture_output=True,
++                              text=True, timeout=60)
++
++    def test_parameters_reject_parallel_and_invalid_sizes(self):
++        for options in [('--threads', 2), ('--backend', 'cuda'), ('--bits', 65),
++                        ('--mc', 0), ('--repeat', 0), ('--seed', '-1'),
++                        ('--bits', 64, '--slot', 1, '--mc', 256),
++                        ('--bits', '512oops'), ('--unknown', 1)]:
++            with self.subTest(options=options):
++                result = self.call(*options)
++                self.assertNotEqual(result.returncode, 0)
++                self.assertNotIn('VERIFICATION=PASS', result.stdout)
++
++    def test_zero_aggregate_repeat_and_no_overwrite(self):
++        with tempfile.TemporaryDirectory(prefix='serial-cli-') as temp:
++            output = Path(temp) / 'nested' / 'one.csv'
++            result = self.call('--bits', 64, '--mc', 1, '--range', 128,
++                               '--slot', 4, '--batch', 15, '--repeat', 2,
++                               '--seed', 20261012, '--csv', output)
++            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++            self.assertIn('OpenMP=OFF CUDA=OFF NTL_THREADS=1', result.stdout)
++            self.assertEqual(result.stdout.count('VERIFICATION=PASS'), 2)
++            with output.open(newline='') as stream:
++                reader = csv.DictReader(stream)
++                rows = list(reader)
++                self.assertEqual(len(reader.fieldnames), 42)
++                self.assertEqual(reader.fieldnames[0], 'message count')
++                self.assertEqual(reader.fieldnames[34], 'amo. proof cost (bits)')
++            self.assertEqual(len(rows), 2)
++            for index, row in enumerate(rows, 1):
++                self.assertEqual(row['verification'], 'PASS')
++                self.assertEqual(int(row['run_index']), index)
++                self.assertEqual(row['execution_backend'], 'serial')
++                self.assertEqual(int(row['ntl_threads']), 1)
++                self.assertEqual(int(row['byte length(bit)']), 64)
++                self.assertEqual(int(row['range proof count']), 128)
++                self.assertGreater(float(row['wall_seconds']), 0)
++                stages = sum(float(row[name]) for name in [
++                    'encryption time', 'circuit create time', 'value assign time',
++                    'commit time', 'prove time', 'verify time', 'attach time-V(s)'])
++                self.assertAlmostEqual(stages, float(row['phase1 time-P(s)']) +
++                                       float(row['phase2 time-V(s)']), places=10)
++            prior = output.read_bytes()
++            repeat = self.call('--bits', 64, '--csv', output)
++            self.assertNotEqual(repeat.returncode, 0)
++            self.assertEqual(output.read_bytes(), prior)
++
++    def test_no_csv_runs_and_reports_verification(self):
++        result = self.call('--bits', 64, '--mc', 1, '--range', 8, '--seed', 7)
++        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
++        self.assertIn('VERIFICATION=PASS run=1 WALL_SECONDS=', result.stdout)
++
++
++if __name__ == '__main__':
++    unittest.main(argv=['test_cli.py', *remaining])
+--- /dev/null
++++ b/tools/serial_benchmark.cpp
+@@ -0,0 +1,152 @@
++#include "app/EndToEnd.hpp"
++#include <NTL/BasicThreadPool.h>
++#include <NTL/version.h>
++#include <chrono>
++#include <algorithm>
++#include <filesystem>
++#include <iomanip>
++#include <limits>
++#include <cstdlib>
++#include <cerrno>
++#include <cstring>
++#include <fcntl.h>
++#include <unistd.h>
++
++#ifdef _OPENMP
++#error "This is a serial baseline: compiling with OpenMP is prohibited."
++#endif
++
++namespace {
++size_t number(const std::string &s) {
++  if (s.empty() || s.find_first_not_of("0123456789") != std::string::npos)
++    throw std::invalid_argument("expected an unsigned integer: " + s);
++  const auto v = std::stoull(s);
++  if (v > std::numeric_limits<size_t>::max()) throw std::out_of_range(s);
++  return static_cast<size_t>(v);
++}
++void usage() {
++  std::cout << "ZKP-Paillier-SP24-Serial-Ubuntu26\n"
++    "Original serial algorithm; OpenMP=OFF CUDA=OFF NTL threads=1.\n"
++    "  --bits N          modulus size in BITS, multiple of 8 (default 512)\n"
++    "  --mc N            messages (alias --messages; default 1)\n"
++    "  --range N         range proofs (alias --range-proofs; default 128)\n"
++    "  --slot N          slot bytes (alias --slot-bytes; default 4)\n"
++    "  --batch N         messages per batch (default 15)\n"
++    "  --repeat N        protocol repetitions using one generated key (default 1)\n"
++    "  --csv PATH        new CSV file (alias --output; never overwrites)\n"
++    "  --seed DECIMAL    optional deterministic experimental seed\n"
++    "  --threads 1       compatibility option; any other value is rejected\n"
++    "  --backend serial  compatibility option; also accepts cpu\n"
++    "  --help\n"
++    "WALL_SECONDS wraps end_to_end, excludes key generation.\n"
++    "64-bit configurations and deterministic seeds are for research tests only.\n";
++}
++const char *header =
++  "message count,message/batch,batch count,byte length(bit),byte length(byte),"
++  "message size(byte),slot size(byte),slot/message,range proof count,cipher size,"
++  "proof size,proof size/message,single encrypt circuit's N,single encrypt circuit's Q,"
++  "batch encrypt circuit's N,batch encrypt circuit's Q,batch encrypt circuit's matrix m,"
++  "batch encrypt circuit's matrix n,encryption time,circuit create time,value assign time,"
++  "commit time,prove time,verify time,attach time-V(s),phase1 time-P(s),phase2 time-V(s),"
++  "phase3 time-P(ms) - simple,phase3 time-P(ns) - simple,phase3 time-P(ms) - complex,"
++  "phase3 time-P(ns) - complex,amo. cmt time (ms),amo. totalPrf time (ms),"
++  "amo. vrf. time (ms),amo. proof cost (bits),wall_seconds,verification,run_index,"
++  "keygen_seconds,seed,execution_backend,ntl_threads";
++}
++
++int main(int argc, char **argv) {
++  try {
++    size_t bits=512, mc=1, ranges=128, slot=4, batch=15, repeat=1;
++    std::string csv, seed;
++    for (int i=1; i<argc; ++i) {
++      const std::string flag=argv[i];
++      if (flag=="--help" || flag=="-h") { usage(); return 0; }
++      if (i+1==argc) throw std::invalid_argument("missing value for " + flag);
++      const std::string value=argv[++i];
++      if (flag=="--csv" || flag=="--output") csv=value;
++      else if (flag=="--seed") {
++        if (value.empty() || value.find_first_not_of("0123456789")!=std::string::npos || value.size()>4096)
++          throw std::invalid_argument("seed must be a nonnegative decimal integer (up to 4096 digits)");
++        seed=value;
++      } else if (flag=="--backend") {
++        if (value!="serial" && value!="cpu") throw std::invalid_argument("only the serial CPU backend is available");
++      } else {
++        const size_t n=number(value);
++        if (flag=="--bits") bits=n;
++        else if (flag=="--mc" || flag=="--messages") mc=n;
++        else if (flag=="--range" || flag=="--range-proofs") ranges=n;
++        else if (flag=="--slot" || flag=="--slot-bytes") slot=n;
++        else if (flag=="--batch") batch=n;
++        else if (flag=="--repeat") repeat=n;
++        else if (flag=="--threads") {
++          if (n!=1) throw std::invalid_argument("serial baseline requires --threads 1");
++        } else throw std::invalid_argument("unknown option: " + flag);
++      }
++    }
++    if (bits<64 || bits>32768 || bits%8 || !mc || !ranges || !slot ||
++        slot>bits/8 || !batch || !repeat || mc>1000000 || ranges>1000000 ||
++        batch>1000000 || repeat>1000000)
++      throw std::invalid_argument("invalid benchmark parameters; see --help");
++    if ((NTL::power(NTL::ZZ(2), static_cast<long>(slot*8))-1)/NTL::conv<NTL::ZZ>(mc) == 0)
++      throw std::invalid_argument("message count exceeds the weight capacity of slot bytes");
++
++    // NTL can use its own thread pool even without application-level OpenMP.
++    NTL::SetNumThreads(1);
++    if (NTL::AvailableThreads()!=1) throw std::runtime_error("NTL is not running with one available thread");
++    std::cout << std::setprecision(12)
++      << "project=ZKP-Paillier-SP24-Serial-Ubuntu26 backend=serial CPU_THREADS=1"
++      << " OpenMP=OFF CUDA=OFF NTL_THREADS=" << NTL::AvailableThreads()
++      << " NTL_VERSION=" << NTL_VERSION << " bits=" << bits << " messages=" << mc
++      << " repeat=" << repeat << " seed=" << (seed.empty()?"random":seed) << std::endl;
++
++    std::ofstream fs;
++    if (!csv.empty()) {
++      const std::filesystem::path path(csv);
++      if (path.has_parent_path()) std::filesystem::create_directories(path.parent_path());
++      const int fd=::open(csv.c_str(),O_WRONLY|O_CREAT|O_EXCL,0644);
++      if (fd<0) throw std::runtime_error("cannot create new CSV " + csv + ": " + std::strerror(errno));
++      ::close(fd);
++      fs.open(csv, std::ios::app);
++      if (!fs) throw std::runtime_error("cannot open CSV: " + csv);
++      fs << std::setprecision(17) << header << '\n'; fs.flush();
++      if (!fs) throw std::runtime_error("failed to write CSV header");
++    }
++    if (!seed.empty()) NTL::SetSeed(NTL::conv<NTL::ZZ>(seed.c_str()));
++    const auto key_start=std::chrono::steady_clock::now();
++    auto crypto=std::make_shared<PaillierEncryption>(bits/8);
++    const double key_seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-key_start).count();
++    std::cout << "KEYGEN_SECONDS=" << key_seconds << " KEYGEN_INCLUDED_IN_WALL=0" << std::endl;
++
++    for (size_t run=1; run<=repeat; ++run) {
++      std::ostringstream row;
++      row << std::setprecision(17);
++      const auto start=std::chrono::steady_clock::now();
++      // Verification is checked before EndToEnd writes any measurements.
++      // Writing/flushing the original 35-column prefix stays inside its wall
++      // boundary, as in the older CPU/GPU benchmark. Only the new metadata
++      // tail and PASS line are appended outside the measurement.
++      std::ostream &measurements=fs.is_open()?static_cast<std::ostream &>(fs):static_cast<std::ostream &>(row);
++      polyu::end_to_end(crypto,mc,ranges,slot,batch,measurements,false);
++      const double seconds=std::chrono::duration<double>(std::chrono::steady_clock::now()-start).count();
++      if (!fs.is_open()) {
++        const std::string text=row.str();
++        if (std::count(text.begin(),text.end(),',')!=34)
++          throw std::runtime_error("unexpected legacy benchmark row schema");
++      }
++      if (fs.is_open()) {
++        fs << ',' << std::setprecision(17) << seconds << ",PASS," << run
++           << ',' << key_seconds << ',' << seed << ",serial,1\n";
++        fs.flush();
++        if (!fs) throw std::runtime_error("failed to write benchmark CSV");
++      }
++      std::cout << "VERIFICATION=PASS run=" << run << " WALL_SECONDS=" << seconds << std::endl;
++    }
++    return 0;
++  } catch (const std::bad_alloc &) {
++    std::cerr << "VERIFICATION=FAIL ERROR: insufficient memory for this configuration" << std::endl;
++    return 2;
++  } catch (const std::exception &e) {
++    std::cerr << "VERIFICATION=FAIL ERROR: " << e.what() << std::endl;
++    return 1;
++  }
++}

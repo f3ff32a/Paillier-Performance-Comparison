@@ -1,0 +1,29 @@
+GPU cases were not requested; CPU contract tests do not validate CUDA execution.
+ADAPTER_TESTS=PASS cases=27
+  PASS valid_check_only
+  PASS cpu_correct
+  PASS cpu_refuse_csv_overwrite
+  PASS cpu_refuse_json_overwrite
+  PASS wrong_schema
+  PASS n2_mismatch
+  PASS even_n
+  PASS bits_mismatch
+  PASS float_bits
+  PASS zero_r
+  PASS r_equal_n
+  PASS noncoprime_r
+  PASS m_equal_n
+  PASS negative_m
+  PASS numeric_m
+  PASS leading_zero_m
+  PASS empty_messages
+  PASS unequal_lengths
+  PASS wrong_expected
+  PASS malformed_id
+  PASS missing_expected
+  PASS trailing_json
+  PASS duplicate_root_key
+  PASS zero_threads
+  PASS zero_repeat
+  PASS unknown_option
+  PASS duplicate_option

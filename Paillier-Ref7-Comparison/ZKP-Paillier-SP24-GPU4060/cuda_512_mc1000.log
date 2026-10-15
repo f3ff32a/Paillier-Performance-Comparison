@@ -1,0 +1,269 @@
+project=ZKP-Paillier-SP24-GPU2 backend=cuda bits=512 messages=1000 verify_gpu=0
+CUDA: NVIDIA GeForce RTX 4060 Laptop GPU (sm_89)
+====================
+[CBatchEnc::encrypt] OpenMP ENABLED, _OPENMP = 201511
+[CBatchEnc::encrypt] max threads = 24
+[Encrypt] requested=cuda cpu=0 gpu=1000 fallback=0 wall_ms=31.2203 gpu_batch_ms=30.8638 kernel_ms=27.5024 check_ms=0
+P.encrypt time: 0.06
+P.Ljir time: 0.001
+P.Lj time: 0.016
+P.wireUp time: 1.27
+P.run time: 1.037
+P.circuit time: 2.795
+message count: 1000
+byte length: 512-bit
+single encrypt circuit's N: 770
+single encrypt circuit's Q: 1539
+batch encrypt circuit's N: 936150
+batch encrypt circuit's Q: 1872300
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2986.45 gpu_batch_ms=2986.28 kernel_ms=2474.7 check_ms=0
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2978.6 gpu_batch_ms=2978.41 kernel_ms=2460.65 check_ms=0
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=3028.24 gpu_batch_ms=3028.06 kernel_ms=2515.39 check_ms=0
+P.commit time: 15.606
+P.y time: 0.001
+prover.setY time: 0.662
+prover.rx time: 0.574
+sx.wai time: 1.633
+sx.wbi time: 0.608
+sx.wci time: 1.894
+prover.sx time: 4.137
+prover.rx_ time: 1.431
+prover.ky time: 0.012
+prover.tx.mul time: 8.209
+prover.txT time: 0
+[Commit] requested=cuda cpu=0 gpu=83 fallback=0 wall_ms=101.189 gpu_batch_ms=101.032 kernel_ms=95.8026 check_ms=0
+prover.txCommit time: 0.119
+prover.polyCommit time: 15.147
+P.polyCommit time: 15.325
+P.x time: 0
+P.prove time: 1.256
+V.Ljir time: 0.001
+V.wireUp time: 1.262
+V.circuit time: 1.634
+V.y time: 0.01
+V.x time: 0.001
+verifier.polyVerify time: 0.057
+verifier.calcV1 time: 0
+verifier.setY time: 0.665
+sx.wai time: 1.148
+sx.wbi time: 0.407
+sx.wci time: 1.833
+verifier.sx time: 4.447
+verifier.r_ time: 0
+verifier.rr_ time: 0.011
+verifier.calcV2 time: 5.124
+verifier.commitR1 time: 0.096
+verifier.commitR2 time: 0.695
+verifier.verify time: 5.976
+V.verify time: 6.042
+V.attach_value time: 0.006
+P.decompose time: 1303
+P.decompose-complex time: 10556
+
+==========
+message count: 1000
+message/batch: 15
+batch count: 67
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 561580 bytes
+proof size/message: 561.58 bytes
+
+single encrypt circuit's N: 770
+single encrypt circuit's Q: 1539
+batch encrypt circuit's N: 936150
+batch encrypt circuit's Q: 1872300
+batch encrypt circuit's matrix m: 968
+batch encrypt circuit's matrix n: 968
+
+encryption time: 0.06
+circuit create time: 3.4895
+value assign time: 1.037
+commit time: 15.606
+prove time: 16.582
+verify time: 6.053
+==========
+VERIFICATION=PASS run=1 WALL_SECONDS=48.3932
+====================
+[CBatchEnc::encrypt] OpenMP ENABLED, _OPENMP = 201511
+[CBatchEnc::encrypt] max threads = 24
+[Encrypt] requested=cuda cpu=0 gpu=1000 fallback=0 wall_ms=29.4215 gpu_batch_ms=29.261 kernel_ms=26.0938 check_ms=0
+P.encrypt time: 0.059
+P.Ljir time: 0.001
+P.Lj time: 0.017
+P.wireUp time: 1.264
+P.run time: 1.064
+P.circuit time: 2.653
+message count: 1000
+byte length: 512-bit
+single encrypt circuit's N: 770
+single encrypt circuit's Q: 1539
+batch encrypt circuit's N: 936150
+batch encrypt circuit's Q: 1872300
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2904.49 gpu_batch_ms=2904.32 kernel_ms=2401.97 check_ms=0
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2921.4 gpu_batch_ms=2921.15 kernel_ms=2417.77 check_ms=0
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2891.72 gpu_batch_ms=2891.47 kernel_ms=2394.31 check_ms=0
+P.commit time: 15.375
+P.y time: 0.001
+prover.setY time: 0.664
+prover.rx time: 0.564
+sx.wai time: 1.624
+sx.wbi time: 0.604
+sx.wci time: 1.832
+prover.sx time: 4.061
+prover.rx_ time: 1.393
+prover.ky time: 0.011
+prover.tx.mul time: 8.128
+prover.txT time: 0
+[Commit] requested=cuda cpu=0 gpu=83 fallback=0 wall_ms=101.352 gpu_batch_ms=101.11 kernel_ms=95.8024 check_ms=0
+prover.txCommit time: 0.119
+prover.polyCommit time: 14.944
+P.polyCommit time: 15.098
+P.x time: 0
+P.prove time: 1.232
+V.Ljir time: 0.001
+V.wireUp time: 1.253
+V.circuit time: 1.635
+V.y time: 0.01
+V.x time: 0.001
+verifier.polyVerify time: 0.055
+verifier.calcV1 time: 0
+verifier.setY time: 0.659
+sx.wai time: 1.144
+sx.wbi time: 0.409
+sx.wci time: 1.812
+verifier.sx time: 4.398
+verifier.r_ time: 0
+verifier.rr_ time: 0.011
+verifier.calcV2 time: 5.07
+verifier.commitR1 time: 0.093
+verifier.commitR2 time: 0.692
+verifier.verify time: 5.914
+V.verify time: 5.982
+V.attach_value time: 0.006
+P.decompose time: 1461
+P.decompose-complex time: 4297
+
+==========
+message count: 1000
+message/batch: 15
+batch count: 67
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 561580 bytes
+proof size/message: 561.58 bytes
+
+single encrypt circuit's N: 770
+single encrypt circuit's Q: 1539
+batch encrypt circuit's N: 936150
+batch encrypt circuit's Q: 1872300
+batch encrypt circuit's matrix m: 968
+batch encrypt circuit's matrix n: 968
+
+encryption time: 0.059
+circuit create time: 3.412
+value assign time: 1.064
+commit time: 15.375
+prove time: 16.331
+verify time: 5.993
+==========
+VERIFICATION=PASS run=2 WALL_SECONDS=47.6345
+====================
+[CBatchEnc::encrypt] OpenMP ENABLED, _OPENMP = 201511
+[CBatchEnc::encrypt] max threads = 24
+[Encrypt] requested=cuda cpu=0 gpu=1000 fallback=0 wall_ms=29.2805 gpu_batch_ms=29.0611 kernel_ms=26.0622 check_ms=0
+P.encrypt time: 0.059
+P.Ljir time: 0.001
+P.Lj time: 0.017
+P.wireUp time: 1.249
+P.run time: 1.045
+P.circuit time: 2.638
+message count: 1000
+byte length: 512-bit
+single encrypt circuit's N: 770
+single encrypt circuit's Q: 1539
+batch encrypt circuit's N: 936150
+batch encrypt circuit's Q: 1872300
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2940.73 gpu_batch_ms=2940.48 kernel_ms=2446.47 check_ms=0
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2922.39 gpu_batch_ms=2922.25 kernel_ms=2421.79 check_ms=0
+[Commit] requested=cuda cpu=0 gpu=968 fallback=0 wall_ms=2908.76 gpu_batch_ms=2908.64 kernel_ms=2405.77 check_ms=0
+P.commit time: 15.419
+P.y time: 0.001
+prover.setY time: 0.657
+prover.rx time: 0.559
+sx.wai time: 1.731
+sx.wbi time: 0.618
+sx.wci time: 1.866
+prover.sx time: 4.217
+prover.rx_ time: 1.412
+prover.ky time: 0.011
+prover.tx.mul time: 8.268
+prover.txT time: 0
+[Commit] requested=cuda cpu=0 gpu=83 fallback=0 wall_ms=106.01 gpu_batch_ms=105.828 kernel_ms=96.2721 check_ms=0
+prover.txCommit time: 0.124
+prover.polyCommit time: 15.25
+P.polyCommit time: 15.405
+P.x time: 0
+P.prove time: 1.246
+V.Ljir time: 0.001
+V.wireUp time: 1.254
+V.circuit time: 1.636
+V.y time: 0.01
+V.x time: 0.002
+verifier.polyVerify time: 0.057
+verifier.calcV1 time: 0
+verifier.setY time: 0.661
+sx.wai time: 1.154
+sx.wbi time: 0.404
+sx.wci time: 1.803
+verifier.sx time: 4.398
+verifier.r_ time: 0
+verifier.rr_ time: 0.011
+verifier.calcV2 time: 5.072
+verifier.commitR1 time: 0.092
+verifier.commitR2 time: 0.694
+verifier.verify time: 5.918
+V.verify time: 5.985
+V.attach_value time: 0.006
+P.decompose time: 1573
+P.decompose-complex time: 4011
+
+==========
+message count: 1000
+message/batch: 15
+batch count: 67
+byte length: 512-bit
+byte length: 64 bytes
+message size: 64 bytes
+slot size: 4 bytes
+slot/message: 16
+range proof count: 128
+cipher size: 128 bytes
+proof size: 561580 bytes
+proof size/message: 561.58 bytes
+
+single encrypt circuit's N: 770
+single encrypt circuit's Q: 1539
+batch encrypt circuit's N: 936150
+batch encrypt circuit's Q: 1872300
+batch encrypt circuit's matrix m: 968
+batch encrypt circuit's matrix n: 968
+
+encryption time: 0.059
+circuit create time: 3.398
+value assign time: 1.045
+commit time: 15.419
+prove time: 16.652
+verify time: 5.997
+==========
+VERIFICATION=PASS run=3 WALL_SECONDS=47.9552
