@@ -1,12 +1,11 @@
-参考文献8与GPU4060项目的Paillier加密对比程序
-============================================
+# 参考文献8与GPU4060项目的Paillier加密对比程序
 
 本程序已将文献8公开实现中的普通Paillier GPU加密算子改为接受外部
 密钥和整数明文，并与所提供GPU4060项目的CPU、CUDA和混合后端使用
 相同的n、m、r数据。完成正确性校验后才输出时间和相对性能。
 
-代码来源
---------
+## 代码来源
+
 论文：Y. Litchev and L. Ouyang,
 “Batched Paillier-Based Hamming-Distance Computation over Binary Embeddings”,
 arXiv:2609.21364，2026。
@@ -22,8 +21,8 @@ provenance.json记录来源版本、原始输入和各源码文件的SHA256。
 尚未确定下载版本是否等于论文实验所用的精确提交；这里比较的是
 该固定公开版本的适配算子，不能声称复现了论文中的原始性能数字。
 
-比较范围
---------
+## 比较范围
+
 共同计算：c = (1+n*m) * r^n mod n^2，g=n+1。
 输入要求：0<=m<n，0<r<n，gcd(r,n)=1。
 一条输入对应一个明文整数和一个密文，不使用原文的512维向量作为
@@ -40,19 +39,23 @@ provenance.json记录来源版本、原始输入和各源码文件的SHA256。
 改动去掉了汉明向量编码、内置密钥生成和内置随机数采样，加入共享
 十进制输入、错误检查、重复测量、校验和输出。具体见adapters说明。
 
-运行环境和构建
---------------
+## 运行环境和构建
+
 完整CUDA对比面向Linux的C++、OpenMP、GMP、CMake和CUDA环境。
 不需要NTL、pybind11或安装完整cuhepy Python依赖。
 Python脚本只使用标准库。若目标Ubuntu尚未安装CPU构建依赖：
 
-  sudo apt update
-  sudo apt install -y build-essential cmake python3 libgmp-dev
+```bash
+sudo apt update
+sudo apt install -y build-essential cmake python3 libgmp-dev
+```
 
 确认nvidia-smi和nvcc可用后，进入本目录构建RTX4060程序：
 
-  python3 scripts/build.py --backend cuda --cxx /usr/bin/g++ \
-    --nvcc /usr/local/cuda-13.4/bin/nvcc --arch 89-real --jobs 4
+```bash
+python3 scripts/build.py --backend cuda --cxx /usr/bin/g++ \
+  --nvcc /usr/local/cuda-13.4/bin/nvcc --arch 89-real --jobs 4
+```
 
 若nvcc位于其他路径，修改--nvcc参数或省略后让CMake查找。
 默认生成build/user_bench，以及ref8_bench_512、_1024、_2048。
@@ -61,38 +64,48 @@ n实际可能为请求位宽减1，本包同时记录requested_n_bits和actual_n
 
 添加3072/4096位目标：
 
-  python3 scripts/build.py --backend cuda --bits 512 1024 2048 3072 4096 \
-    --cxx /usr/bin/g++ --nvcc /usr/local/cuda-13.4/bin/nvcc --arch 89-real
+```bash
+python3 scripts/build.py --backend cuda --bits 512 1024 2048 3072 4096 \
+  --cxx /usr/bin/g++ --nvcc /usr/local/cuda-13.4/bin/nvcc --arch 89-real
+```
 
 若只检查CPU，构建和运行如下：
 
-  python3 scripts/build.py --backend cpu
-  python3 scripts/compare.py --build build-cpu --bits 512 1024 2048 \
-    --messages 1 10 40 --backends user_cpu --threads 4 --repeat 3 \
-    --output results-cpu
+```bash
+python3 scripts/build.py --backend cpu
+python3 scripts/compare.py --build build-cpu --bits 512 1024 2048 \
+  --messages 1 10 40 --backends user_cpu --threads 4 --repeat 3 \
+  --output results-cpu
+```
 
-CUDA验收和正式采集
------------------
+## CUDA验收和正式采集
+
 先用边界明文检查两个GPU实现与混合实现，生成的新目录不可重名：
 
-  python3 scripts/compare.py --build build --bits 512 1024 2048 \
-    --messages 4 10 --dataset edges --threads 16 --repeat 3 --warmup 1 \
-    --output results-gpu-acceptance
+```bash
+python3 scripts/compare.py --build build --bits 512 1024 2048 \
+  --messages 4 10 --dataset edges --threads 16 --repeat 3 --warmup 1 \
+  --output results-gpu-acceptance
+```
 
 必须结束于COMPARISON=PASS。设备错误、计算错误、无GPU任务或CPU回退
 都会中止，不会写入成功的加速比汇总。
 
 与论文消息规模一致的结构化明文测试：
 
-  python3 scripts/compare.py --build build --bits 512 1024 2048 \
-    --messages 1 10 40 100 200 400 --dataset structured --slot-bytes 4 \
-    --threads 16 --repeat 5 --warmup 1 --output results-structured
+```bash
+python3 scripts/compare.py --build build --bits 512 1024 2048 \
+  --messages 1 10 40 100 200 400 --dataset structured --slot-bytes 4 \
+  --threads 16 --repeat 5 --warmup 1 --output results-structured
+```
 
 建议再单独采集完整明文空间的uniform数据，避免仅小明文反映性能：
 
-  python3 scripts/compare.py --build build --bits 512 1024 2048 \
-    --messages 1 10 40 100 200 400 --dataset uniform --threads 16 \
-    --repeat 5 --warmup 1 --output results-uniform
+```bash
+python3 scripts/compare.py --build build --bits 512 1024 2048 \
+  --messages 1 10 40 100 200 400 --dataset uniform --threads 16 \
+  --repeat 5 --warmup 1 --output results-uniform
+```
 
 structured按照你EndToEnd.cpp的方法，把消息序号的二进制位放入
 slot_bytes宽的0/1槽。uniform在[0,n)中采样，edges循环使用0、1、n-1、n/2。
@@ -101,8 +114,8 @@ slot_bytes宽的0/1槽。uniform在[0,n)中采样，edges循环使用0、1、n-1
 随机数生成不计时。--seed仅用于可复现的合成测试；默认采用系统随机源。
 512位只用于与已有实验口径对齐及功能检查，不能作为安全等级声明。
 
-计时和输出解释
---------------
+## 计时和输出解释
+
 wall_seconds：实际实现的热态、主机可见批次时间，包括输入解析/打包、
 数据传输、内核、等待、主机结果转换及该实现保留的批次分配和调度。
 双方接受同一十进制输入并返回十进制密文；内部表示和调度差异保留。
@@ -132,21 +145,23 @@ logs保留原始stdout/stderr/命令；validated_rows.jsonl保留已通过的测
 失败会写failure.json，且不生成成功汇总。输入/结果目录已有内容时
 拒绝覆盖。源码完整性检查命令：python3 scripts/check_sources.py。
 
-单个程序直接运行
-----------------
+## 单个程序直接运行
+
 生成一个共享输入并分别运行：
 
-  python3 scripts/fixtures.py --bits 2048 --messages 100 --dataset structured \
-    --output fixture2048.txt
-  ./build/user_bench --input fixture2048.txt --output user2048.txt \
-    --backend cuda --threads 16 --repeat 5 --warmup 1
-  ./build/ref8_bench_2048 --input fixture2048.txt --output ref82048.txt \
-    --repeat 5 --warmup 1
+```bash
+python3 scripts/fixtures.py --bits 2048 --messages 100 --dataset structured \
+  --output fixture2048.txt
+./build/user_bench --input fixture2048.txt --output user2048.txt \
+  --backend cuda --threads 16 --repeat 5 --warmup 1
+./build/ref8_bench_2048 --input fixture2048.txt --output ref82048.txt \
+  --repeat 5 --warmup 1
+```
 
 请优先通过compare.py执行，确保额外的Python密文检查和统一统计。
 
-已完成的本机验证及限制
-----------------------
+## 已完成的本机验证及限制
+
 CPU适配器已用Windows上的MinGW11.5/OpenMP/GMP6.3编译运行。
 验证使用包内vendor源码；512/1024/2048位输入、边界/结构化/均匀明文、
 线程1和4以及独立Python一般Paillier公式均通过。完整CPU采集流程也通过。

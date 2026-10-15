@@ -1493,9 +1493,9 @@
       "sha256": "cfc4793e3e749ca99aba6ee8ccc297c58dd30b4ffb688de611f05695ba061d63"
     },
     {
-      "path": "使用说明.txt",
-      "bytes": 9371,
-      "sha256": "d30aeaadc12ad8a440eecab128e434eb6af47cc204dbb2e81a90f3b0a07029eb"
+      "path": "README.md",
+      "bytes": 9288,
+      "sha256": "0843fa30a29489111657b2109f38de47ba29932dae9b36406a18f492560f7068"
     }
   ],
   "excluded": "git, pycache, work toolchain/binaries, superseded pre-review integration records"
